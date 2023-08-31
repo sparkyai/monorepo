@@ -24,7 +24,7 @@ importers:
         specifier: latest
         version: 1.10.13
 
-  apps/docs:
+  apps/tool:
     dependencies:
       next:
         specifier: ^13.4.19
@@ -35,58 +35,6 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
-      ui:
-        specifier: workspace:*
-        version: link:../../packages/ui
-    devDependencies:
-      '@next/eslint-plugin-next':
-        specifier: ^13.4.19
-        version: 13.4.19
-      '@types/node':
-        specifier: ^18.11.17
-        version: 18.17.8
-      '@types/react':
-        specifier: ^18.2.5
-        version: 18.2.21
-      '@types/react-dom':
-        specifier: ^18.2.4
-        version: 18.2.7
-      autoprefixer:
-        specifier: ^10.4.13
-        version: 10.4.15(postcss@8.4.28)
-      eslint-config-custom:
-        specifier: workspace:*
-        version: link:../../packages/eslint-config-custom
-      postcss:
-        specifier: ^8.4.20
-        version: 8.4.28
-      tailwind-config:
-        specifier: workspace:*
-        version: link:../../packages/tailwind-config
-      tailwindcss:
-        specifier: ^3.2.4
-        version: 3.3.3
-      tsconfig:
-        specifier: workspace:*
-        version: link:../../packages/tsconfig
-      typescript:
-        specifier: ^5.1.6
-        version: 5.1.6
-
-  apps/web:
-    dependencies:
-      next:
-        specifier: ^13.4.19
-        version: 13.4.19(react-dom@18.2.0)(react@18.2.0)
-      react:
-        specifier: ^18.2.0
-        version: 18.2.0
-      react-dom:
-        specifier: ^18.2.0
-        version: 18.2.0(react@18.2.0)
-      ui:
-        specifier: workspace:*
-        version: link:../../packages/ui
     devDependencies:
       '@next/eslint-plugin-next':
         specifier: ^13.4.19
