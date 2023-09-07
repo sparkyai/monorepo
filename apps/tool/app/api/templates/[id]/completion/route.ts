@@ -43,8 +43,6 @@ export async function POST(request: NextRequest, props: TemplateCompletionContex
     openAIApiKey: process.env.OPENAI_API_KEY,
     presencePenalty: template.presentPenalty,
     frequencyPenalty: template.frequencyPenalty,
-
-    verbose: true,
   });
 
   const chain = prompt.pipe(model).pipe(new BytesOutputParser());
