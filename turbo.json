@@ -3,7 +3,7 @@
   "globalDotEnv": [".env"],
   "pipeline": {
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["prisma:generate","^build"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
       "env": ["OPENAI_API_KEY"]
     },
@@ -19,6 +19,9 @@
       "env": ["OPENAI_API_KEY", "DATABASE_URL"]
     },
     "clean": {
+      "cache": false
+    },
+    "prisma:generate": {
       "cache": false
     }
   }
