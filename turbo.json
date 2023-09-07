@@ -1,15 +1,22 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local"],
+  "globalDotEnv": [".env"],
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
+      "env": ["OPENAI_API_KEY"]
     },
     "lint": {},
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": ["OPENAI_API_KEY", "DATABASE_URL"]
+    },
+    "start": {
+      "cache": false,
+      "persistent": true,
+      "env": ["OPENAI_API_KEY", "DATABASE_URL"]
     },
     "clean": {
       "cache": false

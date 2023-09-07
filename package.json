@@ -1,9 +1,10 @@
 {
   "private": true,
   "scripts": {
-    "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
+    "build": "turbo build",
+    "start": "turbo start",
     "clean": "turbo clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },

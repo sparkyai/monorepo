@@ -29,6 +29,10 @@ module.exports = {
         project,
       },
     },
+    "import/extensions": [".ts", ".js", ".tsx", ".jsx"],
   },
   ignorePatterns: ["node_modules/", "dist/"],
+  rules: {
+    "import/no-extraneous-dependencies": "off",
+  },
 };
