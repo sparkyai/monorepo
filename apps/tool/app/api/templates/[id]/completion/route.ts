@@ -43,40 +43,16 @@ export async function POST(request: NextRequest, props: TemplateCompletionContex
     openAIApiKey: process.env.OPENAI_API_KEY,
     presencePenalty: template.presentPenalty,
     frequencyPenalty: template.frequencyPenalty,
+
+    verbose: true,
   });
 
   const chain = prompt.pipe(model).pipe(new BytesOutputParser());
+  const stream = await chain.stream(input);
 
-  return new StreamingTextResponse(await chain.stream(input));
+  request.signal.addEventListener("abort", () => {
+    void stream.cancel("cancel").catch(() => void 0);
+  });
 
-  // const chain = new LLMChain({
-  //   llm: new ChatOpenAI({
-  //     topP: template.topP,
-  //     maxTokens: -1,
-  //     streaming: true,
-  //     modelName: template.model,
-  //     temperature: template.temperature,
-  //     openAIApiKey: process.env.OPENAI_API_KEY,
-  //     presencePenalty: template.presentPenalty,
-  //     frequencyPenalty: template.frequencyPenalty,
-  //   }),
-  //   prompt: ChatPromptTemplate.fromPromptMessages(messages),
-  //   verbose: true,
-  // });
-  //
-  // // Фантастические похождения Дэрика
-  // const stream = new TransformStream<string>();
-  //
-  // void chain.stream(input).then(async (iterable) => {
-  //   console.log("write...");
-  //   const writer = stream.writable.getWriter();
-  //
-  //   for await (const chunk of iterable) {
-  //     chunk && (await writer.write(JSON.stringify(chunk)));
-  //   }
-  //
-  //   void writer.close();
-  // });
-  //
-  // return new Response(stream.readable);
+  return new StreamingTextResponse(stream);
 }

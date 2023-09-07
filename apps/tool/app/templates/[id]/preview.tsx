@@ -79,16 +79,20 @@ export function PreviewAction(props: PreviewActionProps) {
           ? "bg-green-700 hover:bg-green-800 active:bg-green-800"
           : "bg-red-700 hover:bg-red-800 active:bg-red-800",
       )}
-      disabled={state !== "idle"}
-      onClick={onGenerate as VoidFunction}
+      onClick={state === "idle" ? (onGenerate as VoidFunction) : onCancel}
       type="button"
     >
-      generate
+      {state === "idle" ? "generate" : "stop"}
     </button>
   );
 
+  function onCancel() {
+    controller.current?.abort("cancel");
+  }
+
   async function onGenerate() {
     setState("loading");
+    setContent("");
 
     controller.current = new AbortController();
 
@@ -96,19 +100,21 @@ export function PreviewAction(props: PreviewActionProps) {
       body: JSON.stringify(params),
       signal: controller.current.signal,
       method: "POST",
-    });
+    }).catch(() => void 0);
 
-    if (response.ok && response.body) {
-      setContent("");
+    if (response && response.ok && response.body) {
       const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
 
-      void reader.read().then(function handler(result) {
-        if (!result.done) {
-          setContent((oldContent) => oldContent + result.value);
+      await reader.read().then(
+        function handler(result) {
+          if (!result.done) {
+            setContent((oldContent) => oldContent + result.value);
 
-          void reader.read().then(handler);
-        }
-      });
+            return reader.read().then(handler, () => void 0);
+          }
+        },
+        () => void 0,
+      );
     }
 
     setState("idle");
