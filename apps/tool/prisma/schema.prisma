@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Template {
+  id               Int              @id @default(autoincrement())
+  name             String
+  context          ContextMessage[]
+  category         Category?        @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  categoryId       Int?
+  parameters       Parameter[]
+  model            String           @default("gpt-3.5-turbo")
+  topP             Float            @default(1)
+  temperature      Float            @default(1)
+  presentPenalty   Float            @default(0)
+  frequencyPenalty Float            @default(0)
+
+  @@index([name])
+  @@map("tamplates")
+}
+
+model Parameter {
+  id       Int        @id @default(autoincrement())
+  name     String     @unique
+  template Template[]
+
+  @@map("parameters")
+}
+
+model ContextMessage {
+  id         String   @id @default(uuid())
+  role       String
+  content    String
+  position   Int
+  Template   Template @relation(fields: [templateId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  templateId Int
+
+  @@unique([position, templateId])
+  @@map("context_messages")
+}
+
+model Chat {
+  id       String        @id @default(uuid())
+  messages ChatMessage[]
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  chat      Chat     @relation(fields: [chatId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  role      String
+  content   String
+  createdAt DateTime @default(now())
+  chatId    String
+
+  @@map("messages")
+}
+
+model Category {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  templates Template[]
+
+  @@map("categories")
+}

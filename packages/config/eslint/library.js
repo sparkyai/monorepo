@@ -29,6 +29,15 @@ module.exports = {
         project,
       },
     },
+    "import/extensions": [".ts", ".js", ".tsx", ".jsx"],
   },
   ignorePatterns: ["node_modules/", "dist/"],
+  rules: {
+    "@typescript-eslint/require-await": "off",
+    "@typescript-eslint/no-unsafe-call": "off",
+    "import/no-extraneous-dependencies": "off",
+    "@typescript-eslint/no-unsafe-return": "off",
+    "@typescript-eslint/no-unsafe-argument": "off",
+    "@typescript-eslint/no-unnecessary-type-assertion": "off",
+  },
 };
