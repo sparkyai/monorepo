@@ -4,4 +4,7 @@ module.exports = {
     require.resolve("eslint-config-turbo"),
     require.resolve("./react"),
   ],
+  rules: {
+    "turbo/no-undeclared-env-vars": "off",
+  },
 };
