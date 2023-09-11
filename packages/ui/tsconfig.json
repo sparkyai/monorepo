@@ -1,5 +1,0 @@
-{
-  "extends": "@sparky/config/typescript/react.json",
-  "include": ["."],
-  "exclude": ["dist", "build", "node_modules"]
-}
