@@ -14,6 +14,8 @@ import { TableRow } from "@tiptap/extension-table-row";
 import { Text } from "@tiptap/extension-text";
 import { TextAlign } from "@tiptap/extension-text-align";
 import { TextStyle } from "@tiptap/extension-text-style";
+import { Highlight } from "@tiptap/extension-highlight";
+import { Color } from "@tiptap/extension-color";
 import { generateHTML } from "@tiptap/html";
 
 type RichTextProps = {
@@ -36,7 +38,9 @@ export default function RichText(props: RichTextProps) {
             },
           }),
           Text,
+          Color.configure({}),
           TextStyle,
+          Highlight.configure({}),
           TextAlign.configure({
             types: ["heading", "paragraph"],
           }),
