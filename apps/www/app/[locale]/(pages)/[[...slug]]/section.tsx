@@ -1,21 +1,6 @@
 import dynamic from "next/dynamic";
 
 const SECTIONS = {
-  // "template-cards": dynamic(() => import("components/section/template-cards")),
-  // Text_Image_DoubleCard: dynamic(() => import("components/section/template-cards")),
-  // Horizontal_Detailed_Card_1280px: dynamic(() => import("components/section/template-cards")),
-  // Advantages_list_card: dynamic(() => import("components/section/template-cards")),
-  // Tabbed_Text_Video_Card: dynamic(() => import("components/section/template-cards")),
-  // Banner: dynamic(() => import("components/section/template-cards")),
-  // "company info": dynamic(() => import("components/section/template-cards")),
-  // Hero_Image_AvatarDisplay: dynamic(() => import("components/section/template-cards")),
-  // "Simple_Hero_&_Image": dynamic(() => import("components/section/template-cards")),
-  // Multipurpose_Contact_Section: dynamic(() => import("components/section/template-cards")),
-  // Services_Section_Top_Bottom: dynamic(() => import("components/section/template-cards")),
-  // Services_Section_Left_Right: dynamic(() => import("components/section/template-cards")),
-  // Tools_cards: dynamic(() => import("components/section/template-cards")),
-  // Team_contact_cards: dynamic(() => import("components/section/template-cards")),
-  // Team_banner_cards: dynamic(() => import("components/section/template-cards")),
   faq: dynamic(() => import("components/section/faq")),
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- controlled
   // @ts-expect-error
@@ -23,8 +8,9 @@ const SECTIONS = {
   media: dynamic(() => import("components/section/media")),
   pricing: dynamic(() => import("components/section/pricing")),
   reviews: dynamic(() => import("components/section/reviews")),
-  "hero-about": dynamic(() => import("components/section/hero-about")),
   advantages: dynamic(() => import("components/section/advantages")),
+  "hero-about": dynamic(() => import("components/section/hero-about")),
+  "tools-cards": dynamic(() => import("components/section/tools-cards")),
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- controlled
   // @ts-expect-error
   "promo-banner": dynamic(() => import("components/section/promo-banner")),
@@ -44,6 +30,7 @@ const SECTIONS = {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- controlled
   // @ts-expect-error
   "template-showcase": dynamic(() => import("components/section/template-showcase")),
+  "services-section-left-right": dynamic(() => import("components/section/media-horizontal")),
 };
 
 type PageSectionProps = {
@@ -55,5 +42,9 @@ type PageSectionProps = {
 export default function PageSection(props: PageSectionProps) {
   const Component = SECTIONS[props.type];
 
-  return <Component locale={props.locale} {...props.params} />;
+  if (!Component) {
+    return <pre>{JSON.stringify(props, void 0, 2)}</pre>;
+  }
+
+  return Component ? <Component locale={props.locale} {...props.params} /> : null;
 }
