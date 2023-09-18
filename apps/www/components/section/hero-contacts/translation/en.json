@@ -1,0 +1,25 @@
+{
+  "title": "A better future starts with a simple conversation",
+  "fields": {
+    "name": {
+      "label": "Name",
+      "placeholder": "Your name"
+    },
+    "email": {
+      "label": "Email",
+      "placeholder": "you@complany.com"
+    },
+    "message": {
+      "label": "Message",
+      "placeholder": "Leave us a message..."
+    }
+  },
+  "dialog": {
+    "success": {
+      "text": "Thanks for reaching out.\n\nWe'll review your message and get back to you within 24-48 hours. Meanwhile, feel free to browse our website or visit our FAQs.",
+      "title": "Your message is on its way!",
+      "action": "Continue browsing"
+    }
+  },
+  "loading": "Loading"
+}
