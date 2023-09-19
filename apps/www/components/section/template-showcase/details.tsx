@@ -14,12 +14,12 @@ const caveat = Caveat({
 type DetailsProps = {
   title: string;
   review?: {
-    text: string;
-    author: {
+    author?: {
       name: string;
       avatar: ImageData;
       jobTitle: string;
     };
+    message: string;
   };
   template: {
     name: string;
@@ -55,12 +55,12 @@ export default async function Details(props: DetailsProps) {
             {JSON.parse(props.template.example)}
           </RichText>
         </div>
-        {props.review && (
+        {props.review?.author && (
           <>
             <blockquote
               className={`my-5 w-full ${caveat.className} text-md text-right font-bold sm:text-lg md:text-2xl`}
             >
-              &ldquo;{props.review.text}&rdquo;
+              &ldquo;{props.review.message}&rdquo;
             </blockquote>
             <div className="ml-auto">
               <div className="flex items-center gap-5">

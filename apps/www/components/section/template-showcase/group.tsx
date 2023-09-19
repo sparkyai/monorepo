@@ -6,12 +6,12 @@ import TemplateCard from "components/template/card";
 type GroupProps = {
   title: string;
   review?: {
-    text: string;
-    author: {
+    author?: {
       name: string;
       avatar: ImageData;
       jobTitle: string;
     };
+    message: string;
   };
   primary?: {
     name: string;

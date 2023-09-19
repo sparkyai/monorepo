@@ -1,7 +1,6 @@
 import HeaderContainer from "components/layout/header-container";
 import Section from "components/layout/section";
 import type { ImageData } from "lib/data/api";
-import reviews from "./reviews";
 import Group from "./group";
 
 type TemplateShowcaseProps = {
@@ -20,7 +19,16 @@ type TemplateShowcaseProps = {
       example: string;
       summary: string;
     };
-    category: unknown;
+    category: {
+      review?: {
+        author?: {
+          name: string;
+          avatar: ImageData;
+          jobTitle: string;
+        };
+        message: string;
+      };
+    };
     subtitle: string;
     templates: {
       id: number;
@@ -28,6 +36,7 @@ type TemplateShowcaseProps = {
       icon: ImageData;
       summary: string;
     }[];
+    showCategoryReview?: boolean;
   }[];
 };
 
@@ -35,8 +44,12 @@ export default async function TemplateShowcase(props: TemplateShowcaseProps) {
   return (
     <Section>
       <HeaderContainer {...props.header} />
-      {props.categories.map((category, i) => (
-        <Group key={category.id} {...category} review={reviews[props.locale][i % reviews[props.locale].length]} />
+      {props.categories.map((category) => (
+        <Group
+          key={category.id}
+          {...category}
+          review={category.showCategoryReview ? category.category.review : void 0}
+        />
       ))}
     </Section>
   );
