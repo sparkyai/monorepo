@@ -39,8 +39,6 @@ export default async function Details(props: DetailsProps) {
       <div className="w-full lg:w-1/2 lg:pr-5">
         <p className="text-md mb-4 font-semibold text-gray-50">{props.subtitle}</p>
         <h3 className="text-md mb-7 font-semibold sm:text-lg md:text-2xl">{props.title}</h3>
-        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment -- controlled */}
-        {/* @ts-expect-error */}
         <Form {...props.template} />
       </div>
       <div className="mt-5 flex w-full flex-col lg:mt-0 lg:w-1/2 lg:pl-5">

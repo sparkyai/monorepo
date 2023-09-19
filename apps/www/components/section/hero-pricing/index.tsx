@@ -33,11 +33,7 @@ type HeroPricingProps = {
 
 export default function HeroPricing(props: HeroPricingProps) {
   return (
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- controlled
-    // @ts-expect-error
     <HeroSection {...props.header} locale={props.locale}>
-      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment -- controlled */}
-      {/* @ts-expect-error */}
       <PricingBoard locale={props.locale} models={props.models} products={props.products} />
     </HeroSection>
   );

@@ -36,8 +36,6 @@ export default function Group(props: GroupProps) {
 
   return (
     <>
-      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment -- controlled */}
-      {/* @ts-expect-error */}
       <Details review={props.review} subtitle={props.subtitle} template={props.primary} title={props.title} />
       {Boolean(props.templates.length) && (
         <Carousel>

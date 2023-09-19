@@ -14,8 +14,6 @@ type HeroAboutProps = {
 
 export default function HeroAbout(props: HeroAboutProps) {
   return (
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- controlled
-    // @ts-expect-error
     <HeroSection {...props.header} locale={props.locale}>
       {props.media && (
         <div className="relative aspect-[21/9] overflow-hidden rounded-md">

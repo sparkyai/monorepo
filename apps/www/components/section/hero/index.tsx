@@ -19,8 +19,6 @@ export default async function Hero(props: HeroProps) {
   const dictionary = await import(`lib/dictionaries/${props.locale}.json`).then((module) => module.default);
 
   return (
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- controlled
-    // @ts-expect-error
     <HeroSection
       avatars={props.avatars}
       link={{ href: app(), label: dictionary["Start for free"] }}

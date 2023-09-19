@@ -38,8 +38,6 @@ export default function Pricing(props: PricingProps) {
       <HeaderContainer {...props.header} />
       {props.models.length > 0 && props.products.length > 0 && (
         <div className="container">
-          {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment -- controlled */}
-          {/* @ts-expect-error */}
           <PricingBoard locale={props.locale} models={props.models} products={props.products} />
         </div>
       )}
