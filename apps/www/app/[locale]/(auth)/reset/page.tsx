@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import TextField from "components/form/text-field";
 import ButtonBlueFilled from "components/button/button-blue-filled";
