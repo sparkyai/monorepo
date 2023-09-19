@@ -11,6 +11,13 @@ type PricingProps = {
   models: {
     id: number;
     name: string;
+    tooltip: {
+      title: string;
+      speed: number;
+      reasoning: number;
+      conciseness: number;
+      description: string;
+    };
   }[];
   products: {
     id: number;

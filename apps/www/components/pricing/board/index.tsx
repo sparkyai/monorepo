@@ -13,6 +13,13 @@ type PricingBoardProps = {
   models: {
     id: number;
     name: string;
+    tooltip: {
+      title: string;
+      speed: number;
+      reasoning: number;
+      conciseness: number;
+      description: string;
+    };
   }[];
   products: {
     id: number;
@@ -41,7 +48,18 @@ export default async function PricingBoard(props: PricingBoardProps) {
               <span className="text-md truncate py-px font-semibold leading-9">{dictionary["Choose quality"]}</span>
               <div className="flex w-full gap-5 md:w-auto">
                 {props.models.map((model) => (
-                  <QualityTrigger key={model.id} value={model.id.toString()}>
+                  <QualityTrigger
+                    key={model.id}
+                    tooltip={{
+                      ...model.tooltip,
+                      advantages: [
+                        { label: dictionary.reasoning, value: model.tooltip.reasoning },
+                        { label: dictionary.speed, value: model.tooltip.speed },
+                        { label: dictionary.conciseness, value: model.tooltip.conciseness },
+                      ],
+                    }}
+                    value={model.id.toString()}
+                  >
                     {model.name}
                   </QualityTrigger>
                 ))}

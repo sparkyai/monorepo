@@ -52,6 +52,7 @@ export async function GET(request: NextRequest, context: NavigationContext) {
         "content.cards.feature",
         "content.header",
         "content.models",
+        "content.models.tooltip",
         "content.banner",
         "content.banner.media",
         "content.banner.action",
