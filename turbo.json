@@ -4,7 +4,7 @@
   "globalEnv": ["OPENAI_API_KEY", "*_URL"],
   "pipeline": {
     "build": {
-      "dependsOn": ["prisma:generate", "^build"],
+      "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
     "lint": {},
