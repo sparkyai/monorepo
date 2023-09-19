@@ -1,22 +1,20 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDotEnv": [".env"],
+  "globalEnv": ["OPENAI_API_KEY", "*_URL"],
   "pipeline": {
     "build": {
-      "dependsOn": ["prisma:generate","^build"],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
-      "env": ["OPENAI_API_KEY"]
+      "dependsOn": ["prisma:generate", "^build"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
     "lint": {},
     "dev": {
       "cache": false,
-      "persistent": true,
-      "env": ["OPENAI_API_KEY", "DATABASE_URL"]
+      "persistent": true
     },
     "start": {
       "cache": false,
-      "persistent": true,
-      "env": ["OPENAI_API_KEY", "DATABASE_URL"]
+      "persistent": true
     },
     "clean": {
       "cache": false

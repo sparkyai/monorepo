@@ -16,9 +16,9 @@
     "strict": false,
     "target": "es5",
     "paths": {
-      "@lib/*": ["./lib/*"],
-      "@app/*": ["./app/*"],
-      "@components/*": ["./components/*"],
+      "lib/*": ["./lib/*"],
+      "app/*": ["./app/*"],
+      "components/*": ["./components/*"]
     }
   }
 }

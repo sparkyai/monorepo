@@ -1,0 +1,9 @@
+{
+  "extends": "@sparky/config/typescript/next.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "plugins": [{ "name": "next" }]
+  },
+  "include": ["**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules", ".turbo", ".next"]
+}

@@ -3,16 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "PORT=3003 next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "PORT=3003 next start",
     "lint": "next lint",
     "prisma:generate": "prisma generate"
   },
   "dependencies": {
     "@mantine/hooks": "^6.0.20",
     "@prisma/client": "5.2.0",
-    "@sparky/ui": "workspace:^",
     "ai": "^2.2.11",
     "langchain": "^0.0.138",
     "next": "^13.4.19",

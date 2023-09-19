@@ -1,0 +1,48 @@
+{
+  "offer": {
+    "trial": {
+      "name": "Free Trial",
+      "promo": "Explore all the features to discover what suits you best.",
+      "target": "Unleash Sparky`s Potential for Free",
+      "summary": "Enjoy a free trial of Sparky`s  writing features to get a glimpse of the power of AI-driven content creation.",
+      "services": [
+        "Grammar and style checking",
+        "40+ AI Templates",
+        "20+ Languages",
+        "Advanced Editor",
+        "Compose & command features",
+        "Document Sharing",
+        "Sparky Chat"
+      ]
+    },
+    "business": {
+      "name": "Business Plan",
+      "extra": "Everything in Free-trial, plus",
+      "target": "For bloggers, freelancers & businesses",
+      "summary": "Experience transformative tools to create captivating blogs, books, and extraordinary content effortlessly.",
+      "services": [
+        "Priority access to new features",
+        "Invoicing options",
+        "Priority support",
+        "Priority email support",
+        "Custom Templates",
+        "Shared access to documents"
+      ]
+    },
+    "custom": {
+      "name": "Custom Plan",
+      "extra": "Everything in Business Plan, plus",
+      "target": "For teams and businesses",
+      "summary": "Skyrocket your business with customized plans, AI model development and expert support - achieve exceptional success.",
+      "services": [
+        "Custom number of words",
+        "Custom number of users",
+        "Custom AI development",
+        "Invoicing options",
+        "Dedicated account manager",
+        "Training sessions",
+        "Premium support"
+      ]
+    }
+  }
+}
