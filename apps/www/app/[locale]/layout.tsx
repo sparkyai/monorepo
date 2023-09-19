@@ -31,7 +31,7 @@ type LocaleLayoutProps = PropsWithChildren<{
 export default function LocaleLayout(props: LocaleLayoutProps) {
   return (
     <html className={inter.className} lang={props.params?.locale}>
-      <body className="flex min-h-screen flex-col bg-gray-900 text-blue-50">{props.children}</body>
+      <body className="flex min-h-screen flex-col">{props.children}</body>
     </html>
   );
 }
