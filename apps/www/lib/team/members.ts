@@ -78,7 +78,7 @@ export default {
   ],
   ru: [
     {
-      name: "Юлия Дбякова",
+      name: "Юлия Дьякова",
       image: JuliaDiakova,
       socials: SOCIALS.JuliaDiakova,
       summary: "Ориентированный на пользовательский дизайн, улучшение опыта.",
