@@ -9,9 +9,6 @@ import Remove from "@components/icon/remove";
 type TemplateLinkProps = {
   id: number;
   name: string;
-  category: null | {
-    name: string;
-  };
 };
 
 export default function TemplateLink(props: TemplateLinkProps) {
@@ -21,7 +18,7 @@ export default function TemplateLink(props: TemplateLinkProps) {
   return (
     <div
       className={twMerge(
-        "group relative flex h-20 w-72 cursor-pointer flex-col justify-between rounded-lg border-4 border-stone-600 bg-stone-600 px-4 py-2 transition-colors",
+        "group relative flex w-72 cursor-pointer flex-col justify-between rounded-lg border-4 border-stone-600 bg-stone-600 px-4 py-2 transition-colors",
         pathname === `/templates/${props.id}`
           ? "border-blue-800 bg-blue-800"
           : "hover:border-blue-700 hover:bg-blue-700 active:border-blue-700 active:bg-blue-700",
@@ -52,7 +49,6 @@ export default function TemplateLink(props: TemplateLinkProps) {
           </button>
         </div>
       </div>
-      {props.category && <p className="overflow-hidden text-sm capitalize tracking-widest">{props.category.name}</p>}
     </div>
   );
 }
