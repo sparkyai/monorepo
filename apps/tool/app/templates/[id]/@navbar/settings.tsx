@@ -29,9 +29,15 @@ export default function TemplateNavbarSettings(props: TemplateNavbarSettingsProp
   const [category, setCategory] = useState(props.template.category || "");
 
   useEffect(() => {
+    setCategory(props.template.category || "");
+  }, [props]);
+
+  useEffect(() => {
     const timer = setTimeout(() => {
-      if (props.template.name !== name || props.template.category !== category) {
-        void updateTemplate(props.template.id, { name, category: category ? category.trim() : category }).then(() => {
+      const categoryName = category.trim();
+
+      if (props.template.name !== name || (categoryName && props.template.category !== categoryName)) {
+        void updateTemplate(props.template.id, { name, category: categoryName }).then(() => {
           router.refresh();
         });
       }
