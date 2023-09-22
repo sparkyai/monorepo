@@ -25,7 +25,7 @@ type RichTextProps = {
 
 export default function RichText(props: RichTextProps) {
   return (
-    <article
+    <div
       className={props.className}
       dangerouslySetInnerHTML={{
         __html: generateHTML(props.children, [
