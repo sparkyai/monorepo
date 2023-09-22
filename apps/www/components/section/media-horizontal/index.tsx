@@ -10,6 +10,7 @@ import ButtonBlueFilled from "components/button/button-blue-filled";
 
 type MediaHorizontalProps = {
   media: ImageData | null;
+  label: string;
   locale: string;
   content: string;
   feature: null | {
@@ -42,7 +43,7 @@ export default function MediaHorizontal(props: MediaHorizontalProps) {
                 href={`/${props.feature.locale}/features/${props.feature.slug}`}
                 type="button"
               >
-                Explore AI writing tools
+                {props.label}
               </ButtonBlueFilled>
             )}
           </div>
