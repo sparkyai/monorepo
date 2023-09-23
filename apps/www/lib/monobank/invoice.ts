@@ -3,7 +3,7 @@ async function request(path: string, method: string, payload?: object) {
     body: payload ? JSON.stringify(payload) : void 0,
     method,
     headers: {
-      "X-Token": process.env.MONOBANK_API_KEY,
+      "X-Token": process.env.MONOBANK_API_KEY || "",
     },
   });
 
