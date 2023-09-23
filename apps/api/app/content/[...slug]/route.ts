@@ -46,6 +46,7 @@ export async function GET(request: NextRequest, context: NavigationContext) {
         "content.page",
         "content.form",
         "content.form.image",
+        "content.legal",
         "content.media",
         "content.variants",
         "content.cards",
