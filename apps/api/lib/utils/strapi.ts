@@ -44,7 +44,7 @@ async function request<T>(url: string, method: "get" | "delete"): Promise<T>;
 async function request<T>(url: string, method: "put" | "post", data?: object): Promise<T>;
 async function request(url: string, method: string, payload?: object) {
   const response = await fetch(`${process.env.STRAPI_URL}/api/${url}`, {
-    next: { revalidate: 0 },
+    next: { tags: ["strapi"] },
     body: payload ? JSON.stringify({ data: payload }) : void 0,
     method,
     headers: {

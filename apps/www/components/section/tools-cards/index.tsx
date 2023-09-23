@@ -10,6 +10,7 @@ type ToolsCardsProps = {
   cards: {
     id: number;
     title: string;
+    label: string;
     image: ImageData;
     feature: {
       slug: string;
@@ -34,7 +35,7 @@ export default function ToolsCards(props: ToolsCardsProps) {
             <h3 className="mb-3 text-2xl font-bold text-gray-50">{card.title}</h3>
             <p className="mb-6 text-sm text-gray-200">{card.description}</p>
             <ButtonBlueFilled component={NextLink} href={`/${card.feature.locale}/features/${card.feature.slug}`}>
-              See how It works
+              {card.label}
             </ButtonBlueFilled>
           </div>
         ))}

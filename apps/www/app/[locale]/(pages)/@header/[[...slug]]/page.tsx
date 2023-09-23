@@ -4,6 +4,7 @@ import Portal from "components/common/portal";
 import ButtonBlueFilled from "components/button/button-blue-filled";
 import ButtonGrayFilled from "components/button/button-gray-filled";
 import { DropdownContent } from "components/common/dropdown";
+import MegaMenuLink from "./mega-menu-link";
 import DesktopLink from "./desktop-link";
 import MobileLink from "./mobile-link";
 import MegaMenu from "./mega-menu";
@@ -26,7 +27,7 @@ export default async function PageHeader(props: PageHeaderProps) {
         {navigation.map((item) =>
           "items" in item && item.items?.length ? (
             <MegaMenu key={item.id} name={item.title}>
-              menu
+              {item.items.map((page) => "related" in page && <MegaMenuLink key={page.id} {...page.related} />)}
             </MegaMenu>
           ) : (
             <DesktopLink

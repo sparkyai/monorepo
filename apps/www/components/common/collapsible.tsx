@@ -1,16 +1,22 @@
 "use client";
 
-import type { PropsWithChildren, TransitionEvent } from "react";
+import type { ComponentProps, JSX, JSXElementConstructor, PropsWithChildren, Ref, TransitionEvent } from "react";
 import { useEffect, useRef } from "react";
 import { twMerge } from "tailwind-merge";
 
 type CollapsibleProps = PropsWithChildren<{
   open?: boolean;
   className?: string;
+  component?: keyof JSX.IntrinsicElements;
 }>;
 
 export default function Collapsible(props: CollapsibleProps) {
-  const content = useRef<HTMLDivElement>(null);
+  const content = useRef<HTMLElement>(null);
+  const Component = (props.component || "div") as unknown as JSXElementConstructor<
+    ComponentProps<"div"> & {
+      ref?: Ref<HTMLElement>;
+    }
+  >;
 
   useEffect(() => {
     if (content.current) {
@@ -34,13 +40,16 @@ export default function Collapsible(props: CollapsibleProps) {
   }, [props.open]);
 
   return (
-    <div
+    <Component
       className={twMerge("overflow-y-hidden transition-all duration-500", props.className)}
       onTransitionEnd={onTransitionEnd}
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- controlled
+      // @ts-expect-error
       ref={content}
+      style={{ height: 0 }}
     >
       {props.children}
-    </div>
+    </Component>
   );
 
   function onTransitionEnd(event: TransitionEvent) {

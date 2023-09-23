@@ -66,7 +66,7 @@ export function QualityTrigger(props: QualityTriggerProps) {
       </Tooltip.Trigger>
       <Tooltip.Portal>
         <Tooltip.Content
-          className="flex max-w-xs flex-col rounded-md bg-gray-600 p-4 ring-2 ring-gray-700"
+          className="flex max-w-xs flex-col rounded-md border border-gray-400 bg-gray-600 p-4"
           sideOffset={8}
         >
           <p className="mb-2 text-sm font-semibold tracking-wide">{props.tooltip.title}</p>

@@ -1,21 +1,26 @@
 import NextImage from "next/image";
-import NextLink from "next/link";
 import { twMerge } from "tailwind-merge";
 import Section from "components/layout/section";
 import type { ImageData } from "lib/data/api";
 import { getStaticImageData } from "lib/data/api";
 import RichText from "components/common/rich-text";
 import ContainerCard from "components/layout/container-card";
-import ButtonBlueFilled from "components/button/button-blue-filled";
+import Action from "./action";
+
+type Page = {
+  slug: string | null;
+  locale: string;
+};
 
 type MediaHorizontalProps = {
+  url: string | null;
+  page: Page | null;
+  legal: Page | null;
   media: ImageData | null;
+  label: string;
   locale: string;
   content: string;
-  feature: null | {
-    slug: string;
-    locale: string;
-  };
+  feature: Page | null;
   advantages: {
     id: number;
     title: string;
@@ -35,16 +40,7 @@ export default function MediaHorizontal(props: MediaHorizontalProps) {
                 {JSON.parse(props.content)}
               </RichText>
             )}
-            {props.feature && (
-              <ButtonBlueFilled
-                className="self-start md:self-center xl:self-start"
-                component={NextLink}
-                href={`/${props.feature.locale}/features/${props.feature.slug}`}
-                type="button"
-              >
-                Explore AI writing tools
-              </ButtonBlueFilled>
-            )}
+            <Action {...props} />
           </div>
         )}
         {props.media && (
