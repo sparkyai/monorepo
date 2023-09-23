@@ -1,6 +1,7 @@
 import NextLink from "next/link";
 import ButtonBlueFilled from "components/button/button-blue-filled";
 import IcomoonIcon from "components/common/icomoon-icon";
+import { app } from "lib/utils/url";
 
 interface AppAction {
   path: string;
@@ -53,7 +54,7 @@ export default function Link(props: LinkProps) {
   let href: string | undefined;
 
   if ("path" in props.action) {
-    href = props.action.path;
+    href = app(props.action.path);
   } else if ("social" in props.action) {
     href = props.action.social.url;
   }
