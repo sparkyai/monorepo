@@ -23,7 +23,7 @@ export function getStaticImageData(data: ImageData): StaticImageData {
 
 async function request<T>(path: string, method: string, payload: unknown, options?: object): Promise<T> {
   const response = await fetch(`${process.env.API_URL}${path}`, {
-    next: { revalidate: 0 },
+    next: { tags: ["api"] },
     body: payload ? JSON.stringify(payload) : void 0,
     method,
     ...options,
