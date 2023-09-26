@@ -6,8 +6,7 @@
     "dev": "PORT=3002 next dev",
     "build": "next build",
     "start": "PORT=3002 next start",
-    "lint": "next lint",
-    "prisma:generate": "prisma generate"
+    "lint": "next lint"
   },
   "dependencies": {
     "jose": "^4.14.6",

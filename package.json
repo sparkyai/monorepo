@@ -6,8 +6,7 @@
     "build": "turbo build",
     "start": "turbo start",
     "clean": "turbo clean",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "prisma:generate": "turbo prisma:generate"
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
     "@sparky/config": "workspace:^",

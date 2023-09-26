@@ -18,9 +18,6 @@
     },
     "clean": {
       "cache": false
-    },
-    "prisma:generate": {
-      "cache": false
     }
   }
 }
