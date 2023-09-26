@@ -7,7 +7,7 @@ import TemplateSidebarGroup from "./group";
 import Message from "./message";
 import TemplateSidebarParameter from "./parameter";
 
-const PARAMETERS_REGEX = /{(?<name>[A-zА-я0-9_]+)}/gm;
+const PARAMETERS_REGEX = /{(?<name>[A-zА-я0-9_ ]+)}/gm;
 
 type TemplateSidebarContextProps = {
   template: {

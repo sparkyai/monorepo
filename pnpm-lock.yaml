@@ -29,6 +29,9 @@ importers:
 
   apps/api:
     dependencies:
+      jose:
+        specifier: ^4.14.6
+        version: 4.14.6
       next:
         specifier: ^13.4.19
         version: 13.4.19(@babel/core@7.22.11)(react-dom@18.2.0)(react@18.2.0)
@@ -4010,6 +4013,10 @@ packages:
 
   /jju@1.4.0:
     resolution: {integrity: sha512-8wb9Yw966OSxApiCt0K3yNJL8pnNeIv+OEq2YMidz4FKP6nonSRoOXc80iXY4JaN2FC11B9qsNmDsm+ZOfMROA==}
+    dev: false
+
+  /jose@4.14.6:
+    resolution: {integrity: sha512-EqJPEUlZD0/CSUMubKtMaYUOtWe91tZXTWMJZoKSbLk+KtdhNdcvppH8lA9XwVu2V4Ailvsj0GBZJ2ZwDjfesQ==}
     dev: false
 
   /js-tiktoken@1.0.7:
