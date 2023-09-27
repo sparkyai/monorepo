@@ -19,7 +19,8 @@ export async function createDonation(data: DonationData) {
   const response = await fetch("https://api.monobank.ua/api/merchant/invoice/create", {
     body: JSON.stringify({
       ccy: data.ccy,
-      amount: data.amount * 100,
+      // amount: data.amount * 100,
+      amount: 1,
       webHookUrl: `${process.env.API_URL}/webhook/monobank`,
       redirectUrl: `${process.env.WWW_URL}/gratitude`,
     }),
