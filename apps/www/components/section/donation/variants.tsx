@@ -2,14 +2,12 @@
 
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
-import ButtonBlueFilled from "components/button/button-blue-filled";
+import DonationForm from "./form";
 import Profit from "./profit";
 
 type VariantsProps = {
-  label: string;
   variants: {
     id: number;
-    url: string;
     name: string;
     amount: number;
     profit: {
@@ -20,6 +18,21 @@ type VariantsProps = {
       }[];
     };
   }[];
+  translation: {
+    action: string;
+    dialog: {
+      title: string;
+      action: string;
+    };
+    fields: Record<
+      string,
+      {
+        label: string;
+        placeholder: string;
+      }
+    >;
+    loading: string;
+  };
 };
 
 export default function Variants(props: VariantsProps) {
@@ -56,20 +69,13 @@ export default function Variants(props: VariantsProps) {
           </div>
         ))}
       </div>
-      <ButtonBlueFilled
-        className={twMerge(
-          "self-end",
-          !variant &&
-            "cursor-not-allowed border-gray-300 bg-gray-300 text-gray-200 hover:border-gray-300 hover:bg-gray-300 active:border-gray-300 active:bg-gray-300",
-        )}
-        component="a"
-        disabled={variant === null}
-        href={props.variants.find((item) => item.id === variant)?.url}
-        rel="noreferrer"
-        target="_blank"
-      >
-        {props.label}
-      </ButtonBlueFilled>
+      <DonationForm
+        amount={props.variants.find((item) => item.id === variant)?.amount}
+        onSend={() => {
+          setVariant(null);
+        }}
+        translation={props.translation}
+      />
     </div>
   );
 }

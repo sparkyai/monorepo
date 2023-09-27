@@ -1,0 +1,22 @@
+{
+  "action": "Support Sparky",
+  "fields": {
+    "name": {
+      "label": "Name",
+      "placeholder": "Your name"
+    },
+    "email": {
+      "label": "Email",
+      "placeholder": "you@complany.com"
+    },
+    "message": {
+      "label": "Message",
+      "placeholder": "Leave us a message..."
+    }
+  },
+  "dialog": {
+    "title": "Let's get to know each other before we do a big thing together!",
+    "action": "Send"
+  },
+  "loading": "Loading"
+}

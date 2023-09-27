@@ -1,6 +1,5 @@
 import ContainerCard from "components/layout/container-card";
 import RichText from "components/common/rich-text";
-import { createInvoice } from "lib/monobank/invoice";
 import Variants from "./variants";
 
 type DonationProps = {
@@ -16,26 +15,21 @@ type DonationProps = {
 };
 
 export default async function Donation(props: DonationProps) {
-  const dictionary = await import(`lib/dictionaries/${props.locale}.json`).then((module) => module.default);
-  const variants = await Promise.all(
-    props.variants.map(async (variant) => {
-      const data = await createInvoice(variant.amount * 100, props.locale);
+  const [translation, dictionary] = await Promise.all([
+    import(`./translation/${props.locale}.json`).then((module) => module.default),
+    import(`lib/dictionaries/${props.locale}.json`).then((module) => module.default),
+  ]);
 
-      return {
-        id: variant.id,
-        url: data.pageUrl,
-        name: variant.name,
-        amount: variant.amount,
-        profit: {
-          label: dictionary["What will you get"],
-          content: variant.profit.split(/\n+/).map((text, i) => ({
-            id: i,
-            text,
-          })),
-        },
-      };
-    }),
-  );
+  const variants = props.variants.map((variant) => ({
+    ...variant,
+    profit: {
+      label: dictionary["What will you get"],
+      content: variant.profit.split(/\n+/).map((text, i) => ({
+        id: i,
+        text,
+      })),
+    },
+  }));
 
   return (
     <ContainerCard className="gap-4 md:gap-8">
@@ -49,7 +43,7 @@ export default async function Donation(props: DonationProps) {
           <p>{props.info}</p>
         </div>
       </div>
-      <Variants label={dictionary["Support Sparky"]} variants={variants} />
+      <Variants translation={translation} variants={variants} />
     </ContainerCard>
   );
 }

@@ -1,0 +1,22 @@
+{
+  "action": "Поддержать Sparky",
+  "fields": {
+    "name": {
+      "label": "Имя",
+      "placeholder": "Ваше имя"
+    },
+    "email": {
+      "label": "Электронная почта",
+      "placeholder": "you@complany.com"
+    },
+    "message": {
+      "label": "Сообщение",
+      "placeholder": "Оставьте нам сообщение..."
+    }
+  },
+  "dialog": {
+    "title": "Давайте познакомимся перед тем, как сделать большое        дело вместе!",
+    "action": "Отправить"
+  },
+  "loading": "Загрузка"
+}

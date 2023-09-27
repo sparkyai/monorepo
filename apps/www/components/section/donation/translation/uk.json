@@ -1,0 +1,22 @@
+{
+  "action": "Підтримати Sparky",
+  "fields": {
+    "name": {
+      "label": "Ім'я",
+      "placeholder": "Ваше Ім'я"
+    },
+    "email": {
+      "label": "Електронна пошта",
+      "placeholder": "you@complany.com"
+    },
+    "message": {
+      "label": "Повідомлення",
+      "placeholder": "Залиште нам повідомлення..."
+    }
+  },
+  "dialog": {
+    "title": "Давайте познайомимося перед тим, як зробити велику справу разом!",
+    "action": "Відправити"
+  },
+  "loading": "Завантаження"
+}
