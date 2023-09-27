@@ -22,7 +22,6 @@ export async function createDonation(data: DonationData) {
       // amount: data.amount * 100,
       amount: 1,
       webHookUrl: `${process.env.API_URL}/webhook/monobank`,
-      redirectUrl: `${process.env.WWW_URL}/gratitude`,
     }),
     method: "POST",
     headers: {
