@@ -1,5 +1,6 @@
 import ContainerCard from "components/layout/container-card";
 import RichText from "components/common/rich-text";
+import Section from "components/layout/section";
 import Variants from "./variants";
 
 type DonationProps = {
@@ -32,18 +33,20 @@ export default async function Donation(props: DonationProps) {
   }));
 
   return (
-    <ContainerCard className="gap-4 md:gap-8">
-      <div className="flex w-full flex-col gap-4 md:w-7/12 md:justify-between md:gap-8">
-        <div className="rounded-xs flex flex-col gap-4 bg-gradient-to-r from-[#6F5AFF]/30 via-[#C135FF]/30 to-[#FF3797]/30 px-5 py-6 xl:pr-12">
-          <h2 className="text-xl font-semibold">{dictionary["Sparky Web Application Development Plan"]}</h2>
-          <RichText>{JSON.parse(props.details)}</RichText>
+    <Section>
+      <ContainerCard className="gap-4 md:gap-8">
+        <div className="flex w-full flex-col gap-4 md:w-7/12 md:justify-between md:gap-8">
+          <div className="rounded-xs flex flex-col gap-4 bg-gradient-to-r from-[#6F5AFF]/30 via-[#C135FF]/30 to-[#FF3797]/30 px-5 py-6 xl:pr-12">
+            <h2 className="text-xl font-semibold">{dictionary["Sparky Web Application Development Plan"]}</h2>
+            <RichText>{JSON.parse(props.details)}</RichText>
+          </div>
+          <div className="flex flex-col">
+            <h3 className="font-semibold">{dictionary.Legend}</h3>
+            <p>{props.info}</p>
+          </div>
         </div>
-        <div className="flex flex-col">
-          <h3 className="font-semibold">{dictionary.Legend}</h3>
-          <p>{props.info}</p>
-        </div>
-      </div>
-      <Variants translation={translation} variants={variants} />
-    </ContainerCard>
+        <Variants translation={translation} variants={variants} />
+      </ContainerCard>
+    </Section>
   );
 }

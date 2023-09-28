@@ -1,5 +1,6 @@
 import ContainerCard from "components/layout/container-card";
 import LongText from "components/typography/logn-text";
+import Section from "components/layout/section";
 import type { Action } from "./link";
 import Link from "./link";
 
@@ -17,11 +18,13 @@ export default function ContactBanner(props: ContactBannerProps) {
   }
 
   return (
-    <ContainerCard className="lg:mx-auto lg:w-10/12">
-      <LongText className="w-full text-center text-xl font-semibold sm:text-2xl md:text-3xl">
-        {props.banner.message}
-      </LongText>
-      {props.banner.action.length > 0 && <Link action={props.banner.action[0]} locale={props.locale} />}
-    </ContainerCard>
+    <Section>
+      <ContainerCard className="lg:mx-auto lg:w-10/12">
+        <LongText className="w-full text-center text-xl font-semibold sm:text-2xl md:text-3xl">
+          {props.banner.message}
+        </LongText>
+        {props.banner.action.length > 0 && <Link action={props.banner.action[0]} locale={props.locale} />}
+      </ContainerCard>
+    </Section>
   );
 }
