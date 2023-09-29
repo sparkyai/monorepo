@@ -117,13 +117,7 @@ export default function DonationForm(props: DonationFormProps) {
       createDonation(donation)
         .then(
           (url) => {
-            window.open(url, "_blank", "noreferrer");
-
-            props.onSend();
-            setName("");
-            setEmail("");
-            setIsOpen(false);
-            setMessage("");
+            window.location.href = url;
           },
           () => {
             setHasError(true);
