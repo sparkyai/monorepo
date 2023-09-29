@@ -2,6 +2,7 @@
 
 import type { PropsWithChildren } from "react";
 import { useState } from "react";
+import { twMerge } from "tailwind-merge";
 import IcomoonIcon from "components/common/icomoon-icon";
 import Collapsible from "components/common/collapsible";
 
@@ -21,9 +22,10 @@ export default function Question(props: QuestionProps) {
         <button className="flex w-full items-start gap-3 text-left" onClick={onClick} type="button">
           {props.text}
           <IcomoonIcon
-            className={`ml-auto block border border-transparent p-1 text-[1.125rem] text-blue-500 transition-transform duration-500${
-              isOpen ? "" : " -rotate-90"
-            }`}
+            className={twMerge(
+              "ml-auto block border border-transparent p-1 text-[1.125rem] text-blue-500 transition-transform duration-500",
+              isOpen && "-rotate-90",
+            )}
             name="chevron-down"
           />
         </button>
