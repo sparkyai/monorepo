@@ -34,8 +34,8 @@ export default async function Donation(props: DonationProps) {
 
   return (
     <Section>
-      <ContainerCard className="gap-4 md:gap-8">
-        <div className="flex w-full flex-col gap-4 md:w-7/12 md:justify-between md:gap-8">
+      <ContainerCard className="gap-4 lg:gap-8">
+        <div className="flex w-full flex-col gap-4 lg:w-7/12 lg:justify-between lg:gap-8">
           <div className="rounded-xs flex flex-col gap-4 bg-gradient-to-r from-[#6F5AFF]/30 via-[#C135FF]/30 to-[#FF3797]/30 px-5 py-6 xl:pr-12">
             <h2 className="text-xl font-semibold">{dictionary["Sparky Web Application Development Plan"]}</h2>
             <RichText>{JSON.parse(props.details)}</RichText>

@@ -18,7 +18,7 @@ export default function ContactBanner(props: ContactBannerProps) {
   }
 
   return (
-    <Section>
+    <Section component="div">
       <ContainerCard className="lg:mx-auto lg:w-10/12">
         <LongText className="w-full text-center text-xl font-semibold sm:text-2xl md:text-3xl">
           {props.banner.message}
