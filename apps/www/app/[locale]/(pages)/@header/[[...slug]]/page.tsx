@@ -1,9 +1,9 @@
+import NextLink from "next/link";
 import { getNavigation } from "lib/data/navigation";
-import { app } from "lib/utils/url";
 import Portal from "components/common/portal";
 import ButtonBlueFilled from "components/button/button-blue-filled";
-import ButtonGrayFilled from "components/button/button-gray-filled";
 import { DropdownContent } from "components/common/dropdown";
+import { getDonationLinkData } from "lib/data/donation-link";
 import CollapsibleMenu from "./collapsible-menu";
 import MegaMenuLink from "./mega-menu-link";
 import DesktopLink from "./desktop-link";
@@ -17,9 +17,9 @@ type PageHeaderProps = {
 };
 
 export default async function PageHeader(props: PageHeaderProps) {
-  const [navigation, dictionary] = await Promise.all([
+  const [roadmap, navigation] = await Promise.all([
+    getDonationLinkData(props.params.locale),
     getNavigation("main-navigation", props.params.locale),
-    import(`lib/dictionaries/${props.params.locale}.json`).then((module) => module.default),
   ]);
 
   return (
@@ -73,14 +73,15 @@ export default async function PageHeader(props: PageHeaderProps) {
                   ),
                 )}
               </div>
-              <div className="flex gap-5 sm:hidden">
-                <ButtonGrayFilled className="flex w-0 grow" component="a" href={app()}>
-                  {dictionary.Login}
-                </ButtonGrayFilled>
-                <ButtonBlueFilled className="flex w-0 grow" component="a" href={app()}>
-                  {dictionary["Try now"]}
+              {roadmap && (
+                <ButtonBlueFilled
+                  className="sm:hidden"
+                  component={NextLink}
+                  href={`/${roadmap.page.locale}${roadmap.page.slug ? `/${roadmap.page.slug}` : ""}`}
+                >
+                  {roadmap.label}
                 </ButtonBlueFilled>
-              </div>
+              )}
             </div>
           </div>
         </DropdownContent>
