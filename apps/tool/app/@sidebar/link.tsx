@@ -7,20 +7,19 @@ import { twMerge } from "tailwind-merge";
 
 type LinkProps = PropsWithChildren<{
   href: string;
-  prefetch?: boolean;
 }>;
 
-export default function Link(props: LinkProps) {
+export default function SidebarLink(props: LinkProps) {
   const pathname = usePathname();
+  const isActive = props.href === "/" ? pathname === props.href : pathname.startsWith(props.href);
 
   return (
     <NextLink
       className={twMerge(
-        "inline-flex items-center justify-center gap-2 rounded-md bg-stone-600 px-3 py-1.5 text-sm font-medium capitalize tracking-wide transition-colors hover:bg-blue-700 active:bg-blue-700",
-        pathname.startsWith(props.href) && "bg-blue-800",
+        "rounded-md px-4 py-1.5 tracking-wide transition-colors hover:bg-slate-700 active:bg-slate-700",
+        isActive && "bg-slate-800",
       )}
       href={props.href}
-      prefetch={props.prefetch}
     >
       {props.children}
     </NextLink>
