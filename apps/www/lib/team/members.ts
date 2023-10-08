@@ -19,7 +19,7 @@ const SOCIALS = {
     { url: "https://www.linkedin.com/in/andrii-kamlyk-788486270/", name: "LinkedIn" },
     { url: "https://t.me/AndronAmlike", name: "Telegram" },
   ],
-  DenKarpov: [],
+  DenKarpov: [{ url: "https://www.linkedin.com/in/denys-karpov-eng/", name: "LinkedIn" }],
   JuliaDiakova: [
     { url: "https://www.linkedin.com/in/yuliia-diakova/", name: "LinkedIn" },
     { url: "https://t.me/Yuliia_Diakova", name: "Telegram" },
@@ -150,4 +150,4 @@ export default {
       position: "Тестувальник Підтримка клієнтів",
     },
   ],
-} as Record<string, Member[]>;
+} satisfies Record<string, Member[]>;
