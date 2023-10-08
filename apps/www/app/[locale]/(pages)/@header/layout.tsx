@@ -1,8 +1,9 @@
 import type { PropsWithChildren, ReactElement } from "react";
+import NextLink from "next/link";
 import Brand from "components/common/brand";
-import { app } from "lib/utils/url";
 import { DropdownRoot, DropdownTrigger } from "components/common/dropdown";
 import ButtonBlueFilled from "components/button/button-blue-filled";
+import { getDonationLinkData } from "lib/data/donation-link";
 
 type HeaderLayoutProps = PropsWithChildren<{
   params: {
@@ -12,7 +13,7 @@ type HeaderLayoutProps = PropsWithChildren<{
 }>;
 
 export default async function HeaderLayout(props: HeaderLayoutProps) {
-  const dictionary = await import(`lib/dictionaries/${props.params.locale}.json`).then((module) => module.default);
+  const roadmap = await getDonationLinkData(props.params.locale);
 
   return (
     <DropdownRoot>
@@ -22,15 +23,15 @@ export default async function HeaderLayout(props: HeaderLayoutProps) {
           {props.children}
           <div className="flex items-start gap-2.5">
             {props.locales}
-            <a
-              className="hidden cursor-pointer rounded-sm border border-transparent px-5 py-3.5 text-lg font-semibold leading-5 transition-colors hover:text-blue-400 active:text-blue-400 sm:inline-flex"
-              href={app()}
-            >
-              {dictionary.Login}
-            </a>
-            <ButtonBlueFilled className="hidden sm:inline-flex" component="a" href={app()}>
-              {dictionary["Try now"]}
-            </ButtonBlueFilled>
+            {roadmap && (
+              <ButtonBlueFilled
+                className="hidden sm:inline-flex"
+                component={NextLink}
+                href={`/${roadmap.page.locale}${roadmap.page.slug ? `/${roadmap.page.slug}` : ""}`}
+              >
+                {roadmap.label}
+              </ButtonBlueFilled>
+            )}
             <DropdownTrigger
               aria-label="Menu"
               className="relative h-12 w-12 cursor-pointer rounded-sm border border-transparent bg-transparent text-lg font-semibold leading-5 transition-colors hover:border-gray-300 hover:bg-gray-300 active:border-gray-300 active:bg-gray-300 lg:hidden first:[&_span]:aria-expanded:mt-0 first:[&_span]:aria-expanded:rotate-45 last:[&_span]:aria-expanded:mt-0 last:[&_span]:aria-expanded:-rotate-45 even:[&_span]:aria-expanded:opacity-0"

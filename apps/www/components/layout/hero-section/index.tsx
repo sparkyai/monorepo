@@ -1,20 +1,28 @@
 import type { PropsWithChildren } from "react";
 import { twMerge } from "tailwind-merge";
 import LongText from "components/typography/logn-text";
-import ButtonBlueFilled from "components/button/button-blue-filled";
 import Section from "components/layout/section";
+import Action from "components/layout/hero-section/action";
 import Freelancer from "./freelancer.webp";
 import Marketer from "./marketer.webp";
 import Blogger from "./blogger.webp";
 import Writer from "./writer.webp";
 import User from "./user";
 
+type Page = {
+  slug: string | null;
+  locale: string;
+};
+
 type HeroSectionProps = PropsWithChildren<{
-  link?: {
-    href: string;
-    label: string;
-  };
   title: string;
+  action?: {
+    url: string | null;
+    page: Page | null;
+    label: string;
+    legal: Page | null;
+    feature: Page | null;
+  };
   locale: string;
   subtitle: string;
   avatars?: boolean;
@@ -42,12 +50,10 @@ export default async function HeroSection(props: HeroSectionProps) {
               {props.subtitle}
             </LongText>
           </div>
-          {props.link && (
+          {props.action && (
             <div className="flex items-start lg:justify-around">
               {props.avatars && <User avatar={Writer} className="w-1/12" jobTitle={users[2].jobTitle} />}
-              <ButtonBlueFilled component="a" href={props.link.href}>
-                {props.link.label}
-              </ButtonBlueFilled>
+              <Action {...props.action} />
               {props.avatars && <User avatar={Blogger} className="w-1/12" jobTitle={users[3].jobTitle} />}
             </div>
           )}
