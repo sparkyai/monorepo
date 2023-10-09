@@ -8,6 +8,9 @@
     "start": "PORT=3003 next start",
     "lint": "next lint"
   },
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
   "dependencies": {
     "@mantine/hooks": "^6.0.20",
     "@prisma/client": "5.2.0",
@@ -19,6 +22,7 @@
     "tailwind-merge": "^1.14.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.1.0",
     "@next/eslint-plugin-next": "^13.4.19",
     "@sparky/config": "workspace:^",
     "@types/node": "^18.11.17",
@@ -28,6 +32,7 @@
     "postcss": "^8.4.20",
     "prisma": "^5.2.0",
     "tailwindcss": "^3.2.4",
+    "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   }
 }

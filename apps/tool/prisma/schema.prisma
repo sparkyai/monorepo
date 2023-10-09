@@ -10,63 +10,70 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Template {
-  id               Int              @id @default(autoincrement())
-  name             String
-  context          ContextMessage[]
-  category         Category?        @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  categoryId       Int?
-  parameters       Parameter[]
-  model            String           @default("gpt-3.5-turbo")
-  topP             Float            @default(1)
-  temperature      Float            @default(1)
-  presentPenalty   Float            @default(0)
-  frequencyPenalty Float            @default(0)
-
-  @@index([name])
-  @@map("tamplates")
+model users {
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String @unique
+  surname  String
+  password String
 }
 
-model Parameter {
-  id       Int        @id @default(autoincrement())
-  name     String     @unique
-  template Template[]
-
-  @@map("parameters")
+model languages {
+  id         Int          @id @default(autoincrement())
+  name       String       @unique
+  code       String       @unique @db.VarChar(2)
+  roles      roles[]
+  templates  templates[]
+  categories categories[]
 }
 
-model ContextMessage {
-  id         String   @id @default(uuid())
-  role       String
-  content    String
-  position   Int
-  Template   Template @relation(fields: [templateId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  templateId Int
-
-  @@unique([position, templateId])
-  @@map("context_messages")
+model roles {
+  id                Int                  @id @default(autoincrement())
+  name              String
+  model             String               @default("gpt-3.5-turbo")
+  top_p             Float                @default(1)
+  system            role_systems_promps?
+  language          languages            @relation(fields: [language_id], references: [id], onDelete: Cascade)
+  language_id       Int
+  temperature       Float                @default(1)
+  present_penalty   Float                @default(0)
+  frequency_penalty Float                @default(0)
 }
 
-model Chat {
-  id       String        @id @default(uuid())
-  messages ChatMessage[]
+model role_systems_promps {
+  id      Int    @id @default(autoincrement())
+  role    roles  @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  role_id Int    @unique
+  content String
 }
 
-model ChatMessage {
-  id        String   @id @default(uuid())
-  chat      Chat     @relation(fields: [chatId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  role      String
-  content   String
-  createdAt DateTime @default(now())
-  chatId    String
-
-  @@map("messages")
+model templates {
+  id                Int                @id @default(autoincrement())
+  name              String
+  context           context_messages[]
+  category          categories?        @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  category_id       Int?
+  language          languages          @relation(fields: [language_id], references: [id], onDelete: Cascade)
+  language_id       Int
+  model             String             @default("gpt-3.5-turbo")
+  top_p             Float              @default(1)
+  temperature       Float              @default(1)
+  present_penalty   Float              @default(0)
+  frequency_penalty Float              @default(0)
 }
 
-model Category {
-  id        Int        @id @default(autoincrement())
-  name      String     @unique
-  templates Template[]
+model context_messages {
+  id          Int       @id @default(autoincrement())
+  role        String
+  content     String
+  template    templates @relation(fields: [template_id], references: [id], onDelete: Cascade)
+  template_id Int
+}
 
-  @@map("categories")
+model categories {
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  language    languages   @relation(fields: [language_id], references: [id], onDelete: Cascade)
+  language_id Int
+  templates   templates[]
 }

@@ -8,13 +8,14 @@ const roboto = Roboto({
 });
 
 type RootLayoutProps = PropsWithChildren<{
+  header: ReactElement;
   sidebar: ReactElement;
 }>;
 
 export default function RootLayout(props: RootLayoutProps) {
   return (
     <html className={roboto.className} lang="en">
-      <body className="flex h-screen overflow-hidden bg-stone-950 text-stone-50">
+      <body className="flex bg-slate-900 text-slate-50">
         {props.sidebar}
         {props.children}
       </body>

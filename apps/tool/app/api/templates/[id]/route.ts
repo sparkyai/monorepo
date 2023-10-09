@@ -12,7 +12,7 @@ type TemplateCompletionContext = {
 
 export async function GET(_: NextRequest, props: TemplateCompletionContext) {
   return NextResponse.json(
-    await prisma.template.findMany({
+    await prisma.templates.findMany({
       where: { id: parseInt(props.params.id) },
       include: {
         context: true,

@@ -3,10 +3,37 @@
 import prisma from "@lib/utils/prisma";
 import { getTemplate } from "@lib/utils/data";
 
-export async function createTemplate() {
-  return prisma.template.create({
+export async function createTemplate(name: string, category: number | string, language: number) {
+  return prisma.templates.create({
     data: {
-      name: "Untitled",
+      name,
+      category:
+        typeof category === "number"
+          ? {
+              connect: {
+                id: category,
+              },
+            }
+          : {
+              connectOrCreate: {
+                where: {
+                  name: category,
+                },
+                create: {
+                  name: category,
+                  language: {
+                    connect: {
+                      id: language,
+                    },
+                  },
+                },
+              },
+            },
+      language: {
+        connect: {
+          id: language,
+        },
+      },
     },
     select: {
       id: true,
@@ -15,13 +42,13 @@ export async function createTemplate() {
 }
 
 export async function deleteTemplate(id: number) {
-  return prisma.template.delete({
+  return prisma.templates.delete({
     where: { id },
   });
 }
 
 type TemplateMessage = {
-  id?: string;
+  id?: number;
   role: string;
   content: string;
   position: number;
@@ -32,8 +59,8 @@ export type TemplateData = {
   topP?: number;
   model?: string;
   context?: Partial<Omit<TemplateMessage, "id">>[];
-  category?: string | number;
-  parameters?: unknown[];
+  category?: null | string | number;
+  language?: number;
   temperature?: number;
   presentPenalty?: number;
   frequencyPenalty?: number;
@@ -42,26 +69,35 @@ export type TemplateData = {
 export async function updateTemplate(id: number, data: Omit<TemplateData, "context">) {
   let category;
 
-  if (data.category) {
-    if (typeof data.category === "number") {
-      category = {
-        connect: [data.category],
-      };
-    } else {
-      category = {
-        connectOrCreate: {
-          where: {
-            name: data.category,
-          },
-          create: {
-            name: data.category,
+  if (data.category === null) {
+    category = {
+      disconnect: true,
+    };
+  } else if (typeof data.category === "number") {
+    category = {
+      connect: {
+        id: data.category,
+      },
+    };
+  } else if (data.category) {
+    category = {
+      connectOrCreate: {
+        where: {
+          name: data.category,
+        },
+        create: {
+          name: data.category,
+          language: {
+            connect: {
+              id: data.language,
+            },
           },
         },
-      };
-    }
+      },
+    };
   }
 
-  return prisma.template.update({
+  return prisma.templates.update({
     where: { id },
     data: {
       name: data.name,
@@ -115,7 +151,7 @@ export async function updateTemplateContext(id: number, data: TemplateMessage[])
   const deleted = deleteMany.length;
 
   created + updated + deleted &&
-    (await prisma.template.update({
+    (await prisma.templates.update({
       where: { id },
       data: {
         context: {

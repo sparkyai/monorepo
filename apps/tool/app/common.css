@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    @apply h-full;
+
+    -webkit-tap-highlight-color: rgb(0 0 0 / 0);
+  }
+
+  body {
+    @apply h-full;
+  }
+
+  input::-webkit-search-cancel-button {
+    @apply hidden;
+  }
+}
