@@ -35,14 +35,14 @@ export async function POST(request: NextRequest, props: TemplateCompletionContex
 
   const prompt = ChatPromptTemplate.fromPromptMessages(messages);
   const model = new ChatOpenAI({
-    topP: template.topP,
+    topP: template.top_p,
     maxTokens: -1,
     streaming: true,
     modelName: template.model,
     temperature: template.temperature,
     openAIApiKey: process.env.OPENAI_API_KEY,
-    presencePenalty: template.presentPenalty,
-    frequencyPenalty: template.frequencyPenalty,
+    presencePenalty: template.present_penalty,
+    frequencyPenalty: template.frequency_penalty,
   });
 
   const chain = prompt.pipe(model).pipe(new BytesOutputParser());

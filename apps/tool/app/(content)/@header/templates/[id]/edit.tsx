@@ -17,7 +17,7 @@ type TemplateEditorProps = {
     language: {
       id: number;
     };
-    category: null | {
+    category: {
       id: number;
       name: string;
     };
@@ -38,13 +38,12 @@ export default function TemplateEditor(props: TemplateEditorProps) {
   const [name, setName] = useState(props.template.name);
   const [isOpen, setIsOpen] = useState(false);
   const [language, setLanguage] = useState(props.template.language.id.toString());
-  const [category, setCategory] = useState(props.template.category?.id.toString() || "");
-  const [categoryQuery, setCategoryQuery] = useState(props.template.category?.name || "");
+  const [category, setCategory] = useState(props.template.category.id.toString());
 
   useEffect(() => {
     setName(props.template.name);
     setLanguage(props.template.language.id.toString());
-    setCategory(props.template.category?.id.toString() || "");
+    setCategory(props.template.category.id.toString() || "");
   }, [props]);
 
   return (
@@ -64,8 +63,8 @@ export default function TemplateEditor(props: TemplateEditorProps) {
             className="ml-auto"
             disabled={
               name === props.template.name &&
-              (!categoryQuery.trim() || props.template.category?.name === categoryQuery.trim()) &&
-              (!language || props.template.language.id.toString() === language)
+              (!category || category === props.template.category.id.toString()) &&
+              (!language || language === props.template.language.id.toString())
             }
             onClick={onUpdate}
           >
@@ -82,7 +81,6 @@ export default function TemplateEditor(props: TemplateEditorProps) {
         <FieldGroup label="Category">
           <SelectField
             onChange={setCategory}
-            onInput={setCategoryQuery}
             options={props.categories.map((item) => ({
               label: item.name,
               value: item.id.toString(),
@@ -105,21 +103,7 @@ export default function TemplateEditor(props: TemplateEditorProps) {
   );
 
   function onUpdate() {
-    let newCategory: null | string | number = categoryQuery.trim();
-
-    if (category) {
-      const categoryItem = props.categories.find((item) => item.id.toString() === category);
-
-      if (categoryItem && newCategory.toLowerCase() === categoryItem.name.toLowerCase()) {
-        newCategory = categoryItem.id;
-      }
-    }
-
-    if (props.template.category?.id === newCategory) {
-      newCategory = null;
-    }
-
-    void updateTemplate(props.template.id, { name, category: newCategory, language: props.template.language.id }).then(
+    void updateTemplate(props.template.id, { name, category: parseInt(category), language: parseInt(language) }).then(
       () => {
         router.refresh();
         onClose();

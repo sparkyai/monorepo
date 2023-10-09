@@ -7,7 +7,7 @@ export async function getTemplate(id: number, details?: boolean) {
     select: {
       id: true,
       name: true,
-      topP: details,
+      top_p: details,
       model: details,
       language: {
         select: {
@@ -27,15 +27,14 @@ export async function getTemplate(id: number, details?: boolean) {
           id: details,
           role: details,
           content: details,
-          position: details,
         },
         orderBy: {
-          position: "asc",
+          id: "asc",
         },
       },
       temperature: details,
-      presentPenalty: details,
-      frequencyPenalty: details,
+      present_penalty: details,
+      frequency_penalty: details,
     },
   });
 
@@ -80,6 +79,7 @@ export async function getCategories() {
       },
       language: {
         select: {
+          id: true,
           name: true,
           code: true,
         },
@@ -97,7 +97,7 @@ export async function getRole(id: number, details?: boolean) {
     select: {
       id: true,
       name: true,
-      topP: details,
+      top_p: details,
       model: details,
       language: {
         select: {
@@ -114,8 +114,8 @@ export async function getRole(id: number, details?: boolean) {
         },
       },
       temperature: details,
-      presentPenalty: details,
-      frequencyPenalty: details,
+      present_penalty: details,
+      frequency_penalty: details,
     },
   });
 

@@ -8,9 +8,29 @@ export async function deleteCategory(id: number) {
   });
 }
 
-export async function updateCategory(id: number, name: string) {
+export async function updateCategory(id: number, name: string, language: number) {
   return prisma.categories.update({
     where: { id },
-    data: { name },
+    data: {
+      name,
+      language: {
+        connect: {
+          id: language,
+        },
+      },
+    },
+  });
+}
+
+export async function createCategory(name: string, language: number) {
+  return prisma.categories.create({
+    data: {
+      name,
+      language: {
+        connect: {
+          id: language,
+        },
+      },
+    },
   });
 }

@@ -3,10 +3,12 @@
 import { useState } from "react";
 import TextField from "@components/form/text-field";
 import SelectField from "@components/form/select-field";
+import CreateCategory from "./create";
 import CategoryRow from "./row";
 
 type CategoriesTableProps = {
   languages: {
+    id: number;
     name: string;
   }[];
   categories: {
@@ -16,6 +18,7 @@ type CategoriesTableProps = {
       templates: number;
     };
     language: {
+      id: number;
       name: string;
     };
   }[];
@@ -36,20 +39,19 @@ export default function CategoriesTable(props: CategoriesTableProps) {
           placeholder="Language"
           value={language}
         />
+        <CreateCategory languages={props.languages} />
       </div>
       <div className="flex flex-col rounded-md border border-slate-700 bg-slate-800 tracking-wider">
-        <CategoryRow className="font-bold" />
+        <CategoryRow className="font-bold" languages={props.languages} />
         {props.categories
           .filter((item) => item.name.toLowerCase().includes(query.toLowerCase()))
           .filter((item) => !language || item.language.name === language)
           .map((category) => (
             <CategoryRow
+              category={{ ...category, templates: category._count.templates }}
               className="text-sm"
-              id={category.id}
               key={category.id}
-              language={category.language.name}
-              name={category.name}
-              templates={category._count.templates}
+              languages={props.languages}
             />
           ))}
       </div>
