@@ -21,14 +21,14 @@ export async function deleteRole(id: number) {
   });
 }
 
-type RoleData = {
+export type RoleData = {
   name?: string;
-  topP?: number;
+  top_p?: number;
   model?: string;
   language?: number;
   temperature?: number;
-  presentPenalty?: number;
-  frequencyPenalty?: number;
+  present_penalty?: number;
+  frequency_penalty?: number;
 };
 
 export async function updateRole(id: number, data: RoleData) {

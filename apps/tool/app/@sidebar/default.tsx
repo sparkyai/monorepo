@@ -13,7 +13,7 @@ export default function DefaultSidebar() {
         <SidebarLink href="#">Referrals</SidebarLink>
       </SidebarGroup>
       <SidebarGroup label="Chat">
-        <SidebarLink href="#">Roles</SidebarLink>
+        <SidebarLink href="/roles">Roles</SidebarLink>
       </SidebarGroup>
       <SidebarGroup label="Text">
         <SidebarLink href="/templates">Templates</SidebarLink>
