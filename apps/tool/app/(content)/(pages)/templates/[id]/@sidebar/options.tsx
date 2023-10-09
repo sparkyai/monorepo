@@ -11,28 +11,28 @@ import TemplateSidebarGroup from "./group";
 
 type TemplateSidebarOptionsProps = {
   id: number;
-  topP: number;
+  top_p: number;
   model: string;
   models: string[];
   temperature: number;
-  presentPenalty: number;
-  frequencyPenalty: number;
+  present_penalty: number;
+  frequency_penalty: number;
 };
 
 export default function TemplateSidebarOptions(props: TemplateSidebarOptionsProps) {
   const router = useRouter();
 
-  const [topP, setTopP] = useState(props.topP);
+  const [topP, setTopP] = useState(props.top_p);
   const [model, setModel] = useState(props.model);
   const [temperature, setTemperature] = useState(props.temperature);
-  const [presentPenalty, setPresentPenalty] = useState(props.presentPenalty);
-  const [frequencyPenalty, setFrequencyPenalty] = useState(props.frequencyPenalty);
+  const [presentPenalty, setPresentPenalty] = useState(props.present_penalty);
+  const [frequencyPenalty, setFrequencyPenalty] = useState(props.frequency_penalty);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       const data: TemplateData = {};
 
-      if (topP !== props.topP) {
+      if (topP !== props.top_p) {
         data.topP = topP;
       }
 
@@ -44,11 +44,11 @@ export default function TemplateSidebarOptions(props: TemplateSidebarOptionsProp
         data.temperature = temperature;
       }
 
-      if (presentPenalty !== props.presentPenalty) {
+      if (presentPenalty !== props.present_penalty) {
         data.presentPenalty = presentPenalty;
       }
 
-      if (frequencyPenalty !== props.frequencyPenalty) {
+      if (frequencyPenalty !== props.frequency_penalty) {
         data.frequencyPenalty = frequencyPenalty;
       }
 

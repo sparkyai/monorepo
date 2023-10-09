@@ -51,7 +51,6 @@ type TemplateMessage = {
   id?: number;
   role: string;
   content: string;
-  position: number;
 };
 
 export type TemplateData = {
@@ -59,7 +58,7 @@ export type TemplateData = {
   topP?: number;
   model?: string;
   context?: Partial<Omit<TemplateMessage, "id">>[];
-  category?: null | string | number;
+  category?: number;
   language?: number;
   temperature?: number;
   presentPenalty?: number;
@@ -67,46 +66,25 @@ export type TemplateData = {
 };
 
 export async function updateTemplate(id: number, data: Omit<TemplateData, "context">) {
-  let category;
-
-  if (data.category === null) {
-    category = {
-      disconnect: true,
-    };
-  } else if (typeof data.category === "number") {
-    category = {
-      connect: {
-        id: data.category,
-      },
-    };
-  } else if (data.category) {
-    category = {
-      connectOrCreate: {
-        where: {
-          name: data.category,
-        },
-        create: {
-          name: data.category,
-          language: {
-            connect: {
-              id: data.language,
-            },
-          },
-        },
-      },
-    };
-  }
-
   return prisma.templates.update({
     where: { id },
     data: {
       name: data.name,
-      topP: data.topP,
+      top_p: data.topP,
       model: data.model,
-      category,
+      category: {
+        connect: {
+          id: data.category,
+        },
+      },
+      language: {
+        connect: {
+          id: data.language,
+        },
+      },
       temperature: data.temperature,
-      presentPenalty: data.presentPenalty,
-      frequencyPenalty: data.frequencyPenalty,
+      present_penalty: data.presentPenalty,
+      frequency_penalty: data.frequencyPenalty,
     },
   });
 }
@@ -121,24 +99,7 @@ export async function updateTemplateContext(id: number, data: TemplateMessage[])
   const createMany = data.filter((message) => !message.id);
 
   const updateMany = data
-    .filter((message) => {
-      if (
-        deleteMany.every((item) => item.id !== message.id) &&
-        createMany.every((item) => item.position !== message.position)
-      ) {
-        return (
-          JSON.stringify(template.context.find((oldMessage) => oldMessage.id === message.id)) !==
-          JSON.stringify({
-            id: message.id,
-            role: message.role,
-            content: message.content,
-            position: message.position,
-          })
-        );
-      }
-
-      return false;
-    })
+    .filter((message) => message.id)
     .map((message) => ({
       where: {
         id: message.id,

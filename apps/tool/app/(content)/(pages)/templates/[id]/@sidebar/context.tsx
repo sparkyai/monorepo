@@ -52,7 +52,6 @@ export default function TemplateSidebarContext(props: TemplateSidebarContextProp
         id: message.id ? message.id : void 0,
         role: message.role,
         content: message.content,
-        position: message.position,
       }));
 
       void updateTemplateContext(props.template.id, data);
