@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import prisma from "@lib/utils/prisma";
 
 export async function getTemplate(id: number, details?: boolean) {
-  const template = await prisma.template.findUnique({
+  const template = await prisma.templates.findUnique({
     where: { id },
     select: {
       id: true,
@@ -47,7 +47,7 @@ export async function getTemplate(id: number, details?: boolean) {
 }
 
 export async function getTemplates() {
-  return prisma.template.findMany({
+  return prisma.templates.findMany({
     select: {
       id: true,
       name: true,
@@ -71,7 +71,7 @@ export async function getTemplates() {
 }
 
 export async function getCategories() {
-  return prisma.category.findMany({
+  return prisma.categories.findMany({
     include: {
       _count: {
         select: {
@@ -92,7 +92,7 @@ export async function getCategories() {
 }
 
 export async function getRole(id: number, details?: boolean) {
-  const template = await prisma.role.findUnique({
+  const template = await prisma.roles.findUnique({
     where: { id },
     select: {
       id: true,
@@ -127,7 +127,7 @@ export async function getRole(id: number, details?: boolean) {
 }
 
 export async function getRoles() {
-  return prisma.role.findMany({
+  return prisma.roles.findMany({
     select: {
       id: true,
       name: true,
@@ -145,7 +145,7 @@ export async function getRoles() {
 }
 
 export async function getLanguages() {
-  return prisma.language.findMany({
+  return prisma.languages.findMany({
     orderBy: {
       code: "asc",
     },

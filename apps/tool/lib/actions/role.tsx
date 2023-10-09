@@ -3,7 +3,7 @@
 import prisma from "@lib/utils/prisma";
 
 export async function createRole(name: string, language: number) {
-  return prisma.role.create({
+  return prisma.roles.create({
     data: {
       name,
       language: {
@@ -16,7 +16,7 @@ export async function createRole(name: string, language: number) {
 }
 
 export async function deleteRole(id: number) {
-  return prisma.role.delete({
+  return prisma.roles.delete({
     where: { id },
   });
 }
@@ -32,7 +32,7 @@ type RoleData = {
 };
 
 export async function updateRole(id: number, data: RoleData) {
-  return prisma.role.update({
+  return prisma.roles.update({
     where: { id },
     data: {
       ...data,
@@ -48,7 +48,7 @@ export async function updateRole(id: number, data: RoleData) {
 }
 
 export async function updateRoleSystemPrompt(id: number, content: string) {
-  await prisma.roleSystemPrompt.upsert({
+  await prisma.role_systems_promps.upsert({
     where: {
       role_id: id,
     },

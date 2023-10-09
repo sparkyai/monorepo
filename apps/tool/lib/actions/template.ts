@@ -4,7 +4,7 @@ import prisma from "@lib/utils/prisma";
 import { getTemplate } from "@lib/utils/data";
 
 export async function createTemplate(name: string, category: number | string, language: number) {
-  return prisma.template.create({
+  return prisma.templates.create({
     data: {
       name,
       category:
@@ -42,7 +42,7 @@ export async function createTemplate(name: string, category: number | string, la
 }
 
 export async function deleteTemplate(id: number) {
-  return prisma.template.delete({
+  return prisma.templates.delete({
     where: { id },
   });
 }
@@ -97,7 +97,7 @@ export async function updateTemplate(id: number, data: Omit<TemplateData, "conte
     };
   }
 
-  return prisma.template.update({
+  return prisma.templates.update({
     where: { id },
     data: {
       name: data.name,
@@ -151,7 +151,7 @@ export async function updateTemplateContext(id: number, data: TemplateMessage[])
   const deleted = deleteMany.length;
 
   created + updated + deleted &&
-    (await prisma.template.update({
+    (await prisma.templates.update({
       where: { id },
       data: {
         context: {

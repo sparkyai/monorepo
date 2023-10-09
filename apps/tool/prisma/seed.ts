@@ -1,13 +1,14 @@
 import { PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
+import categories from "./categories.json";
 
 const prisma = new PrismaClient();
 
 async function seed() {
-  await prisma.$transaction([prisma.user.deleteMany(), prisma.setting.deleteMany(), prisma.language.deleteMany()]);
+  await prisma.$transaction([prisma.users.deleteMany(), prisma.languages.deleteMany()]);
 
-  const languages = await prisma.$transaction(async () => {
-    await prisma.language.createMany({
+  const language = await prisma.$transaction(async () => {
+    await prisma.languages.createMany({
       data: [
         { name: "English", code: "en" },
         { name: "Русский", code: "ru" },
@@ -15,14 +16,14 @@ async function seed() {
       ],
     });
 
-    return prisma.language.findMany();
+    return prisma.languages.findFirstOrThrow({
+      where: {
+        code: "ru",
+      },
+    });
   });
 
-  await prisma.setting.createMany({
-    data: [{ name: "language", value: "en" }],
-  });
-
-  await prisma.user.create({
+  await prisma.users.create({
     data: {
       name: faker.person.firstName(),
       email: faker.internet.email(),
@@ -32,58 +33,39 @@ async function seed() {
   });
 
   await Promise.all(
-    languages
-      .map((language) =>
-        faker.helpers.multiple(
-          () =>
-            prisma.category.create({
-              data: {
-                name: faker.word.words(1),
-                language: {
-                  connect: {
-                    id: language.id,
-                  },
-                },
-                templates: {
-                  create: faker.helpers.multiple(
-                    () => ({
-                      name: faker.word.words(1),
-                      language: {
-                        connect: {
-                          id: language.id,
-                        },
-                      },
-                    }),
-                    { count: { min: 1, max: 5 } },
-                  ),
+    categories.map((category) =>
+      prisma.categories.create({
+        data: {
+          name: category.name,
+          language: {
+            connect: {
+              id: language.id,
+            },
+          },
+          templates: {
+            create: category.templates.map((template) => ({
+              name: template.name,
+              top_p: template.topP,
+              model: template.model,
+              context: {
+                create: template.messages.map((message) => ({
+                  role: message.role,
+                  content: message.content,
+                })),
+              },
+              language: {
+                connect: {
+                  id: language.id,
                 },
               },
-            }),
-          { count: { min: 1, max: 5 } },
-        ),
-      )
-      .flat(),
-  );
-
-  await Promise.all(
-    languages
-      .map((language) =>
-        faker.helpers.uniqueArray(
-          () =>
-            prisma.role.create({
-              data: {
-                name: faker.word.words(1),
-                language: {
-                  connect: {
-                    id: language.id,
-                  },
-                },
-              },
-            }),
-          10,
-        ),
-      )
-      .flat(),
+              temperature: template.temperature,
+              present_penalty: template.presentPenalty,
+              frequency_penalty: template.frequencyPenalty,
+            })),
+          },
+        },
+      }),
+    ),
   );
 }
 

@@ -3,13 +3,13 @@
 import prisma from "@lib/utils/prisma";
 
 export async function deleteCategory(id: number) {
-  return prisma.category.delete({
+  return prisma.categories.delete({
     where: { id },
   });
 }
 
 export async function updateCategory(id: number, name: string) {
-  return prisma.category.update({
+  return prisma.categories.update({
     where: { id },
     data: { name },
   });

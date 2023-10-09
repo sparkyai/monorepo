@@ -10,96 +10,70 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model users {
   id       Int    @id @default(autoincrement())
   name     String
   email    String @unique
   surname  String
   password String
-
-  @@map("users")
 }
 
-model Setting {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
-  value String
-
-  @@map("setting")
+model languages {
+  id         Int          @id @default(autoincrement())
+  name       String       @unique
+  code       String       @unique @db.VarChar(2)
+  roles      roles[]
+  templates  templates[]
+  categories categories[]
 }
 
-model Language {
-  id       Int        @id @default(autoincrement())
-  name     String     @unique
-  code     String     @unique @db.VarChar(2)
-  roles    Role[]
-  Template Template[]
-  Category Category[]
-
-  @@map("languages")
+model roles {
+  id                Int                  @id @default(autoincrement())
+  name              String
+  model             String               @default("gpt-3.5-turbo")
+  top_p             Float                @default(1)
+  system            role_systems_promps?
+  language          languages            @relation(fields: [language_id], references: [id], onDelete: Cascade)
+  language_id       Int
+  temperature       Float                @default(1)
+  present_penalty   Float                @default(0)
+  frequency_penalty Float                @default(0)
 }
 
-model Role {
-  id                 Int               @id @default(autoincrement())
-  name               String
-  model              String            @default("gpt-3.5-turbo")
-  topP               Float             @default(1)
-  system             RoleSystemPrompt?
-  language           Language          @relation(fields: [language_id], references: [id], onDelete: Cascade)
-  temperature        Float             @default(1)
-  presentPenalty     Float             @default(0)
-  frequencyPenalty   Float             @default(0)
-  language_id        Int
-
-  @@index([name])
-  @@map("roles")
-}
-
-model RoleSystemPrompt {
+model role_systems_promps {
   id      Int    @id @default(autoincrement())
-  role    Role   @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  role    roles  @relation(fields: [role_id], references: [id], onDelete: Cascade)
   role_id Int    @unique
   content String
-
-  @@map("role_systems_promps")
 }
 
-model Template {
-  id               Int              @id @default(autoincrement())
-  name             String
-  context          ContextMessage[]
-  category         Category?        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  categoryId       Int?
-  language         Language         @relation(fields: [language_id], references: [id], onDelete: Cascade)
-  language_id      Int
-  model            String           @default("gpt-3.5-turbo")
-  topP             Float            @default(1)
-  temperature      Float            @default(1)
-  presentPenalty   Float            @default(0)
-  frequencyPenalty Float            @default(0)
-
-  @@index([name])
-  @@map("tamplates")
+model templates {
+  id                Int                @id @default(autoincrement())
+  name              String
+  context           context_messages[]
+  category          categories?        @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  category_id       Int?
+  language          languages          @relation(fields: [language_id], references: [id], onDelete: Cascade)
+  language_id       Int
+  model             String             @default("gpt-3.5-turbo")
+  top_p             Float              @default(1)
+  temperature       Float              @default(1)
+  present_penalty   Float              @default(0)
+  frequency_penalty Float              @default(0)
 }
 
-model ContextMessage {
-  id          Int      @id @default(autoincrement())
+model context_messages {
+  id          Int       @id @default(autoincrement())
   role        String
   content     String
-  position    Int
-  template    Template @relation(fields: [template_id], references: [id], onDelete: Cascade)
+  template    templates @relation(fields: [template_id], references: [id], onDelete: Cascade)
   template_id Int
-
-  @@unique([position, template_id])
-  @@map("context_messages")
 }
 
-model Category {
-  id          Int        @id @default(autoincrement())
-  name        String     @unique
-  language    Language   @relation(fields: [language_id], references: [id], onDelete: Cascade)
+model categories {
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  language    languages   @relation(fields: [language_id], references: [id], onDelete: Cascade)
   language_id Int
-  templates   Template[]
-
-  @@map("categories")
+  templates   templates[]
 }

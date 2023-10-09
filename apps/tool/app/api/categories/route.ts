@@ -5,7 +5,7 @@ export const revalidate = 0;
 
 export async function GET() {
   return NextResponse.json(
-    await prisma.category.findMany({
+    await prisma.categories.findMany({
       include: {
         templates: {
           select: {
