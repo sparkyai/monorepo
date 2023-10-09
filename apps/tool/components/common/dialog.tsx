@@ -1,7 +1,7 @@
 import type { PropsWithChildren, ReactNode } from "react";
+import { twMerge } from "tailwind-merge";
 import Close from "@components/icon/close";
 import Portal from "@components/common/portal";
-import { twMerge } from "tailwind-merge";
 
 type DialogProps = PropsWithChildren<{
   title: string;
