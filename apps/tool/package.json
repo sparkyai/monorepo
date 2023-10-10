@@ -17,6 +17,7 @@
     "ai": "^2.2.11",
     "langchain": "^0.0.138",
     "next": "^13.4.19",
+    "qs": "^6.11.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tailwind-merge": "^1.14.0"
@@ -26,6 +27,7 @@
     "@next/eslint-plugin-next": "^13.4.19",
     "@sparky/config": "workspace:^",
     "@types/node": "^18.11.17",
+    "@types/qs": "^6.9.8",
     "@types/react": "^18.2.5",
     "@types/react-dom": "^18.2.4",
     "autoprefixer": "^10.4.13",

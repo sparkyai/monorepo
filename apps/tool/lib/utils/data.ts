@@ -109,7 +109,6 @@ export async function getRole(id: number, details?: boolean) {
       system: details && {
         select: {
           id: details,
-          role: details,
           content: details,
         },
       },

@@ -1,3 +1,4 @@
+import { useListState } from "@mantine/hooks";
 import { useRef, useState } from "react";
 
 type Message = {
@@ -6,57 +7,46 @@ type Message = {
   content: string;
 };
 
-type ChatOption = {
-  topP: number;
-  model: string;
-  messages?: Omit<Message, "id">[];
-  temperature: number;
-  presentPenalty: number;
-  frequencyPenalty: number;
-};
-
-export default function useChat(options: ChatOption) {
+export default function useChat(url: string, messages?: Omit<Message, "id">[]) {
   const controller = useRef<AbortController>();
 
-  const [messages, setMessages] = useState<Message[]>(
-    options.messages?.map((message, id) => ({ id, ...message })) || [],
-  );
+  const [history, handlers] = useListState(messages?.map((message, id) => ({ id, ...message })));
   const [isLoading, setIsLoading] = useState(false);
 
-  return [messages, isLoading, { send, cancel }] as const;
+  return [history, isLoading, { send, cancel }] as const;
 
-  function send(message: string) {
+  function send(content: string) {
     setIsLoading(true);
+
+    const message = {
+      id: history.length,
+      role: "user",
+      content,
+    };
+    handlers.append(message);
 
     controller.current = new AbortController();
 
-    const newMessages = [...messages, { id: messages.length, role: "user", content: message }];
-    setMessages(newMessages);
+    void request(url, [...history, message], controller.current.signal).then((stream) => {
+      const reader = stream.pipeThrough(new TextDecoderStream()).getReader();
+      const id = history.length + 1;
+      let assistant = "";
 
-    request({ ...options, messages: newMessages }, controller.current.signal)
-      .then((stream) => {
-        const reader = stream.pipeThrough(new TextDecoderStream()).getReader();
+      handlers.append({ id, role: "assistant", content: assistant });
 
-        newMessages.push({ id: newMessages.length, role: "assistant", content: "" });
-        setMessages(newMessages);
+      void reader.read().then(
+        function handler(result) {
+          if (!result.done) {
+            handlers.setItemProp(id, "content", (assistant += result.value));
 
-        void reader.read().then(
-          function handler(result) {
-            if (!result.done) {
-              newMessages[newMessages.length - 1].content += result.value;
-              setMessages([...newMessages]);
+            return reader.read().then(handler, () => void 0);
+          }
 
-              return reader.read().then(handler, () => void 0);
-            }
-
-            setIsLoading(false);
-          },
-          () => void 0,
-        );
-      })
-      .catch(() => {
-        setIsLoading(false);
-      });
+          setIsLoading(false);
+        },
+        () => void 0,
+      );
+    });
   }
 
   function cancel(reason?: string) {
@@ -65,8 +55,8 @@ export default function useChat(options: ChatOption) {
   }
 }
 
-async function request(data: Required<ChatOption>, signal: AbortSignal) {
-  const response = await fetch(`/api/chat/completions`, {
+async function request(url: string, data: object, signal: AbortSignal) {
+  const response = await fetch(url, {
     body: JSON.stringify(data),
     signal,
     method: "POST",

@@ -1,11 +1,19 @@
 import { Roboto } from "next/font/google";
 import type { PropsWithChildren, ReactElement } from "react";
 import "./common.css";
+import type { Metadata } from "next";
 
 const roboto = Roboto({
   weight: ["400", "500", "700"],
   subsets: ["cyrillic"],
 });
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 type RootLayoutProps = PropsWithChildren<{
   header: ReactElement;
