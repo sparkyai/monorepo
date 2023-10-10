@@ -10,12 +10,12 @@ import { updateRole } from "@lib/actions/role";
 
 type OptionsProps = {
   id: number;
-  topP: number;
+  top_p: number;
   model: string;
   models: string[];
   temperature: number;
-  presentPenalty: number;
-  frequencyPenalty: number;
+  present_penalty: number;
+  frequency_penalty: number;
 };
 
 export default function Options(props: OptionsProps) {
