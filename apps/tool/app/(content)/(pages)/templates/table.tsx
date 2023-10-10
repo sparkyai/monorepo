@@ -15,7 +15,7 @@ type TemplatesTableProps = {
   templates: {
     id: number;
     name: string;
-    category: null | {
+    category: {
       id: number;
       name: string;
     };
@@ -58,7 +58,7 @@ export default function TemplatesTable(props: TemplatesTableProps) {
         <TemplateRow className="font-bold" />
         {props.templates
           .filter((template) => template.name.toLowerCase().includes(query.toLowerCase()))
-          .filter((template) => !category || template.category?.name === category)
+          .filter((template) => template.category.name === category)
           .filter((item) => !language || item.language.name === language)
           .map((template) => (
             <TemplateRow className="text-sm" key={template.id} template={template} />

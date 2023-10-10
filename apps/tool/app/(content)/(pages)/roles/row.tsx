@@ -5,7 +5,7 @@ import RemoveRole from "./remove";
 
 type RoleRowProps = {
   role?: {
-    id: string;
+    id: number;
     name: string;
     language: {
       name: string;
