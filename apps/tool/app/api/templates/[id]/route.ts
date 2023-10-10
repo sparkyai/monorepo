@@ -11,12 +11,59 @@ type TemplateCompletionContext = {
 };
 
 export async function GET(_: NextRequest, props: TemplateCompletionContext) {
-  return NextResponse.json(
-    await prisma.templates.findMany({
-      where: { id: parseInt(props.params.id) },
-      include: {
-        context: true,
+  const templates = await prisma.templates.findMany({
+    where: { id: parseInt(props.params.id) },
+    select: {
+      id: true,
+      name: true,
+      model: true,
+      top_p: true,
+      context: {
+        select: {
+          role: true,
+          content: true,
+        },
       },
+      category: {
+        select: {
+          id: true,
+          name: true,
+          language: {
+            select: {
+              code: true,
+              name: true,
+            },
+          },
+        },
+      },
+      language: {
+        select: {
+          code: true,
+          name: true,
+        },
+      },
+      temperature: true,
+      present_penalty: true,
+      frequency_penalty: true,
+    },
+  });
+
+  if (!templates.length) {
+    throw new Error("Template not found.");
+  }
+
+  return NextResponse.json(
+    templates.map((template) => {
+      const item: Record<string, unknown> = { ...template };
+      item.topP = template.top_p;
+      item.presentPenalty = template.present_penalty;
+      item.frequencyPenalty = template.frequency_penalty;
+
+      delete item.top_p;
+      delete item.present_penalty;
+      delete item.frequency_penalty;
+
+      return item;
     }),
   );
 }
