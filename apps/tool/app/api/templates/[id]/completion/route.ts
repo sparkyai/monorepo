@@ -5,13 +5,13 @@ import { getTemplate } from "@lib/utils/data";
 import type { ChatMessage } from "@lib/utils/langchain";
 import { getChatResponse } from "@lib/utils/langchain";
 
-type TemplateCompletionContext = {
+type TemplateProps = {
   params: {
     id: string;
   };
 };
 
-export async function POST(request: NextRequest, props: TemplateCompletionContext) {
+export async function POST(request: NextRequest, props: TemplateProps) {
   const input: ChainValues = await request.json();
   const template = await getTemplate(parseInt(props.params.id), true);
   const options = {

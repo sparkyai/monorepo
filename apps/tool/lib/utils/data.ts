@@ -46,26 +46,41 @@ export async function getTemplate(id: number, details?: boolean) {
 }
 
 export async function getTemplates() {
-  return prisma.templates.findMany({
-    select: {
-      id: true,
-      name: true,
-      language: {
-        select: {
-          name: true,
-          code: true,
+  const [templates, reactions] = await Promise.all([
+    prisma.templates.findMany({
+      select: {
+        id: true,
+        name: true,
+        language: {
+          select: {
+            name: true,
+            code: true,
+          },
         },
-      },
-      category: {
-        select: {
-          id: true,
-          name: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
         },
+        regenerated: true,
       },
-    },
-    orderBy: {
-      id: "desc",
-    },
+      orderBy: {
+        id: "desc",
+      },
+    }),
+    prisma.template_reactions.groupBy({
+      by: ["liked", "template_id"],
+      _count: true,
+    }),
+  ]);
+
+  return templates.map((template) => {
+    const templateReactions = reactions.filter((reaction) => reaction.template_id === template.id);
+    const liked = templateReactions.find((reaction) => reaction.liked);
+    const disliked = templateReactions.find((reaction) => !reaction.liked);
+
+    return { ...template, liked: liked?._count || 0, disliked: disliked?._count || 0 };
   });
 }
 
