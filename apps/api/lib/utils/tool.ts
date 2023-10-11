@@ -3,7 +3,7 @@ async function request<T>(url: string, method: "put" | "post", data?: object): P
 async function request(url: string, method: string, payload?: object) {
   const response = await fetch(`${process.env.TOOL_URL}/api/${url}`, {
     next: { revalidate: 0 },
-    body: payload ? JSON.stringify({ data: payload }) : void 0,
+    body: payload ? JSON.stringify(payload) : void 0,
     method,
     headers: {
       "Content-Type": "application/json",

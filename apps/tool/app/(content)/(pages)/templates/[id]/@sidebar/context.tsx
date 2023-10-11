@@ -3,11 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import Add from "@components/icon/add";
 import { updateTemplateContext } from "@lib/actions/template";
+import { getTemplateParameters } from "@lib/utils/model";
+import TemplateSidebarParameter from "./parameter";
 import TemplateSidebarGroup from "./group";
 import Message from "./message";
-import TemplateSidebarParameter from "./parameter";
-
-const PARAMETERS_REGEX = /{(?<name>[A-zА-я0-9_ ]+)}/gm;
 
 type TemplateSidebarContextProps = {
   template: {
@@ -28,23 +27,7 @@ export default function TemplateSidebarContext(props: TemplateSidebarContextProp
       position: i,
     })),
   );
-  const parameters = useMemo(
-    () =>
-      messages
-        .map((message) =>
-          Array.from(message.content.matchAll(PARAMETERS_REGEX)).map(
-            (match) =>
-              (
-                match.groups as {
-                  name: string;
-                }
-              ).name,
-          ),
-        )
-        .flat()
-        .filter((name, index, collection) => index === collection.indexOf(name)),
-    [messages],
-  );
+  const parameters = useMemo(() => getTemplateParameters(messages), [messages]);
 
   useEffect(() => {
     const timer = setTimeout(() => {

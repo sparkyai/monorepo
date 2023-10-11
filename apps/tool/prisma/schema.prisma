@@ -48,18 +48,20 @@ model role_systems_promps {
 }
 
 model templates {
-  id                Int                @id @default(autoincrement())
+  id                Int                  @id @default(autoincrement())
   name              String
   context           context_messages[]
-  category          categories         @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  category          categories           @relation(fields: [category_id], references: [id], onDelete: Cascade)
   category_id       Int
-  language          languages          @relation(fields: [language_id], references: [id], onDelete: Cascade)
+  language          languages            @relation(fields: [language_id], references: [id], onDelete: Cascade)
   language_id       Int
-  model             String             @default("gpt-3.5-turbo")
-  top_p             Float              @default(1)
-  temperature       Float              @default(1)
-  present_penalty   Float              @default(0)
-  frequency_penalty Float              @default(0)
+  model             String               @default("gpt-3.5-turbo")
+  top_p             Float                @default(1)
+  temperature       Float                @default(1)
+  present_penalty   Float                @default(0)
+  frequency_penalty Float                @default(0)
+  reactions         template_reactions[]
+  regenerated       Int                  @default(0)
 }
 
 model context_messages {
@@ -76,4 +78,19 @@ model categories {
   language    languages   @relation(fields: [language_id], references: [id], onDelete: Cascade)
   language_id Int
   templates   templates[]
+}
+
+model clients {
+  id                 Int                  @id
+  template_reactions template_reactions[]
+}
+
+model template_reactions {
+  liked        Boolean
+  client       clients   @relation(fields: [clients_id], references: [id], onDelete: Cascade)
+  template     templates @relation(fields: [templates_id], references: [id], onDelete: Cascade)
+  clients_id   Int
+  templates_id Int
+
+  @@unique([clients_id, templates_id])
 }
