@@ -21,9 +21,9 @@ export async function PUT(request: NextRequest, props: TemplateProps) {
 
   await prisma.template_reactions.upsert({
     where: {
-      clients_id_templates_id: {
-        clients_id: data.client.id,
-        templates_id: parseInt(props.params.id),
+      client_id_template_id: {
+        client_id: data.client.id,
+        template_id: parseInt(props.params.id),
       },
     },
     update: {
@@ -32,8 +32,13 @@ export async function PUT(request: NextRequest, props: TemplateProps) {
     create: {
       liked: data.liked,
       client: {
-        create: {
-          id: data.client.id,
+        connectOrCreate: {
+          where: {
+            id: data.client.id,
+          },
+          create: {
+            id: data.client.id,
+          },
         },
       },
       template: {

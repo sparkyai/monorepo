@@ -87,10 +87,10 @@ model clients {
 
 model template_reactions {
   liked        Boolean
-  client       clients   @relation(fields: [clients_id], references: [id], onDelete: Cascade)
-  template     templates @relation(fields: [templates_id], references: [id], onDelete: Cascade)
-  clients_id   Int
-  templates_id Int
+  client       clients   @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  template     templates @relation(fields: [template_id], references: [id], onDelete: Cascade)
+  client_id   Int
+  template_id Int
 
-  @@unique([clients_id, templates_id])
+  @@unique([client_id, template_id])
 }

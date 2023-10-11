@@ -15,6 +15,8 @@ type TemplatesTableProps = {
   templates: {
     id: number;
     name: string;
+    liked: number;
+    disliked: number;
     category: {
       id: number;
       name: string;
@@ -22,6 +24,7 @@ type TemplatesTableProps = {
     language: {
       name: string;
     };
+    regenerated: number;
   }[];
   categories: {
     id: number;
