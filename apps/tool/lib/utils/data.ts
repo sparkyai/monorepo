@@ -165,3 +165,14 @@ export async function getLanguages() {
     },
   });
 }
+
+export async function getImageTemplates() {
+  return prisma.image_templates.findMany({
+    include: {
+      language: true,
+    },
+    orderBy: {
+      id: "desc",
+    },
+  });
+}

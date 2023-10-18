@@ -1,34 +1,19 @@
 "use server";
 
-import prisma from "@lib/utils/prisma";
 import { getTemplate } from "@lib/utils/data";
+import prisma from "@lib/utils/prisma";
 
-export async function createTemplate(name: string, category: number | string, language: number) {
+type RequiredExclude<T, K extends keyof T> = Required<Omit<T, K>> & Pick<T, K>;
+
+export async function createTemplate(name: string, category: number, language: number) {
   return prisma.templates.create({
     data: {
       name,
-      category:
-        typeof category === "number"
-          ? {
-              connect: {
-                id: category,
-              },
-            }
-          : {
-              connectOrCreate: {
-                where: {
-                  name: category,
-                },
-                create: {
-                  name: category,
-                  language: {
-                    connect: {
-                      id: language,
-                    },
-                  },
-                },
-              },
-            },
+      category: {
+        connect: {
+          id: category,
+        },
+      },
       language: {
         connect: {
           id: language,
@@ -126,4 +111,46 @@ export async function updateTemplateContext(id: number, data: TemplateMessage[])
     }));
 
   return { created, updated, deleted };
+}
+
+type ImageTemplateData = {
+  name?: string;
+  model?: string;
+  provider?: string;
+  language?: number;
+};
+
+export async function createImageTemplate(data: RequiredExclude<ImageTemplateData, "model">) {
+  return prisma.image_templates.create({
+    data: {
+      ...data,
+      language: {
+        connect: {
+          id: data.language,
+        },
+      },
+    },
+  });
+}
+
+export async function deleteImageTemplate(id: number) {
+  return prisma.image_templates.delete({
+    where: { id },
+  });
+}
+
+export async function updateImageTemplate(id: number, data: ImageTemplateData) {
+  return prisma.image_templates.update({
+    where: { id },
+    data: {
+      ...data,
+      language: data.language
+        ? {
+            connect: {
+              id: data.language,
+            },
+          }
+        : void 0,
+    },
+  });
 }

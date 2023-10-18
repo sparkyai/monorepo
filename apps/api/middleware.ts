@@ -5,7 +5,7 @@ import { jwtVerify } from "jose";
 const JWT_KEY = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export const config = {
-  matcher: ["/categories", "/templates"],
+  matcher: ["/categories", "/templates", "/image"],
 };
 
 export default async function middleware(request: NextRequest) {

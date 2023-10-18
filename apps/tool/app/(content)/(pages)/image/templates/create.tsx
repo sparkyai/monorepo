@@ -1,33 +1,37 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import ButtonPrimary from "@components/button/button-primary";
-import TextField from "@components/form/text-field";
+import Dialog from "@components/common/dialog";
 import FieldGroup from "@components/form/field-group";
 import SelectField from "@components/form/select-field";
-import { createTemplate } from "@lib/actions/template";
-import Dialog from "@components/common/dialog";
+import TextField from "@components/form/text-field";
+import { createImageTemplate } from "@lib/actions/template";
 
-type CreateTemplateProps = {
-  languages: {
-    id: number;
+type CreateProps = {
+  leonardo: {
+    id: string;
     name: string;
-    code: string;
   }[];
-  categories: {
+  languages: {
     id: number;
     name: string;
   }[];
 };
 
-export default function CreateTemplate(props: CreateTemplateProps) {
+export default function Create(props: CreateProps) {
   const router = useRouter();
 
   const [name, setName] = useState("");
+  const [model, setModel] = useState<null | string>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [provider, setProvider] = useState("");
   const [language, setLanguage] = useState("");
-  const [category, setCategory] = useState("");
+
+  useEffect(() => {
+    setModel(["Leonardo"].includes(provider) ? "" : null);
+  }, [provider]);
 
   return (
     <>
@@ -36,7 +40,11 @@ export default function CreateTemplate(props: CreateTemplateProps) {
       </ButtonPrimary>
       <Dialog
         footer={
-          <ButtonPrimary className="ml-auto" disabled={!name || !language || !category} onClick={onCreate}>
+          <ButtonPrimary
+            className="ml-auto"
+            disabled={!name || !language || !provider || model === ""}
+            onClick={onCreate}
+          >
             Create
           </ButtonPrimary>
         }
@@ -46,16 +54,6 @@ export default function CreateTemplate(props: CreateTemplateProps) {
       >
         <FieldGroup label="Name">
           <TextField onChange={setName} value={name} />
-        </FieldGroup>
-        <FieldGroup label="Category">
-          <SelectField
-            onChange={setCategory}
-            options={props.categories.map((item) => ({
-              label: item.name,
-              value: item.id.toString(),
-            }))}
-            value={category}
-          />
         </FieldGroup>
         <FieldGroup label="Language">
           <SelectField
@@ -67,6 +65,21 @@ export default function CreateTemplate(props: CreateTemplateProps) {
             value={language}
           />
         </FieldGroup>
+        <FieldGroup label="Provider">
+          <SelectField onChange={setProvider} options={["DALL·E", "Leonardo"]} value={provider} />
+        </FieldGroup>
+        {provider === "Leonardo" && typeof model === "string" && (
+          <FieldGroup label="Model">
+            <SelectField
+              onChange={setModel}
+              options={props.leonardo.map((item) => ({
+                label: item.name,
+                value: item.id,
+              }))}
+              value={model}
+            />
+          </FieldGroup>
+        )}
       </Dialog>
     </>
   );
@@ -79,15 +92,14 @@ export default function CreateTemplate(props: CreateTemplateProps) {
     setIsOpen(false);
 
     setName("");
+    setModel(null);
+    setProvider("");
     setLanguage("");
-    setCategory("");
   }
 
   function onCreate() {
-    void createTemplate(name, parseInt(category), parseInt(language)).then((template) => {
+    void createImageTemplate({ name, model: model || void 0, provider, language: parseInt(language) }).then(() => {
       router.refresh();
-      router.push(`/templates/${template.id}`);
-
       onClose();
     });
   }

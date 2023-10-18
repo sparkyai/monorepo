@@ -1,16 +1,12 @@
-import SidebarLayout from "@app/@sidebar/layout";
-import SidebarGroup from "@app/@sidebar/group";
-import SidebarLink from "@app/@sidebar/link";
+import SidebarLayout from "./layout";
+import SidebarGroup from "./group";
+import SidebarLink from "./link";
 
 export default function DefaultSidebar() {
   return (
     <SidebarLayout>
       <SidebarGroup>
         <SidebarLink href="/">Dashboard</SidebarLink>
-      </SidebarGroup>
-      <SidebarGroup label="People">
-        <SidebarLink href="#">Users</SidebarLink>
-        <SidebarLink href="#">Referrals</SidebarLink>
       </SidebarGroup>
       <SidebarGroup label="Chat">
         <SidebarLink href="/roles">Roles</SidebarLink>
@@ -20,7 +16,7 @@ export default function DefaultSidebar() {
         <SidebarLink href="/categories">Categories</SidebarLink>
       </SidebarGroup>
       <SidebarGroup label="Image">
-        <SidebarLink href="#">Templates</SidebarLink>
+        <SidebarLink href="/image/templates">Templates</SidebarLink>
       </SidebarGroup>
     </SidebarLayout>
   );

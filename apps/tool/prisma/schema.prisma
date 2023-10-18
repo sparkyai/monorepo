@@ -19,12 +19,13 @@ model users {
 }
 
 model languages {
-  id         Int          @id @default(autoincrement())
-  name       String       @unique
-  code       String       @unique @db.VarChar(2)
-  roles      roles[]
-  templates  templates[]
-  categories categories[]
+  id              Int               @id @default(autoincrement())
+  name            String            @unique
+  code            String            @unique @db.VarChar(2)
+  roles           roles[]
+  templates       templates[]
+  categories      categories[]
+  image_templates image_templates[]
 }
 
 model roles {
@@ -86,11 +87,20 @@ model clients {
 }
 
 model template_reactions {
-  liked        Boolean
-  client       clients   @relation(fields: [client_id], references: [id], onDelete: Cascade)
-  template     templates @relation(fields: [template_id], references: [id], onDelete: Cascade)
+  liked       Boolean
+  client      clients   @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  template    templates @relation(fields: [template_id], references: [id], onDelete: Cascade)
   client_id   Int
   template_id Int
 
   @@unique([client_id, template_id])
+}
+
+model image_templates {
+  id           Int       @id @default(autoincrement())
+  name         String
+  model        String?
+  provider     String
+  language     languages @relation(fields: [languages_id], references: [id], onDelete: Cascade)
+  languages_id Int
 }

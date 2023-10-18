@@ -1,7 +1,7 @@
 const PARAMETERS_REGEX = /{(?<name>[A-zА-я0-9_ ]+)}/gm;
 
 export function getParameters(prompt: string) {
-  return Array.from(prompt.matchAll(PARAMETERS_REGEX)).map((match) => match[1]);
+  return Array.from(prompt.matchAll(PARAMETERS_REGEX)).map((match) => match[1].trim());
 }
 
 type Message = {
