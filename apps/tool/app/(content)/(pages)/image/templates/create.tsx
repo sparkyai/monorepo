@@ -1,28 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import ButtonPrimary from "@components/button/button-primary";
 import Dialog from "@components/common/dialog";
 import FieldGroup from "@components/form/field-group";
-import SelectField from "@components/form/select-field";
 import TextField from "@components/form/text-field";
-import { createImageTemplate } from "@lib/actions/template";
+import SelectField from "@components/form/select-field";
+import type { ImageTemplate } from "@lib/actions/image";
 
-type CreateProps = {
+type CreateDialogProps = {
   leonardo: {
     id: string;
     name: string;
   }[];
+  onCreate: (data: ImageTemplate) => void;
   languages: {
     id: number;
     name: string;
   }[];
 };
 
-export default function Create(props: CreateProps) {
-  const router = useRouter();
-
+export default function CreateDialog(props: CreateDialogProps) {
   const [name, setName] = useState("");
   const [model, setModel] = useState<null | string>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -35,14 +33,14 @@ export default function Create(props: CreateProps) {
 
   return (
     <>
-      <ButtonPrimary className="ml-auto" onClick={onOpen}>
+      <ButtonPrimary className="ml-auto truncate" onClick={onOpen}>
         New Template
       </ButtonPrimary>
       <Dialog
         footer={
           <ButtonPrimary
             className="ml-auto"
-            disabled={!name || !language || !provider || model === ""}
+            disabled={!name.trim() || !language || !provider || model === ""}
             onClick={onCreate}
           >
             Create
@@ -98,9 +96,13 @@ export default function Create(props: CreateProps) {
   }
 
   function onCreate() {
-    void createImageTemplate({ name, model: model || void 0, provider, language: parseInt(language) }).then(() => {
-      router.refresh();
-      onClose();
+    props.onCreate({
+      name,
+      model,
+      provider,
+      language: parseInt(language),
     });
+
+    onClose();
   }
 }

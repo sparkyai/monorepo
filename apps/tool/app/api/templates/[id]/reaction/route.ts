@@ -6,7 +6,7 @@ import prisma from "@lib/utils/prisma";
 const reaction = z.object({
   liked: z.boolean(),
   client: z.object({
-    id: z.number().int(),
+    id: z.number().positive(),
   }),
 });
 
@@ -19,35 +19,54 @@ type TemplateProps = {
 export async function PUT(request: NextRequest, props: TemplateProps) {
   const data = reaction.parse(await request.json());
 
-  await prisma.template_reactions.upsert({
-    where: {
-      client_id_template_id: {
-        client_id: data.client.id,
-        template_id: parseInt(props.params.id),
-      },
-    },
-    update: {
-      liked: data.liked,
-    },
-    create: {
-      liked: data.liked,
-      client: {
-        connectOrCreate: {
-          where: {
-            id: data.client.id,
-          },
-          create: {
-            id: data.client.id,
-          },
+  const interactions = await prisma.text_templates
+    .findUniqueOrThrow({ where: { id: parseInt(props.params.id) } })
+    .interactions({
+      where: {
+        type: {
+          in: ["like", "dislike"],
+        },
+        client: {
+          id: data.client.id,
         },
       },
-      template: {
-        connect: {
-          id: parseInt(props.params.id),
-        },
+      select: {
+        id: true,
+        type: true,
       },
-    },
-  });
+    });
 
-  return NextResponse.json({ done: true });
+  if (interactions.length) {
+    await prisma.interactions.update({
+      data: {
+        type: data.liked ? "like" : "dislike",
+      },
+      where: {
+        id: interactions[0].id,
+      },
+    });
+  } else {
+    await prisma.interactions.create({
+      data: {
+        type: data.liked ? "like" : "dislike",
+        client: {
+          connectOrCreate: {
+            where: {
+              id: data.client.id,
+            },
+            create: {
+              id: data.client.id,
+            },
+          },
+        },
+        text_templates: {
+          connect: {
+            id: parseInt(props.params.id),
+          },
+        },
+      },
+    });
+  }
+
+  return new NextResponse();
 }

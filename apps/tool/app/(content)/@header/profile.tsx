@@ -32,7 +32,11 @@ export default function Profile(props: ProfileProps) {
 
   return (
     <div className="relative flex items-center gap-2" ref={ref}>
-      <button className="font-medium tracking-wider after:absolute after:inset-0" onClick={onClick} type="button">
+      <button
+        className="truncate font-medium tracking-wider after:absolute after:inset-0"
+        onClick={onClick}
+        type="button"
+      >
         {props.user.name} {props.user.surname}
       </button>
       <div className="flex h-9 w-9 rounded-full bg-slate-700">

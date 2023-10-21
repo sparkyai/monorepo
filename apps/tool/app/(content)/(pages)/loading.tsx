@@ -1,9 +1,5 @@
-import Spinner from "@components/common/spinner";
+import Loader from "@components/common/loader";
 
 export default function Loading() {
-  return (
-    <div className="flex">
-      <Spinner />
-    </div>
-  );
+  return <Loader className="m-auto" />;
 }

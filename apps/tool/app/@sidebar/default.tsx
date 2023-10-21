@@ -9,11 +9,12 @@ export default function DefaultSidebar() {
         <SidebarLink href="/">Dashboard</SidebarLink>
       </SidebarGroup>
       <SidebarGroup label="Chat">
-        <SidebarLink href="/roles">Roles</SidebarLink>
+        <SidebarLink href="/chat/roles">Roles</SidebarLink>
+        <SidebarLink href="/chat/categories">Categories</SidebarLink>
       </SidebarGroup>
       <SidebarGroup label="Text">
-        <SidebarLink href="/templates">Templates</SidebarLink>
-        <SidebarLink href="/categories">Categories</SidebarLink>
+        <SidebarLink href="/text/templates">Templates</SidebarLink>
+        <SidebarLink href="/text/categories">Categories</SidebarLink>
       </SidebarGroup>
       <SidebarGroup label="Image">
         <SidebarLink href="/image/templates">Templates</SidebarLink>

@@ -9,14 +9,29 @@ type TemplateProps = {
 };
 
 export async function PUT(_: NextRequest, props: TemplateProps) {
-  await prisma.templates.update({
-    where: { id: parseInt(props.params.id) },
+  await prisma.text_templates.update({
     data: {
-      regenerated: {
-        increment: 1,
+      interactions: {
+        create: {
+          type: "generate",
+          client: {
+            connectOrCreate: {
+              where: {
+                id: 0,
+              },
+              create: {
+                id: 0,
+              },
+            },
+          },
+        },
       },
+    },
+    where: { id: parseInt(props.params.id) },
+    select: {
+      id: true,
     },
   });
 
-  return NextResponse.json({ done: true });
+  return new NextResponse();
 }

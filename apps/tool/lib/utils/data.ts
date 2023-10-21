@@ -1,19 +1,29 @@
-import { notFound } from "next/navigation";
 import prisma from "@lib/utils/prisma";
 
-export async function getTemplate(id: number, details?: boolean) {
-  const template = await prisma.templates.findUnique({
+function getCursor<T>(id?: T) {
+  return id ? { id } : void 0;
+}
+
+export async function getLanguageCollection() {
+  return prisma.languages.findMany({
+    orderBy: {
+      code: "asc",
+    },
+  });
+}
+
+export async function getChatRole(id: number) {
+  return prisma.chat_roles.findUniqueOrThrow({
     where: { id },
     select: {
       id: true,
       name: true,
-      top_p: details,
-      model: details,
-      language: {
+      poster: true,
+      message: {
         select: {
           id: true,
-          name: true,
-          code: true,
+          role: true,
+          content: true,
         },
       },
       category: {
@@ -22,154 +32,162 @@ export async function getTemplate(id: number, details?: boolean) {
           name: true,
         },
       },
-      context: details && {
+      language: true,
+      parameters: {
         select: {
-          id: details,
-          role: details,
-          content: details,
-        },
-        orderBy: {
-          id: "asc",
+          model: true,
+          top_p: true,
+          temperature: true,
+          present_penalty: true,
+          frequency_penalty: true,
         },
       },
-      temperature: details,
-      present_penalty: details,
-      frequency_penalty: details,
+      description: true,
     },
   });
-
-  if (template) {
-    return template;
-  }
-
-  notFound();
 }
 
-export async function getTemplates() {
-  const [templates, reactions] = await Promise.all([
-    prisma.templates.findMany({
-      select: {
-        id: true,
-        name: true,
-        language: {
-          select: {
-            name: true,
-            code: true,
-          },
+export async function getChatRoleCollection(cursor?: number) {
+  return prisma.chat_roles.findMany({
+    cursor: getCursor(cursor),
+    select: {
+      id: true,
+      name: true,
+      poster: true,
+      category: {
+        select: {
+          id: true,
+          name: true,
         },
-        category: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        regenerated: true,
       },
-      orderBy: {
-        id: "desc",
-      },
-    }),
-    prisma.template_reactions.groupBy({
-      by: ["liked", "template_id"],
-      _count: true,
-    }),
-  ]);
-
-  return templates.map((template) => {
-    const templateReactions = reactions.filter((reaction) => reaction.template_id === template.id);
-    const liked = templateReactions.find((reaction) => reaction.liked);
-    const disliked = templateReactions.find((reaction) => !reaction.liked);
-
-    return { ...template, liked: liked?._count || 0, disliked: disliked?._count || 0 };
+      language: true,
+    },
+    orderBy: {
+      id: "desc",
+    },
   });
 }
 
-export async function getCategories() {
-  return prisma.categories.findMany({
-    include: {
+export async function getChatCategoryCollection(cursor?: number) {
+  return prisma.chat_categories.findMany({
+    cursor: getCursor(cursor),
+    select: {
+      id: true,
+      name: true,
+      _count: {
+        select: {
+          roles: true,
+        },
+      },
+      language: true,
+    },
+    orderBy: {
+      id: "desc",
+    },
+  });
+}
+
+export async function getTextTemplate(id: number) {
+  return prisma.text_templates.findUniqueOrThrow({
+    where: { id },
+    select: {
+      id: true,
+      name: true,
+      poster: true,
+      category: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      language: true,
+      messages: {
+        select: {
+          id: true,
+          role: true,
+          content: true,
+        },
+      },
+      parameters: {
+        select: {
+          model: true,
+          top_p: true,
+          temperature: true,
+          present_penalty: true,
+          frequency_penalty: true,
+        },
+      },
+      description: true,
+    },
+  });
+}
+
+export async function getTextTemplateCollection(cursor?: number) {
+  return prisma.text_templates.findMany({
+    cursor: getCursor(cursor),
+    select: {
+      id: true,
+      name: true,
+      poster: true,
+      category: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      language: true,
+      description: true,
+    },
+    orderBy: {
+      id: "desc",
+    },
+  });
+}
+
+export async function getTextTemplateMessagesCollection(templateId: number, cursor?: number) {
+  return prisma.text_templates.findUniqueOrThrow({ where: { id: templateId } }).messages({
+    cursor: getCursor(cursor),
+    select: {
+      id: true,
+      role: true,
+      content: true,
+    },
+    orderBy: {
+      id: "desc",
+    },
+  });
+}
+
+export async function getTextCategoryCollection(cursor?: number) {
+  return prisma.text_categories.findMany({
+    cursor: getCursor(cursor),
+    select: {
+      id: true,
+      name: true,
       _count: {
         select: {
           templates: true,
         },
       },
-      language: {
-        select: {
-          id: true,
-          name: true,
-          code: true,
-        },
-      },
-    },
-    orderBy: {
-      id: "desc",
-    },
-  });
-}
-
-export async function getRole(id: number, details?: boolean) {
-  const template = await prisma.roles.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      name: true,
-      top_p: details,
-      model: details,
-      language: {
-        select: {
-          id: true,
-          name: true,
-          code: true,
-        },
-      },
-      system: details && {
-        select: {
-          id: details,
-          content: details,
-        },
-      },
-      temperature: details,
-      present_penalty: details,
-      frequency_penalty: details,
-    },
-  });
-
-  if (template) {
-    return template;
-  }
-
-  notFound();
-}
-
-export async function getRoles() {
-  return prisma.roles.findMany({
-    select: {
-      id: true,
-      name: true,
-      language: {
-        select: {
-          name: true,
-          code: true,
-        },
-      },
-    },
-    orderBy: {
-      id: "desc",
-    },
-  });
-}
-
-export async function getLanguages() {
-  return prisma.languages.findMany({
-    orderBy: {
-      code: "asc",
-    },
-  });
-}
-
-export async function getImageTemplates() {
-  return prisma.image_templates.findMany({
-    include: {
       language: true,
+    },
+    orderBy: {
+      id: "desc",
+    },
+  });
+}
+
+export async function getImageTemplateCollection(cursor?: number) {
+  return prisma.image_templates.findMany({
+    cursor: getCursor(cursor),
+    select: {
+      id: true,
+      name: true,
+      model: true,
+      poster: true,
+      provider: true,
+      language: true,
+      description: true,
     },
     orderBy: {
       id: "desc",

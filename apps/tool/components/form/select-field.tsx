@@ -91,6 +91,7 @@ export default function SelectField(props: TextFieldProps) {
   }
 
   function onClear() {
+    setShow(false);
     setQuery("");
     props.onInput?.("");
     props.onChange?.("");

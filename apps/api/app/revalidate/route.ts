@@ -6,7 +6,7 @@ export async function POST() {
 
   await revalidate(`${process.env.WWW_URL}/api/revalidate`, ["api"]);
 
-  return NextResponse.json({ done: true });
+  return new NextResponse();
 }
 
 async function revalidate(url: string, tags: string[]) {

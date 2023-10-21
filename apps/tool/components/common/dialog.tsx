@@ -18,7 +18,7 @@ export default function Dialog(props: DialogProps) {
         <div className="fixed inset-0 z-30 flex bg-slate-950/75">
           <div
             className={twMerge(
-              "m-auto flex w-full max-w-sm flex-col gap-4 rounded-xl bg-slate-800 p-4",
+              "m-auto flex w-full max-w-sm flex-col gap-2 rounded-xl bg-slate-800 p-4",
               props.size && "max-w-xl",
             )}
           >

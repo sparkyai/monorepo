@@ -12,14 +12,12 @@ type TemplateCompletionContext = {
 };
 
 export async function GET(_: NextRequest, props: TemplateCompletionContext) {
-  const templates = await prisma.templates.findMany({
+  const template = await prisma.text_templates.findUniqueOrThrow({
     where: { id: parseInt(props.params.id) },
     select: {
       id: true,
       name: true,
-      model: true,
-      top_p: true,
-      context: {
+      messages: {
         select: {
           role: true,
           content: true,
@@ -43,36 +41,23 @@ export async function GET(_: NextRequest, props: TemplateCompletionContext) {
           name: true,
         },
       },
-      temperature: true,
-      present_penalty: true,
-      frequency_penalty: true,
+      parameters: {
+        select: {
+          model: true,
+          top_p: true,
+          temperature: true,
+          present_penalty: true,
+          frequency_penalty: true,
+        },
+      },
     },
   });
 
-  if (!templates.length) {
-    throw new Error("Template not found.");
-  }
-
-  const parameters = getTemplateParameters(templates[0].context);
-
   return NextResponse.json({
-    ...templates[0],
-    parameters,
+    id: template.id,
+    name: template.name,
+    context: template.messages,
+    ...template.parameters,
+    parameters: getTemplateParameters(template.messages),
   });
-  // return NextResponse.json(
-  //   templates.map((template) => {
-  //     const item: Record<string, unknown> = { ...template };
-  //     item.topP = template.top_p;
-  //     item.presentPenalty = template.present_penalty;
-  //     item.frequencyPenalty = template.frequency_penalty;
-  //
-  //     item.parameters = getTemplateParameters(template.context);
-  //
-  //     delete item.top_p;
-  //     delete item.present_penalty;
-  //     delete item.frequency_penalty;
-  //
-  //     return item;
-  //   }),
-  // );
 }

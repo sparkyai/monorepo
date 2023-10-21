@@ -1,5 +1,6 @@
 import { useListState } from "@mantine/hooks";
 import { useRef, useState } from "react";
+import { getTemplateParameters } from "@lib/utils/model";
 
 type Message = {
   id: number;
@@ -55,7 +56,18 @@ export default function useChat(url: string, messages?: Omit<Message, "id">[]) {
   }
 }
 
-async function request(url: string, data: object, signal: AbortSignal) {
+async function request(url: string, messages: { role: string; content: string }[], signal: AbortSignal) {
+  const parameters = getTemplateParameters(messages);
+  const data = messages.map((message) => {
+    let content = message.content;
+
+    for (const parameter of parameters) {
+      content = content.replace(`{${parameter}}`, `${parameter}`);
+    }
+
+    return { role: message.role, content };
+  });
+
   const response = await fetch(url, {
     body: JSON.stringify(data),
     signal,
