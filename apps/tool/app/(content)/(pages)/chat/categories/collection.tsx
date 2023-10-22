@@ -9,6 +9,7 @@ import SelectField from "@components/form/select-field";
 import type { ChatCategory } from "@lib/actions/chat";
 import { createChatCategory, deleteChatCategory, updateChatCategory } from "@lib/actions/chat";
 import DeleteDialog from "@components/dialog/delete";
+import AnalyticsDialog from "@components/dialog/analytics";
 import CreateDialog from "./create";
 import UpdateDialog from "./update";
 
@@ -60,7 +61,7 @@ export default function Collection(props: CollectionProps) {
           <span className="w-32 grow">Name</span>
           <span className="w-32 grow">Language</span>
           <span className="w-32 grow">Roles</span>
-          <span aria-hidden className="w-16 shrink-0" />
+          <span aria-hidden className="w-28 shrink-0" />
         </Table.Header>
         {categories
           .filter(
@@ -73,7 +74,8 @@ export default function Collection(props: CollectionProps) {
               <span className="w-32 grow">{category.name}</span>
               <span className="w-32 grow">{category.language.name}</span>
               <span className="w-32 grow">{category._count.roles}</span>
-              <div className="flex w-16 shrink-0 gap-2">
+              <div className="flex w-28 shrink-0 justify-end gap-2">
+                <AnalyticsDialog url={`/api/analytics/chat/categories/${category.id}`} />
                 <UpdateDialog
                   category={category}
                   languages={props.languages}

@@ -3,24 +3,16 @@ import { NextResponse } from "next/server";
 import { parse } from "qs";
 import { z } from "zod";
 import prisma from "@lib/utils/prisma";
+import { query, language, base } from "@lib/utils/schema";
 
 export const revalidate = 0;
 
-const query = z.object({
-  limit: z.optional(
-    z
-      .string()
-      .transform((val) => parseInt(val))
-      .refine((val) => val >= 0),
-  ),
-  offset: z.optional(
-    z
-      .string()
-      .transform((val) => parseInt(val))
-      .refine((val) => val >= 0),
-  ),
-  locale: z.optional(z.string()),
-});
+const output = z.array(
+  base.extend({
+    roles: z.array(base),
+    language,
+  }),
+);
 
 export async function GET(request: NextRequest) {
   const params = query.parse(parse(request.nextUrl.search.slice(1)));
@@ -56,5 +48,5 @@ export async function GET(request: NextRequest) {
     },
   });
 
-  return NextResponse.json(categories);
+  return NextResponse.json(output.parse(categories));
 }

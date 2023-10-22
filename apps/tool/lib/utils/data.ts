@@ -19,13 +19,7 @@ export async function getChatRole(id: number) {
       id: true,
       name: true,
       poster: true,
-      message: {
-        select: {
-          id: true,
-          role: true,
-          content: true,
-        },
-      },
+      prompt: true,
       category: {
         select: {
           id: true,

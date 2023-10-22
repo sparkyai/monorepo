@@ -22,7 +22,7 @@ export default async function Role(props: RoleProps) {
           <Prompt role={role} />
         </SidebarGroup>
         <SidebarGroup name="Options">
-          <Options models={models} role={role} />
+          <Options models={models} role={role as never} />
         </SidebarGroup>
       </div>
     </div>

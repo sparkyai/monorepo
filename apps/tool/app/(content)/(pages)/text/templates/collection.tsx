@@ -11,6 +11,7 @@ import DeleteDialog from "@components/dialog/delete";
 import Edit from "@components/icon/edit";
 import type { TextTemplate } from "@lib/actions/text";
 import { createTextTemplate, deleteTextTemplate } from "@lib/actions/text";
+import AnalyticsDialog from "@components/dialog/analytics";
 import CreateDialog from "./create";
 
 type CollectionProps = {
@@ -80,7 +81,7 @@ export default function Collection(props: CollectionProps) {
           <span className="w-32 grow">Name</span>
           <span className="w-32 grow">Category</span>
           <span className="w-32 grow">Language</span>
-          <span aria-hidden className="w-16 shrink-0" />
+          <span aria-hidden className="w-28 shrink-0" />
         </Table.Header>
         {templates
           .filter(
@@ -94,7 +95,8 @@ export default function Collection(props: CollectionProps) {
               <span className="w-32 grow truncate">{template.name}</span>
               <span className="w-32 grow truncate">{template.category.name}</span>
               <span className="w-32 grow truncate">{template.language.name}</span>
-              <div className="flex w-16 shrink-0 gap-2">
+              <div className="flex w-28 shrink-0 justify-end gap-2">
+                <AnalyticsDialog url={`/api/analytics/text/templates/${template.id}`} />
                 <NextLink
                   className="p-1.5 transition-colors hover:text-blue-400 active:text-blue-400"
                   href={`/text/templates/${template.id}`}

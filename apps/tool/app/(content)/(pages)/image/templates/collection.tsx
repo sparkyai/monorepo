@@ -9,6 +9,7 @@ import SelectField from "@components/form/select-field";
 import DeleteDialog from "@components/dialog/delete";
 import type { ImageTemplate } from "@lib/actions/image";
 import { createImageTemplate, updateImageTemplate, deleteImageTemplate } from "@lib/actions/image";
+import AnalyticsDialog from "@components/dialog/analytics";
 import CreateDialog from "./create";
 import UpdateDialog from "./update";
 
@@ -71,7 +72,7 @@ export default function Collection(props: CollectionProps) {
           <span className="w-32 grow">Name</span>
           <span className="w-32 grow">Language</span>
           <span className="w-32 grow">Provider</span>
-          <span aria-hidden className="w-16 shrink-0" />
+          <span aria-hidden className="w-28 shrink-0" />
         </Table.Header>
         {templates
           .filter(
@@ -85,7 +86,8 @@ export default function Collection(props: CollectionProps) {
               <span className="w-32 grow">{template.name}</span>
               <span className="w-32 grow">{template.language.name}</span>
               <span className="w-32 grow">{template.provider}</span>
-              <div className="flex w-16 shrink-0 gap-2">
+              <div className="flex w-28 shrink-0 justify-end gap-2">
+                <AnalyticsDialog url={`/api/analytics/image/templates/${template.id}`} />
                 <UpdateDialog
                   languages={props.languages}
                   leonardo={props.leonardo}

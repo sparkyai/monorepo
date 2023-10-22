@@ -1,9 +1,17 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import prisma from "@lib/utils/prisma";
 import { getTemplateParameters } from "@lib/utils/model";
+import { base, message, language, parameters } from "@lib/utils/schema";
 
 export const revalidate = 0;
+
+const output = base.extend(parameters.shape).extend({
+  context: z.array(message),
+  language,
+  parameters: z.array(z.string()),
+});
 
 type TemplateCompletionContext = {
   params: {
@@ -53,11 +61,14 @@ export async function GET(_: NextRequest, props: TemplateCompletionContext) {
     },
   });
 
-  return NextResponse.json({
+  const response = {
     id: template.id,
     name: template.name,
     context: template.messages,
+    language: template.language,
     ...template.parameters,
     parameters: getTemplateParameters(template.messages),
-  });
+  };
+
+  return NextResponse.json(output.parse(response));
 }

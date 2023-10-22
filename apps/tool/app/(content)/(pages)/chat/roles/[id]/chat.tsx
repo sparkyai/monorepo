@@ -11,15 +11,17 @@ import Loader from "@components/common/loader";
 type ChatProps = {
   role: {
     id: number;
-    message: {
-      role: string;
-      content: string;
-    };
+    prompt: string;
   };
 };
 
 export default function Chat(props: ChatProps) {
-  const [history, isLoading, chat] = useChat(`/api/chat/roles/${props.role.id}/completion`, [props.role.message]);
+  const [history, isLoading, chat] = useChat(`/api/chat/roles/${props.role.id}/completion`, [
+    {
+      role: "system",
+      content: props.role.prompt,
+    },
+  ]);
 
   const ref = useRef<HTMLDivElement>(null);
   const [top, setTop] = useState(0);

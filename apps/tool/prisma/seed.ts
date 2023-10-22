@@ -9,9 +9,7 @@ async function seed() {
     prisma.users.deleteMany(),
     prisma.images.deleteMany(),
     prisma.languages.deleteMany(),
-    prisma.gpt_messages.deleteMany(),
     prisma.telegram_clients.deleteMany(),
-    prisma.gpt_chat_parameters.deleteMany(),
   ]);
 
   const language = await prisma.$transaction(async () => {
@@ -53,12 +51,7 @@ async function seed() {
                   url: faker.image.url(),
                 },
               },
-              message: {
-                create: {
-                  role: "system",
-                  content: template.messages[0].content,
-                },
-              },
+              prompt: template.messages[0].content,
               language: {
                 connect: {
                   id: language.id,

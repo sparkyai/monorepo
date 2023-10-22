@@ -80,28 +80,9 @@ export async function updateTextTemplate(id: number, data: Partial<TextTemplate>
 }
 
 export async function deleteTextTemplate(id: number) {
-  await prisma.$transaction(async () => {
-    await prisma.interactions.deleteMany({
-      where: {
-        text_templates: {
-          every: { id },
-        },
-      },
-    });
-
-    await prisma.gpt_messages.deleteMany({
-      where: {
-        text_templates: {
-          every: { id },
-        },
-      },
-    });
-
-    await prisma.gpt_chat_parameters.deleteMany({
-      where: {
-        text_templates: { id },
-      },
-    });
+  await prisma.text_templates.delete({
+    where: { id },
+    select: { id: true },
   });
 }
 
@@ -111,10 +92,10 @@ export type TextTemplateMessage = {
 };
 
 export async function createTextTemplateMessage(templateId: number, data: TextTemplateMessage) {
-  return prisma.gpt_messages.create({
+  return prisma.text_template_messages.create({
     data: {
       ...data,
-      text_templates: {
+      template: {
         connect: {
           id: templateId,
         },
@@ -129,7 +110,7 @@ export async function createTextTemplateMessage(templateId: number, data: TextTe
 }
 
 export async function updateTextTemplateMessage(id: bigint, data: Partial<TextTemplateMessage>) {
-  await prisma.gpt_messages.update({
+  await prisma.text_template_messages.update({
     data,
     where: { id },
     select: { id: true },
@@ -137,7 +118,7 @@ export async function updateTextTemplateMessage(id: bigint, data: Partial<TextTe
 }
 
 export async function deleteTextTemplateMessage(id: bigint) {
-  await prisma.gpt_messages.delete({
+  await prisma.text_template_messages.delete({
     where: { id },
     select: { id: true },
   });
@@ -189,38 +170,8 @@ export async function updateTextCategory(id: number, data: Partial<TextCategory>
 }
 
 export async function deleteTextCategory(id: number) {
-  await prisma.$transaction(async () => {
-    await prisma.interactions.deleteMany({
-      where: {
-        text_templates: {
-          every: {
-            category: { id },
-          },
-        },
-      },
-    });
-
-    await prisma.gpt_messages.deleteMany({
-      where: {
-        text_templates: {
-          every: {
-            category: { id },
-          },
-        },
-      },
-    });
-
-    await prisma.gpt_chat_parameters.deleteMany({
-      where: {
-        text_templates: {
-          category: { id },
-        },
-      },
-    });
-
-    await prisma.text_categories.delete({
-      where: { id },
-      select: { id: true },
-    });
+  await prisma.text_categories.delete({
+    where: { id },
+    select: { id: true },
   });
 }

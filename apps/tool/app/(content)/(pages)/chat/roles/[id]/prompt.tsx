@@ -12,17 +12,15 @@ import { updateChatRole } from "@lib/actions/chat";
 type PromptProps = {
   role: {
     id: number;
-    message: {
-      content: string;
-    };
+    prompt: string;
   };
 };
 
 export default function Prompt(props: PromptProps) {
   const router = useRouter();
 
+  const [prompt, setPrompt] = useState(props.role.prompt);
   const [isOpen, setIsOpen] = useState(false);
-  const [content, setContent] = useState(props.role.message.content);
   const [isLoading, setIsLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -37,11 +35,7 @@ export default function Prompt(props: PromptProps) {
       </button>
       <Dialog
         footer={
-          <ButtonPrimary
-            className="ml-auto"
-            disabled={content.trim() === props.role.message.content}
-            onClick={onUpdate}
-          >
+          <ButtonPrimary className="ml-auto" disabled={prompt.trim() === props.role.prompt} onClick={onUpdate}>
             Update
           </ButtonPrimary>
         }
@@ -50,7 +44,7 @@ export default function Prompt(props: PromptProps) {
         size="lg"
         title="Edit system prompt"
       >
-        <TextField onChange={setContent} rows={16} value={content} />
+        <TextField onChange={setPrompt} rows={16} value={prompt} />
       </Dialog>
       {(isLoading || isPending) && (
         <div className="fixed inset-0 z-50 flex bg-slate-950/75">
@@ -71,7 +65,7 @@ export default function Prompt(props: PromptProps) {
   function onUpdate() {
     setIsLoading(true);
 
-    void updateChatRole(props.role.id, { message: content }).then(() => {
+    void updateChatRole(props.role.id, { prompt }).then(() => {
       setIsLoading(false);
       onClose();
 

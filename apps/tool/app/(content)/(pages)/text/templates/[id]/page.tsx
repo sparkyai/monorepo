@@ -3,8 +3,8 @@ import { getModels } from "@lib/utils/gpt";
 import { GenerationProvider, GenerationTrigger } from "./generation";
 import Context from "./context";
 import Options from "./options";
-import Input from "./input";
 import Content from "./content";
+import Input from "./input";
 
 type TemplateProps = {
   params: {
@@ -26,7 +26,7 @@ export default async function Template(props: TemplateProps) {
         <div className="flex w-80 shrink-0 flex-col gap-3 overflow-y-auto p-4">
           <Context messages={messages} template={template} />
           <Input messages={messages} />
-          <Options models={models} template={template} />
+          <Options models={models} template={template as never} />
           <GenerationTrigger template={template} />
         </div>
       </div>

@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import prisma from "@lib/utils/prisma";
+import { handler } from "@app/api/v1/interaction";
 
 const reaction = z.object({
   liked: z.boolean(),
@@ -17,56 +18,14 @@ type TemplateProps = {
 };
 
 export async function PUT(request: NextRequest, props: TemplateProps) {
-  const data = reaction.parse(await request.json());
+  const input = reaction.parse(await request.json());
 
-  const interactions = await prisma.text_templates
-    .findUniqueOrThrow({ where: { id: parseInt(props.params.id) } })
-    .interactions({
-      where: {
-        type: {
-          in: ["like", "dislike"],
-        },
-        client: {
-          id: data.client.id,
-        },
-      },
-      select: {
-        id: true,
-        type: true,
-      },
-    });
+  const data = {
+    type: input.liked ? "like" : "dislike",
+    client: input.client,
+  } as const;
 
-  if (interactions.length) {
-    await prisma.interactions.update({
-      data: {
-        type: data.liked ? "like" : "dislike",
-      },
-      where: {
-        id: interactions[0].id,
-      },
-    });
-  } else {
-    await prisma.interactions.create({
-      data: {
-        type: data.liked ? "like" : "dislike",
-        client: {
-          connectOrCreate: {
-            where: {
-              id: data.client.id,
-            },
-            create: {
-              id: data.client.id,
-            },
-          },
-        },
-        text_templates: {
-          connect: {
-            id: parseInt(props.params.id),
-          },
-        },
-      },
-    });
-  }
+  await handler(data, parseInt(props.params.id), prisma.text_templates);
 
   return new NextResponse();
 }

@@ -4,7 +4,7 @@ import prisma from "@lib/utils/prisma";
 
 export type ChatRole = {
   name: string;
-  message?: string;
+  prompt?: string;
   category: number;
   language: number;
   parameters?: {
@@ -20,12 +20,7 @@ export async function createChatRole(data: ChatRole) {
   return prisma.chat_roles.create({
     data: {
       name: data.name.trim(),
-      message: {
-        create: {
-          role: "system",
-          content: data.message?.trim() || "",
-        },
-      },
+      prompt: data.prompt?.trim(),
       category: {
         connect: {
           id: data.category,
@@ -61,13 +56,7 @@ export async function updateChatRole(id: number, data: Partial<ChatRole>) {
   await prisma.chat_roles.update({
     data: {
       name: data.name?.trim(),
-      message: data.message
-        ? {
-            update: {
-              content: data.message.trim(),
-            },
-          }
-        : void 0,
+      prompt: data.prompt?.trim(),
       category: data.category
         ? {
             connect: {
@@ -96,26 +85,9 @@ export async function updateChatRole(id: number, data: Partial<ChatRole>) {
 }
 
 export async function deleteChatRole(id: number) {
-  await prisma.$transaction(async () => {
-    await prisma.interactions.deleteMany({
-      where: {
-        chat_roles: {
-          every: { id },
-        },
-      },
-    });
-
-    await prisma.gpt_messages.deleteMany({
-      where: {
-        chat_role: { id },
-      },
-    });
-
-    await prisma.gpt_chat_parameters.deleteMany({
-      where: {
-        chat_roles: { id },
-      },
-    });
+  await prisma.chat_roles.delete({
+    where: { id },
+    select: { id: true },
   });
 }
 
@@ -165,36 +137,8 @@ export async function updateChatCategory(id: number, data: Partial<ChatCategory>
 }
 
 export async function deleteChatCategory(id: number) {
-  await prisma.$transaction(async () => {
-    await prisma.interactions.deleteMany({
-      where: {
-        chat_roles: {
-          every: {
-            category: { id },
-          },
-        },
-      },
-    });
-
-    await prisma.gpt_messages.deleteMany({
-      where: {
-        chat_role: {
-          category: { id },
-        },
-      },
-    });
-
-    await prisma.gpt_chat_parameters.deleteMany({
-      where: {
-        chat_roles: {
-          category: { id },
-        },
-      },
-    });
-
-    await prisma.chat_categories.delete({
-      where: { id },
-      select: { id: true },
-    });
+  await prisma.chat_categories.delete({
+    where: { id },
+    select: { id: true },
   });
 }

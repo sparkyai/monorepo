@@ -40,66 +40,49 @@ model images {
 }
 
 model telegram_clients {
-  id           BigInt         @id
-  created_at   DateTime       @default(now())
-  updated_at   DateTime       @updatedAt
-  interactions interactions[]
-}
-
-enum interaction_type {
-  like
-  dislike
-  generate
-}
-
-model interactions {
-  id              BigInt            @id @default(autoincrement())
-  type            interaction_type
-  client          telegram_clients  @relation(fields: [client_id], references: [id], onDelete: Cascade)
-  client_id       BigInt
-  created_at      DateTime          @default(now())
-  updated_at      DateTime          @updatedAt
-  chat_roles      chat_roles[]
-  text_templates  text_templates[]
-  image_templates image_templates[]
-}
-
-model gpt_messages {
-  id             BigInt           @id @default(autoincrement())
-  role           String
-  content        String
-  chat_role      chat_roles?
-  created_at     DateTime         @default(now())
-  updated_at     DateTime         @updatedAt
-  text_templates text_templates[]
-}
-
-model gpt_chat_parameters {
-  id                Int             @id @default(autoincrement())
-  model             String          @default("gpt-3.5-turbo")
-  top_p             Float           @default(1)
-  chat_roles        chat_roles?
-  temperature       Float           @default(1)
-  text_templates    text_templates?
-  present_penalty   Float           @default(0)
-  frequency_penalty Float           @default(0)
+  id                          BigInt                        @id
+  created_at                  DateTime                      @default(now())
+  updated_at                  DateTime                      @updatedAt
+  chat_role_interactions      chat_role_interactions[]
+  text_template_interactions  text_template_interactions[]
+  image_template_interactions image_template_interactions[]
 }
 
 model chat_roles {
-  id            Int                 @id @default(autoincrement())
-  name          String
-  poster        images?             @relation(fields: [poster_id], references: [id], onDelete: SetNull)
-  poster_id     BigInt?
-  message       gpt_messages        @relation(fields: [message_id], references: [id], onDelete: Cascade)
-  message_id    BigInt              @unique
-  category      chat_categories     @relation(fields: [category_id], references: [id], onDelete: Cascade)
-  category_id   Int
-  language      languages           @relation(fields: [language_id], references: [id], onDelete: Cascade)
-  language_id   Int
-  parameters    gpt_chat_parameters @relation(fields: [parameters_id], references: [id], onDelete: Cascade)
-  parameters_id Int                 @unique
-  description   String?
-  interactions  interactions[]
+  id           Int                      @id @default(autoincrement())
+  name         String
+  prompt       String                   @default("")
+  poster       images?                  @relation(fields: [poster_id], references: [id], onDelete: SetNull)
+  poster_id    BigInt?
+  category     chat_categories          @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  category_id  Int
+  language     languages                @relation(fields: [language_id], references: [id], onDelete: Cascade)
+  language_id  Int
+  parameters   chat_role_parameters?
+  description  String?
+  interactions chat_role_interactions[]
+}
+
+model chat_role_parameters {
+  id                Int        @id @default(autoincrement())
+  role              chat_roles @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  role_id           Int        @unique
+  model             String     @default("gpt-3.5-turbo")
+  top_p             Float      @default(1)
+  temperature       Float      @default(1)
+  present_penalty   Float      @default(0)
+  frequency_penalty Float      @default(0)
+}
+
+model chat_role_interactions {
+  id         Int              @id @default(autoincrement())
+  type       String
+  role       chat_roles       @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  role_id    Int
+  client     telegram_clients @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  client_id  BigInt
+  created_at DateTime         @default(now())
+  updated_at DateTime         @updatedAt
 }
 
 model chat_categories {
@@ -111,19 +94,50 @@ model chat_categories {
 }
 
 model text_templates {
-  id            Int                 @id @default(autoincrement())
-  name          String
-  poster        images?             @relation(fields: [poster_id], references: [id], onDelete: SetNull)
-  poster_id     BigInt?
-  messages      gpt_messages[]
-  category      text_categories     @relation(fields: [category_id], references: [id], onDelete: Cascade)
-  category_id   Int
-  language      languages           @relation(fields: [language_id], references: [id], onDelete: Cascade)
-  language_id   Int
-  parameters    gpt_chat_parameters @relation(fields: [parameters_id], references: [id], onDelete: Cascade)
-  parameters_id Int                 @unique
-  description   String?
-  interactions  interactions[]
+  id           Int                          @id @default(autoincrement())
+  name         String
+  poster       images?                      @relation(fields: [poster_id], references: [id], onDelete: SetNull)
+  poster_id    BigInt?
+  messages     text_template_messages[]
+  category     text_categories              @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  category_id  Int
+  language     languages                    @relation(fields: [language_id], references: [id], onDelete: Cascade)
+  language_id  Int
+  parameters   text_template_parameters?
+  description  String?
+  interactions text_template_interactions[]
+}
+
+model text_template_parameters {
+  id                Int            @id @default(autoincrement())
+  model             String         @default("gpt-3.5-turbo")
+  top_p             Float          @default(1)
+  template          text_templates @relation(fields: [template_id], references: [id], onDelete: Cascade)
+  template_id       Int            @unique
+  temperature       Float          @default(1)
+  present_penalty   Float          @default(0)
+  frequency_penalty Float          @default(0)
+}
+
+model text_template_messages {
+  id           BigInt         @id @default(autoincrement())
+  role         String
+  content      String
+  template     text_templates @relation(fields: [templates_id], references: [id], onDelete: Cascade)
+  templates_id Int
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+}
+
+model text_template_interactions {
+  id          Int              @id @default(autoincrement())
+  type        String
+  client      telegram_clients @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  client_id   BigInt
+  template    text_templates   @relation(fields: [template_id], references: [id], onDelete: Cascade)
+  template_id Int
+  created_at  DateTime         @default(now())
+  updated_at  DateTime         @updatedAt
 }
 
 model text_categories {
@@ -135,14 +149,25 @@ model text_categories {
 }
 
 model image_templates {
-  id           Int            @id @default(autoincrement())
+  id           Int                           @id @default(autoincrement())
   name         String
   model        String?
-  poster       images?        @relation(fields: [poster_id], references: [id], onDelete: SetNull)
+  poster       images?                       @relation(fields: [poster_id], references: [id], onDelete: SetNull)
   poster_id    BigInt?
   provider     String
-  language     languages      @relation(fields: [languages_id], references: [id], onDelete: Cascade)
+  language     languages                     @relation(fields: [languages_id], references: [id], onDelete: Cascade)
   languages_id Int
   description  String?
-  interactions interactions[]
+  interactions image_template_interactions[]
+}
+
+model image_template_interactions {
+  id          Int              @id @default(autoincrement())
+  type        String
+  client      telegram_clients @relation(fields: [client_id], references: [id], onDelete: Cascade)
+  client_id   BigInt
+  template    image_templates  @relation(fields: [template_id], references: [id], onDelete: Cascade)
+  template_id Int
+  created_at  DateTime         @default(now())
+  updated_at  DateTime         @updatedAt
 }

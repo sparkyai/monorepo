@@ -1,8 +1,19 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import prisma from "@lib/utils/prisma";
+import { base, language, parameters, poster } from "@lib/utils/schema";
 
 export const revalidate = 0;
+
+const output = base.extend({
+  poster: z.nullable(poster),
+  prompt: z.string(),
+  category: base,
+  language,
+  parameters,
+  description: z.nullable(z.string()),
+});
 
 type RoleProps = {
   params: {
@@ -23,12 +34,7 @@ export async function GET(_: NextRequest, props: RoleProps) {
           url: true,
         },
       },
-      message: {
-        select: {
-          role: true,
-          content: true,
-        },
-      },
+      prompt: true,
       category: {
         select: {
           id: true,
@@ -54,5 +60,5 @@ export async function GET(_: NextRequest, props: RoleProps) {
     },
   });
 
-  return NextResponse.json(role);
+  return NextResponse.json(output.parse(role));
 }
