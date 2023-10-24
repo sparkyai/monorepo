@@ -11,5 +11,5 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  return NextResponse.json({ done: true });
+  return new NextResponse();
 }

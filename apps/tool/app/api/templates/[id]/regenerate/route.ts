@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import prisma from "@lib/utils/prisma";
+import { handler } from "@app/api/v1/interaction";
 
 type TemplateProps = {
   params: {
@@ -9,14 +10,14 @@ type TemplateProps = {
 };
 
 export async function PUT(_: NextRequest, props: TemplateProps) {
-  await prisma.templates.update({
-    where: { id: parseInt(props.params.id) },
-    data: {
-      regenerated: {
-        increment: 1,
-      },
+  const data = {
+    type: "regenerate" as const,
+    client: {
+      id: -1,
     },
-  });
+  };
 
-  return NextResponse.json({ done: true });
+  await handler(data, parseInt(props.params.id), prisma.text_templates);
+
+  return new NextResponse();
 }

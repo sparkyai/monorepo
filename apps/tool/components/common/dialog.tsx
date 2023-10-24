@@ -15,10 +15,10 @@ export default function Dialog(props: DialogProps) {
   return (
     <Portal>
       {props.open && (
-        <div className="fixed inset-0 z-30 flex bg-slate-950/75">
+        <div className="fixed inset-0 z-30 flex overflow-auto bg-slate-950/75 p-4">
           <div
             className={twMerge(
-              "m-auto flex w-full max-w-sm flex-col gap-4 rounded-xl bg-slate-800 p-4",
+              "m-auto grid w-full max-w-sm grid-cols-2 gap-4 rounded-xl bg-slate-800 p-4",
               props.size && "max-w-xl",
             )}
           >
@@ -33,7 +33,7 @@ export default function Dialog(props: DialogProps) {
               </button>
             </header>
             {props.children}
-            {props.footer && <footer className="mt-6 flex gap-3">{props.footer}</footer>}
+            {props.footer && <footer className="col-span-2 mt-6 flex gap-3">{props.footer}</footer>}
           </div>
         </div>
       )}

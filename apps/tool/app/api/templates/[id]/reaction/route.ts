@@ -2,11 +2,12 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import prisma from "@lib/utils/prisma";
+import { handler } from "@app/api/v1/interaction";
 
 const reaction = z.object({
   liked: z.boolean(),
   client: z.object({
-    id: z.number().int(),
+    id: z.number().positive(),
   }),
 });
 
@@ -17,37 +18,14 @@ type TemplateProps = {
 };
 
 export async function PUT(request: NextRequest, props: TemplateProps) {
-  const data = reaction.parse(await request.json());
+  const input = reaction.parse(await request.json());
 
-  await prisma.template_reactions.upsert({
-    where: {
-      client_id_template_id: {
-        client_id: data.client.id,
-        template_id: parseInt(props.params.id),
-      },
-    },
-    update: {
-      liked: data.liked,
-    },
-    create: {
-      liked: data.liked,
-      client: {
-        connectOrCreate: {
-          where: {
-            id: data.client.id,
-          },
-          create: {
-            id: data.client.id,
-          },
-        },
-      },
-      template: {
-        connect: {
-          id: parseInt(props.params.id),
-        },
-      },
-    },
-  });
+  const data = {
+    type: input.liked ? "like" : "dislike",
+    client: input.client,
+  } as const;
 
-  return NextResponse.json({ done: true });
+  await handler(data, parseInt(props.params.id), prisma.text_templates);
+
+  return new NextResponse();
 }

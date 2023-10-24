@@ -1,13 +1,19 @@
 import { PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
-import categories from "./categories.json";
+import chat from "./chat.json";
+import text from "./text.json";
 
 const prisma = new PrismaClient();
 
 async function seed() {
-  await prisma.$transaction([prisma.users.deleteMany(), prisma.languages.deleteMany()]);
+  await prisma.$transaction([
+    prisma.users.deleteMany(),
+    prisma.images.deleteMany(),
+    prisma.languages.deleteMany(),
+    prisma.telegram_clients.deleteMany(),
+  ]);
 
-  const language = await prisma.$transaction(async () => {
+  const languages = await prisma.$transaction(async () => {
     await prisma.languages.createMany({
       data: [
         { name: "English", code: "en" },
@@ -16,9 +22,10 @@ async function seed() {
       ],
     });
 
-    return prisma.languages.findFirstOrThrow({
-      where: {
-        code: "ru",
+    return prisma.languages.findMany({
+      select: {
+        id: true,
+        code: true,
       },
     });
   });
@@ -33,40 +40,92 @@ async function seed() {
   });
 
   await Promise.all(
-    categories.map((category) =>
-      prisma.categories.create({
+    chat.map((category) =>
+      prisma.chat_categories.create({
         data: {
           name: category.name,
-          language: {
-            connect: {
-              id: language.id,
-            },
-          },
-          templates: {
-            create: category.templates.map((template) => ({
-              name: template.name,
-              top_p: template.topP,
-              model: template.model,
-              context: {
-                create: template.messages.map((message) => ({
-                  role: message.role,
-                  content: message.content,
-                })),
+          roles: {
+            create: category.roles.map((role) => ({
+              name: role.name,
+              prompt: role.prompt || "",
+              parameters: {
+                create: role.parameters,
               },
-              language: {
-                connect: {
-                  id: language.id,
-                },
-              },
-              temperature: template.temperature,
-              present_penalty: template.presentPenalty,
-              frequency_penalty: template.frequencyPenalty,
+              language_id: getLanguageId(role.language.code),
             })),
           },
+          language_id: getLanguageId(category.language.code),
         },
       }),
     ),
   );
+
+  await Promise.all(
+    text.map((category) =>
+      prisma.text_categories.create({
+        data: {
+          name: category.name,
+          templates: {
+            create: category.templates.map((template) => ({
+              name: template.name,
+              messages: {
+                create: template.messages,
+              },
+              parameters: {
+                create: template.parameters,
+              },
+              language_id: getLanguageId(template.language.code),
+              interactions: {
+                create: faker.helpers
+                  .multiple(
+                    () => ({
+                      type: "regenerated",
+                      client: {
+                        connectOrCreate: {
+                          where: {
+                            id: 0,
+                          },
+                          create: {
+                            id: 0,
+                          },
+                        },
+                      },
+                    }),
+                    { count: template.regenerated },
+                  )
+                  .concat(
+                    template.reactions?.map((reaction) => ({
+                      type: reaction.liked ? "like" : "dislike",
+                      client: {
+                        connectOrCreate: {
+                          where: {
+                            id: reaction.client_id,
+                          },
+                          create: {
+                            id: reaction.client_id,
+                          },
+                        },
+                      },
+                    })) || [],
+                  ),
+              },
+            })),
+          },
+          language_id: getLanguageId(category.language.code),
+        },
+      }),
+    ),
+  );
+
+  function getLanguageId(code: string) {
+    const language = languages.find((item) => item.code === code);
+
+    if (language) {
+      return language.id;
+    }
+
+    throw new Error("Invalid language");
+  }
 }
 
 async function success() {

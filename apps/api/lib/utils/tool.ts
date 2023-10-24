@@ -10,10 +10,8 @@ async function request(url: string, method: string, payload?: object) {
     },
   });
 
-  const data = await response.json();
-
   if (response.ok) {
-    return data;
+    return response.json().catch(() => void 0);
   }
 
   throw new Error("Tool Internal Error");

@@ -35,17 +35,17 @@ export default function SelectField(props: TextFieldProps) {
   );
 
   useEffect(() => {
-    function onMouseUp(event: MouseEvent) {
+    function onMouseDown(event: MouseEvent) {
       if (!ref.current?.contains(event.target as Node)) {
         setShow(false);
       }
     }
 
     if (show) {
-      window.addEventListener("mouseup", onMouseUp, true);
+      window.addEventListener("mousedown", onMouseDown, true);
 
       return function cancel() {
-        window.removeEventListener("mouseup", onMouseUp, true);
+        window.removeEventListener("mousedown", onMouseDown, true);
       };
     }
   }, [show]);
@@ -70,7 +70,7 @@ export default function SelectField(props: TextFieldProps) {
         </button>
       )}
       {show && Boolean(options.length) && (
-        <div className="absolute inset-x-0 top-full z-10 mt-2 flex flex-col rounded-md border border-slate-600 bg-slate-700 p-1">
+        <div className="absolute inset-x-0 top-full z-10 mt-2 flex max-h-36 flex-col overflow-y-auto rounded-md border border-slate-600 bg-slate-700 p-1">
           {options.map((item) => (
             <button
               className="rounded px-3 py-1 text-left transition-colors hover:bg-slate-600 active:bg-slate-600"
@@ -91,6 +91,7 @@ export default function SelectField(props: TextFieldProps) {
   }
 
   function onClear() {
+    setShow(false);
     setQuery("");
     props.onInput?.("");
     props.onChange?.("");
