@@ -17,6 +17,7 @@
     "@aws-sdk/s3-request-presigner": "^3.433.0",
     "@mantine/hooks": "^6.0.20",
     "@prisma/client": "5.2.0",
+    "@sentry/nextjs": "^7.75.0",
     "ai": "^2.2.11",
     "langchain": "^0.0.138",
     "next": "^13.4.19",
