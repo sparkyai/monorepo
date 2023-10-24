@@ -13,12 +13,21 @@ async function seed() {
     prisma.telegram_clients.deleteMany(),
   ]);
 
-  await prisma.languages.createMany({
-    data: [
-      { name: "English", code: "en" },
-      { name: "Русский", code: "ru" },
-      { name: "Українська", code: "uk" },
-    ],
+  const languages = await prisma.$transaction(async () => {
+    await prisma.languages.createMany({
+      data: [
+        { name: "English", code: "en" },
+        { name: "Русский", code: "ru" },
+        { name: "Українська", code: "uk" },
+      ],
+    });
+
+    return prisma.languages.findMany({
+      select: {
+        id: true,
+        code: true,
+      },
+    });
   });
 
   await prisma.users.create({
@@ -39,21 +48,13 @@ async function seed() {
             create: category.roles.map((role) => ({
               name: role.name,
               prompt: role.prompt || "",
-              language: {
-                connect: {
-                  code: role.language.code,
-                },
-              },
               parameters: {
                 create: role.parameters,
               },
+              language_id: getLanguageId(role.language.code),
             })),
           },
-          language: {
-            connect: {
-              code: category.language.code,
-            },
-          },
+          language_id: getLanguageId(category.language.code),
         },
       }),
     ),
@@ -64,25 +65,16 @@ async function seed() {
       prisma.text_categories.create({
         data: {
           name: category.name,
-          language: {
-            connect: {
-              code: category.language.code,
-            },
-          },
           templates: {
             create: category.templates.map((template) => ({
               name: template.name,
               messages: {
                 create: template.messages,
               },
-              language: {
-                connect: {
-                  code: category.language.code,
-                },
-              },
               parameters: {
                 create: template.parameters,
               },
+              language_id: getLanguageId(template.language.code),
               interactions: {
                 create: faker.helpers
                   .multiple(
@@ -119,282 +111,21 @@ async function seed() {
               },
             })),
           },
+          language_id: getLanguageId(category.language.code),
         },
       }),
     ),
   );
 
-  // let id = 1;
-  // await Promise.all(
-  //   categories.map((category) =>
-  //     prisma.chat_categories.create({
-  //       data: {
-  //         name: category.name,
-  //         roles: {
-  //           create: category.templates.map((template) => ({
-  //             name: template.name,
-  //             poster: {
-  //               create: {
-  //                 url: faker.image.url(),
-  //               },
-  //             },
-  //             prompt: template.messages[0].content,
-  //             language: {
-  //               connect: {
-  //                 id: language.id,
-  //               },
-  //             },
-  //             parameters: {
-  //               create: {
-  //                 top_p: template.topP,
-  //                 model: template.model,
-  //                 temperature: template.temperature,
-  //                 present_penalty: template.presentPenalty,
-  //                 frequency_penalty: template.frequencyPenalty,
-  //               },
-  //             },
-  //             description: faker.lorem.lines(2),
-  //             interactions: {
-  //               create: [
-  //                 faker.helpers.multiple(
-  //                   () => {
-  //                     const date = faker.date.recent({ days: 60 });
-  //
-  //                     return {
-  //                       type: "generate" as const,
-  //                       client: {
-  //                         connectOrCreate: {
-  //                           where: { id },
-  //                           create: { id },
-  //                         },
-  //                       },
-  //                       created_at: date,
-  //                       updated_at: date,
-  //                     };
-  //                   },
-  //                   { count: { min: 10, max: 100 } },
-  //                 ),
-  //                 faker.helpers.multiple(
-  //                   () => {
-  //                     const oldId = id++;
-  //
-  //                     return faker.helpers.maybe(() => ({
-  //                       type: faker.helpers.arrayElement(["like", "dislike"]),
-  //                       client: {
-  //                         connectOrCreate: {
-  //                           where: { id: oldId },
-  //                           create: { id: oldId },
-  //                         },
-  //                       },
-  //                     })) as {
-  //                       type: "like";
-  //                       client: {
-  //                         connectOrCreate: {
-  //                           where: {
-  //                             id: number;
-  //                           };
-  //                           create: {
-  //                             id: number;
-  //                           };
-  //                         };
-  //                       };
-  //                     };
-  //                   },
-  //                   { count: 1 },
-  //                 ),
-  //               ]
-  //                 .flat()
-  //                 .filter(Boolean),
-  //             },
-  //           })),
-  //         },
-  //         language: {
-  //           connect: {
-  //             id: language.id,
-  //           },
-  //         },
-  //       },
-  //     }),
-  //   ),
-  // );
-  //
-  // id = 1;
-  // await Promise.all(
-  //   categories.map((category) =>
-  //     prisma.text_categories.create({
-  //       data: {
-  //         name: category.name,
-  //         language: {
-  //           connect: {
-  //             id: language.id,
-  //           },
-  //         },
-  //         templates: {
-  //           create: category.templates.map((template) => ({
-  //             name: template.name,
-  //             poster: {
-  //               create: {
-  //                 url: faker.image.url(),
-  //               },
-  //             },
-  //             messages: {
-  //               create: template.messages.map((message) => ({
-  //                 role: message.role,
-  //                 content: message.content,
-  //               })),
-  //             },
-  //             language: {
-  //               connect: {
-  //                 id: language.id,
-  //               },
-  //             },
-  //             parameters: {
-  //               create: {
-  //                 top_p: template.topP,
-  //                 model: template.model,
-  //                 temperature: template.temperature,
-  //                 present_penalty: template.presentPenalty,
-  //                 frequency_penalty: template.frequencyPenalty,
-  //               },
-  //             },
-  //             description: faker.lorem.lines(2),
-  //             interactions: {
-  //               create: [
-  //                 faker.helpers.multiple(
-  //                   () => {
-  //                     const date = faker.date.recent({ days: 60 });
-  //
-  //                     return {
-  //                       type: "generate" as const,
-  //                       client: {
-  //                         connectOrCreate: {
-  //                           where: { id },
-  //                           create: { id },
-  //                         },
-  //                       },
-  //                       created_at: date,
-  //                       updated_at: date,
-  //                     };
-  //                   },
-  //                   { count: { min: 10, max: 100 } },
-  //                 ),
-  //                 faker.helpers.multiple(
-  //                   () => {
-  //                     const oldId = id++;
-  //
-  //                     return faker.helpers.maybe(() => ({
-  //                       type: faker.helpers.arrayElement(["like", "dislike"]),
-  //                       client: {
-  //                         connectOrCreate: {
-  //                           where: { id: oldId },
-  //                           create: { id: oldId },
-  //                         },
-  //                       },
-  //                     })) as {
-  //                       type: "like";
-  //                       client: {
-  //                         connectOrCreate: {
-  //                           where: {
-  //                             id: number;
-  //                           };
-  //                           create: {
-  //                             id: number;
-  //                           };
-  //                         };
-  //                       };
-  //                     };
-  //                   },
-  //                   { count: 1 },
-  //                 ),
-  //               ]
-  //                 .flat()
-  //                 .filter(Boolean),
-  //             },
-  //           })),
-  //         },
-  //       },
-  //     }),
-  //   ),
-  // );
-  //
-  // id = 1;
-  // await Promise.all(
-  //   categories
-  //     .map((category) =>
-  //       category.templates.map((template) =>
-  //         prisma.image_templates.create({
-  //           data: {
-  //             name: template.name,
-  //             poster: {
-  //               create: {
-  //                 url: faker.image.url(),
-  //               },
-  //             },
-  //             provider: "DALL·E",
-  //             language: {
-  //               connect: {
-  //                 id: language.id,
-  //               },
-  //             },
-  //             description: faker.lorem.lines(2),
-  //             interactions: {
-  //               create: [
-  //                 faker.helpers.multiple(
-  //                   () => {
-  //                     const date = faker.date.recent({ days: 60 });
-  //
-  //                     return {
-  //                       type: "generate" as const,
-  //                       client: {
-  //                         connectOrCreate: {
-  //                           where: { id },
-  //                           create: { id },
-  //                         },
-  //                       },
-  //                       created_at: date,
-  //                       updated_at: date,
-  //                     };
-  //                   },
-  //                   { count: { min: 10, max: 100 } },
-  //                 ),
-  //                 faker.helpers.multiple(
-  //                   () => {
-  //                     const oldId = id++;
-  //
-  //                     return faker.helpers.maybe(() => ({
-  //                       type: faker.helpers.arrayElement(["like", "dislike"]),
-  //                       client: {
-  //                         connectOrCreate: {
-  //                           where: { id: oldId },
-  //                           create: { id: oldId },
-  //                         },
-  //                       },
-  //                     })) as {
-  //                       type: "like";
-  //                       client: {
-  //                         connectOrCreate: {
-  //                           where: {
-  //                             id: number;
-  //                           };
-  //                           create: {
-  //                             id: number;
-  //                           };
-  //                         };
-  //                       };
-  //                     };
-  //                   },
-  //                   { count: 1 },
-  //                 ),
-  //               ]
-  //                 .flat()
-  //                 .filter(Boolean),
-  //             },
-  //           },
-  //         }),
-  //       ),
-  //     )
-  //     .flat(),
-  // );
+  function getLanguageId(code: string) {
+    const language = languages.find((item) => item.code === code);
+
+    if (language) {
+      return language.id;
+    }
+
+    throw new Error("Invalid language");
+  }
 }
 
 async function success() {
