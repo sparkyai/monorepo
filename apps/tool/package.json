@@ -12,6 +12,9 @@
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.433.0",
+    "@aws-sdk/lib-storage": "^3.433.0",
+    "@aws-sdk/s3-request-presigner": "^3.433.0",
     "@mantine/hooks": "^6.0.20",
     "@prisma/client": "5.2.0",
     "ai": "^2.2.11",

@@ -60,10 +60,10 @@ export default function UpdateDialog(props: UpdateDialogProps) {
         open={isOpen}
         title="Update category"
       >
-        <FieldGroup label="Name">
+        <FieldGroup className="col-span-2" label="Name">
           <TextField onChange={setName} value={name} />
         </FieldGroup>
-        <FieldGroup label="Language">
+        <FieldGroup className="col-span-2" label="Language">
           <SelectField
             onChange={setLanguage}
             options={props.languages.map((item) => ({

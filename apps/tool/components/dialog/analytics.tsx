@@ -21,7 +21,7 @@ type AnalyticsDialogProps = {
 
 export default function AnalyticsDialog(props: AnalyticsDialogProps) {
   const [data, setData] = useState<object[]>([]);
-  const [period, setPeriod] = useState("day");
+  const [period, setPeriod] = useState("month");
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -65,7 +65,7 @@ export default function AnalyticsDialog(props: AnalyticsDialogProps) {
         <PieChart size={16} />
       </button>
       <Dialog onClose={onClose} open={isOpen} size="lg" title="Analytics">
-        <div className="flex justify-end">
+        <div className="col-span-2 flex justify-end">
           <SelectField
             onChange={setPeriod}
             options={[
@@ -77,7 +77,7 @@ export default function AnalyticsDialog(props: AnalyticsDialogProps) {
             value={period}
           />
         </div>
-        <div className="relative">
+        <div className="relative col-span-2">
           <ResponsiveContainer style={{ width: "100%", aspectRatio: "16 / 9" }}>
             <AreaChart data={data} height={9} width={16}>
               <CartesianGrid strokeDasharray="3 3" />

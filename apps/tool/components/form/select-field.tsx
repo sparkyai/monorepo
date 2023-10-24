@@ -35,17 +35,17 @@ export default function SelectField(props: TextFieldProps) {
   );
 
   useEffect(() => {
-    function onMouseUp(event: MouseEvent) {
+    function onMouseDown(event: MouseEvent) {
       if (!ref.current?.contains(event.target as Node)) {
         setShow(false);
       }
     }
 
     if (show) {
-      window.addEventListener("mouseup", onMouseUp, true);
+      window.addEventListener("mousedown", onMouseDown, true);
 
       return function cancel() {
-        window.removeEventListener("mouseup", onMouseUp, true);
+        window.removeEventListener("mousedown", onMouseDown, true);
       };
     }
   }, [show]);

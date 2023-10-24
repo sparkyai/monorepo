@@ -58,7 +58,7 @@ export default function Message(props: MessageProps) {
         size="lg"
         title="Update prompt"
       >
-        <div className="flex items-end justify-between gap-3">
+        <div className="col-span-2 flex items-end justify-between gap-3">
           <span className="font-medium">Prompt</span>
           <SelectField
             className="w-36"
@@ -71,7 +71,7 @@ export default function Message(props: MessageProps) {
             value={role}
           />
         </div>
-        <TextField onChange={setContent} rows={16} value={content} />
+        <TextField className="col-span-2" onChange={setContent} rows={16} value={content} />
       </Dialog>
     </>
   );

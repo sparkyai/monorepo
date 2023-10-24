@@ -1,9 +1,15 @@
 "use server";
 
 import prisma from "@lib/utils/prisma";
+import { uploadObject, deleteObject } from "@lib/utils/s3";
+
+function getTemplatePosterKey(id: number) {
+  return `text-template-${id}-poster`;
+}
 
 export type TextTemplate = {
   name: string;
+  poster?: null | File;
   category: number;
   language: number;
   parameters?: {
@@ -13,6 +19,7 @@ export type TextTemplate = {
     present_penalty?: number;
     frequency_penalty?: number;
   };
+  description?: string;
 };
 
 export async function createTextTemplate(data: TextTemplate) {
@@ -32,8 +39,7 @@ export async function createTextTemplate(data: TextTemplate) {
       parameters: {
         create: data.parameters || {},
       },
-      // poster?: imagesCreateNestedOneWithoutChat_rolesInput
-      // description?: string | null
+      description: data.description?.trim(),
     },
     select: {
       id: true,
@@ -73,17 +79,68 @@ export async function updateTextTemplate(id: number, data: Partial<TextTemplate>
             update: data.parameters,
           }
         : void 0,
+      description: data.description?.trim(),
     },
     where: { id },
     select: { id: true },
   });
 }
 
+export async function updateTextTemplatePoster(id: number, data: FormData) {
+  if (data.has("poster")) {
+    const url = await uploadObject(getTemplatePosterKey(id), data.get("poster") as File);
+
+    await prisma.text_templates.update({
+      data: {
+        poster: {
+          create: {
+            url,
+          },
+        },
+      },
+      where: { id },
+      select: { id: true },
+    });
+  } else {
+    const poster = await prisma.text_templates.findUniqueOrThrow({ where: { id } }).poster({
+      select: {
+        id: true,
+        url: true,
+      },
+    });
+
+    if (poster) {
+      await prisma.images.delete({
+        where: { id: poster.id },
+        select: { id: true },
+      });
+
+      await deleteObject(getTemplatePosterKey(id));
+    }
+  }
+}
+
 export async function deleteTextTemplate(id: number) {
-  await prisma.text_templates.delete({
+  const template = await prisma.text_templates.delete({
     where: { id },
-    select: { id: true },
+    select: {
+      poster: {
+        select: {
+          id: true,
+        },
+      },
+    },
   });
+
+  if (template.poster) {
+    await Promise.all([
+      deleteObject(getTemplatePosterKey(id)),
+      prisma.images.delete({
+        where: { id: template.poster.id },
+        select: { id: true },
+      }),
+    ]);
+  }
 }
 
 export type TextTemplateMessage = {

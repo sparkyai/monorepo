@@ -8,10 +8,30 @@ import TextField from "@components/form/text-field";
 import SelectField from "@components/form/select-field";
 import DeleteDialog from "@components/dialog/delete";
 import type { ImageTemplate } from "@lib/actions/image";
-import { createImageTemplate, updateImageTemplate, deleteImageTemplate } from "@lib/actions/image";
+import {
+  createImageTemplate,
+  updateImageTemplate,
+  deleteImageTemplate,
+  updateImageTemplatePoster,
+} from "@lib/actions/image";
 import AnalyticsDialog from "@components/dialog/analytics";
 import CreateDialog from "./create";
 import UpdateDialog from "./update";
+
+type Template = {
+  id: number;
+  name: string;
+  model: null | string;
+  poster: null | {
+    url: string;
+  };
+  provider: string;
+  language: {
+    id: number;
+    name: string;
+  };
+  description: null | string;
+};
 
 type CollectionProps = {
   leonardo: {
@@ -22,16 +42,7 @@ type CollectionProps = {
     id: number;
     name: string;
   }[];
-  templates: {
-    id: number;
-    name: string;
-    model: null | string;
-    provider: string;
-    language: {
-      id: number;
-      name: string;
-    };
-  }[];
+  templates: Template[];
 };
 
 export default function Collection(props: CollectionProps) {
@@ -92,7 +103,7 @@ export default function Collection(props: CollectionProps) {
                   languages={props.languages}
                   leonardo={props.leonardo}
                   onUpdate={(data) => {
-                    onUpdate(template.id, data);
+                    onUpdate(template, data);
                   }}
                   template={template}
                 />
@@ -127,35 +138,57 @@ export default function Collection(props: CollectionProps) {
     });
   }
 
-  function onUpdate(id: number, data: Partial<ImageTemplate>) {
+  function onUpdate(template: Template, { poster, ...data }: Partial<ImageTemplate>) {
     setIsLoading(true);
 
-    void updateImageTemplate(id, data).then(() => {
-      handlers.applyWhere(
-        (item) => item.id === id,
-        (template) => ({
-          id: template.id,
-          name: data.name || template.name,
-          model: data.model || template.model,
-          provider: data.provider || template.provider,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- controlled
-          language: props.languages.find((item) => item.id === data.language)!,
-        }),
-      );
-      setIsLoading(false);
+    void updateImageTemplate(template.id, data).then(() => {
+      const form = new FormData();
+      let promise = Promise.resolve(template.poster?.url);
 
-      refresh();
+      if (poster && poster.name !== template.poster?.url) {
+        form.append("poster", poster);
+
+        promise = updateImageTemplatePoster(template.id, form);
+      } else if (template.poster && !poster) {
+        promise = updateImageTemplatePoster(template.id, form);
+      }
+
+      void promise.then((url) => {
+        handlers.applyWhere(
+          (item) => item.id === template.id,
+          () => ({
+            id: template.id,
+            name: data.name || template.name,
+            model: data.model || template.model,
+            poster: url ? { url } : template.poster,
+            provider: data.provider || template.provider,
+            language: props.languages.find((lang) => lang.id === data.language) || template.language,
+            description: data.description || template.description,
+          }),
+        );
+        setIsLoading(false);
+
+        refresh();
+      });
     });
   }
 
-  function onCreate(data: ImageTemplate) {
+  function onCreate({ poster, ...data }: ImageTemplate) {
     setIsLoading(true);
 
     void createImageTemplate(data).then((template) => {
-      handlers.prepend(template);
-      setIsLoading(false);
+      const form = new FormData();
 
-      refresh();
+      if (poster) {
+        form.append("poster", poster);
+      }
+
+      void updateImageTemplatePoster(template.id, form).then((url) => {
+        handlers.prepend({ ...template, poster: url ? { url } : null });
+        setIsLoading(false);
+
+        refresh();
+      });
     });
   }
 }

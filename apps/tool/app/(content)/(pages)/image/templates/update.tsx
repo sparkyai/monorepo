@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import ButtonPrimary from "@components/button/button-primary";
 import Dialog from "@components/common/dialog";
 import FieldGroup from "@components/form/field-group";
@@ -8,6 +8,8 @@ import TextField from "@components/form/text-field";
 import SelectField from "@components/form/select-field";
 import Edit from "@components/icon/edit";
 import type { ImageTemplate } from "@lib/actions/image";
+import ImageField from "@components/form/image-field";
+import usePoster from "@lib/hooks/use-poster";
 
 type UpdateDialogProps = {
   leonardo: {
@@ -18,10 +20,14 @@ type UpdateDialogProps = {
     id: number;
     name: string;
     model: null | string;
+    poster: null | {
+      url: string;
+    };
     provider: string;
     language: {
       id: number;
     };
+    description: null | string;
   };
   onUpdate: (data: Partial<ImageTemplate>) => void;
   languages: {
@@ -33,20 +39,26 @@ type UpdateDialogProps = {
 export default function UpdateDialog(props: UpdateDialogProps) {
   const [name, setName] = useState(props.template.name);
   const [model, setModel] = useState(props.template.model);
+  const [poster, setPoster, resetPoster] = usePoster(props.template.poster?.url);
   const [isOpen, setIsOpen] = useState(false);
   const [provider, setProvider] = useState(props.template.provider);
   const [language, setLanguage] = useState(props.template.language.id.toString());
+  const [description, setDescription] = useState(props.template.description || "");
 
   // useEffect(() => {
   //   setModel(["Leonardo"].includes(provider) ? "" : null);
   // }, [provider]);
 
-  useEffect(() => {
-    setName(props.template.name);
-    setModel(props.template.model);
-    setProvider(props.template.provider);
-    setLanguage(props.template.language.id.toString());
-  }, [props.template]);
+  // useEffect(() => {
+  //   setModel(["Leonardo"].includes(props.template.provider) ? "" : null);
+  // }, [props.template.provider]);
+
+  // useEffect(() => {
+  //   setName(props.template.name);
+  //   setModel(props.template.model);
+  //   setProvider(props.template.provider);
+  //   setLanguage(props.template.language.id.toString());
+  // }, [props.template]);
 
   return (
     <>
@@ -64,8 +76,10 @@ export default function UpdateDialog(props: UpdateDialogProps) {
             disabled={
               (!name.trim() || name.trim() === props.template.name) &&
               (model === "" || model === props.template.model) &&
+              (typeof poster !== typeof props.template.poster || poster?.name === props.template.poster?.url) &&
               (!provider || provider === props.template.provider || model === "") &&
-              (!language || language === props.template.language.id.toString())
+              (!language || language === props.template.language.id.toString()) &&
+              (!description.trim() || description.trim() === props.template.description)
             }
             onClick={onUpdate}
           >
@@ -74,12 +88,13 @@ export default function UpdateDialog(props: UpdateDialogProps) {
         }
         onClose={onClose}
         open={isOpen}
-        title="Update category"
+        size="lg"
+        title="Update template"
       >
-        <FieldGroup label="Name">
+        <FieldGroup className="col-span-1" label="Name">
           <TextField onChange={setName} value={name} />
         </FieldGroup>
-        <FieldGroup label="Language">
+        <FieldGroup className="col-span-1" label="Language">
           <SelectField
             onChange={setLanguage}
             options={props.languages.map((item) => ({
@@ -89,7 +104,7 @@ export default function UpdateDialog(props: UpdateDialogProps) {
             value={language}
           />
         </FieldGroup>
-        <FieldGroup label="Provider">
+        <FieldGroup className="col-span-1" label="Provider">
           <SelectField
             onChange={(value) => {
               setProvider(value);
@@ -100,7 +115,7 @@ export default function UpdateDialog(props: UpdateDialogProps) {
           />
         </FieldGroup>
         {provider === "Leonardo" && typeof model === "string" && (
-          <FieldGroup label="Model">
+          <FieldGroup className="col-span-1" label="Model">
             <SelectField
               onChange={setModel}
               options={props.leonardo.map((item) => ({
@@ -111,6 +126,12 @@ export default function UpdateDialog(props: UpdateDialogProps) {
             />
           </FieldGroup>
         )}
+        <FieldGroup className="col-span-2" label="Poster">
+          <ImageField className="aspect-video" onChange={setPoster} value={poster} />
+        </FieldGroup>
+        <FieldGroup className="col-span-2" label="Description">
+          <TextField onChange={setDescription} rows={7} value={description} />
+        </FieldGroup>
       </Dialog>
     </>
   );
@@ -122,21 +143,24 @@ export default function UpdateDialog(props: UpdateDialogProps) {
   function onClose() {
     setIsOpen(false);
 
-    // setName((value) => value.trim());
     setName(props.template.name);
     setModel(props.template.model);
+    resetPoster();
     setProvider(props.template.provider);
     setLanguage(props.template.language.id.toString());
+    setDescription(props.template.description || "");
   }
 
   function onUpdate() {
     props.onUpdate({
       name,
       model,
+      poster,
       provider,
       language: parseInt(language),
+      description,
     });
 
-    onClose();
+    setIsOpen(false);
   }
 }

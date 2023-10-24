@@ -7,6 +7,8 @@ import FieldGroup from "@components/form/field-group";
 import TextField from "@components/form/text-field";
 import SelectField from "@components/form/select-field";
 import type { ChatRole } from "@lib/actions/chat";
+import usePoster from "@lib/hooks/use-poster";
+import ImageField from "@components/form/image-field";
 
 type CreateDialogProps = {
   onCreate: (data: ChatRole) => void;
@@ -22,9 +24,11 @@ type CreateDialogProps = {
 
 export default function CreateDialog(props: CreateDialogProps) {
   const [name, setName] = useState("");
+  const [poster, setPoster, resetPoster] = usePoster();
   const [isOpen, setIsOpen] = useState(false);
   const [category, setCategory] = useState("");
   const [language, setLanguage] = useState("");
+  const [description, setDescription] = useState("");
 
   return (
     <>
@@ -39,12 +43,13 @@ export default function CreateDialog(props: CreateDialogProps) {
         }
         onClose={onClose}
         open={isOpen}
+        size="lg"
         title="Create role"
       >
-        <FieldGroup label="Name">
+        <FieldGroup className="col-span-1" label="Name">
           <TextField onChange={setName} value={name} />
         </FieldGroup>
-        <FieldGroup label="Category">
+        <FieldGroup className="col-span-1 col-start-1" label="Category">
           <SelectField
             onChange={setCategory}
             options={props.categories.map((item) => ({
@@ -54,7 +59,7 @@ export default function CreateDialog(props: CreateDialogProps) {
             value={category}
           />
         </FieldGroup>
-        <FieldGroup label="Language">
+        <FieldGroup className="col-span-1" label="Language">
           <SelectField
             onChange={setLanguage}
             options={props.languages.map((item) => ({
@@ -63,6 +68,12 @@ export default function CreateDialog(props: CreateDialogProps) {
             }))}
             value={language}
           />
+        </FieldGroup>
+        <FieldGroup className="col-span-2" label="Poster">
+          <ImageField className="aspect-video" onChange={setPoster} value={poster} />
+        </FieldGroup>
+        <FieldGroup className="col-span-2" label="Description">
+          <TextField onChange={setDescription} rows={7} value={description} />
         </FieldGroup>
       </Dialog>
     </>
@@ -76,15 +87,19 @@ export default function CreateDialog(props: CreateDialogProps) {
     setIsOpen(false);
 
     setName("");
+    resetPoster();
     setCategory("");
     setLanguage("");
+    setDescription("");
   }
 
   function onCreate() {
     props.onCreate({
       name,
+      poster,
       category: parseInt(category),
       language: parseInt(language),
+      description,
     });
 
     onClose();

@@ -9,12 +9,17 @@ import TextField from "@components/form/text-field";
 import SelectField from "@components/form/select-field";
 import Edit from "@components/icon/edit";
 import Loader from "@components/common/loader";
-import { updateTextTemplate } from "@lib/actions/text";
+import { updateTextTemplate, updateTextTemplatePoster } from "@lib/actions/text";
+import ImageField from "@components/form/image-field";
+import usePoster from "@lib/hooks/use-poster";
 
 type UpdateDialogProps = {
   template: {
     id: number;
     name: string;
+    poster: null | {
+      url: string;
+    };
     category: {
       id: number;
       name: string;
@@ -23,6 +28,7 @@ type UpdateDialogProps = {
       id: number;
       name: string;
     };
+    description: null | string;
   };
   languages: {
     id: number;
@@ -38,11 +44,13 @@ export default function UpdateDialog(props: UpdateDialogProps) {
   const router = useRouter();
 
   const [name, setName] = useState(props.template.name);
+  const [poster, setPoster, resetPoster] = usePoster(props.template.poster?.url);
   const [isOpen, setIsOpen] = useState(false);
   const [category, setCategory] = useState(props.template.category.id.toString());
   const [language, setLanguage] = useState(props.template.language.id.toString());
   const [isLoading, setIsLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [description, setDescription] = useState(props.template.description || "");
 
   return (
     <>
@@ -59,8 +67,11 @@ export default function UpdateDialog(props: UpdateDialogProps) {
             className="ml-auto"
             disabled={
               name.trim() === props.template.name &&
+              description.trim() === (props.template.description || "") &&
               category === props.template.category.id.toString() &&
-              language === props.template.language.id.toString()
+              language === props.template.language.id.toString() &&
+              typeof poster === typeof props.template.poster &&
+              poster?.name === props.template.poster?.url
             }
             onClick={onUpdate}
           >
@@ -69,12 +80,13 @@ export default function UpdateDialog(props: UpdateDialogProps) {
         }
         onClose={onClose}
         open={isOpen}
-        title="Update role"
+        size="lg"
+        title="Update template"
       >
-        <FieldGroup label="Name">
+        <FieldGroup className="col-span-1" label="Name">
           <TextField onChange={setName} value={name} />
         </FieldGroup>
-        <FieldGroup label="Category">
+        <FieldGroup className="col-span-1 col-start-1" label="Category">
           <SelectField
             onChange={setCategory}
             options={props.categories.map((item) => ({
@@ -84,7 +96,7 @@ export default function UpdateDialog(props: UpdateDialogProps) {
             value={category}
           />
         </FieldGroup>
-        <FieldGroup label="Language">
+        <FieldGroup className="col-span-1" label="Language">
           <SelectField
             onChange={setLanguage}
             options={props.languages.map((item) => ({
@@ -93,6 +105,12 @@ export default function UpdateDialog(props: UpdateDialogProps) {
             }))}
             value={language}
           />
+        </FieldGroup>
+        <FieldGroup className="col-span-2" label="Poster">
+          <ImageField className="aspect-video" onChange={setPoster} value={poster} />
+        </FieldGroup>
+        <FieldGroup className="col-span-2" label="Description">
+          <TextField onChange={setDescription} rows={7} value={description} />
         </FieldGroup>
       </Dialog>
       {(isLoading || isPending) && (
@@ -109,6 +127,12 @@ export default function UpdateDialog(props: UpdateDialogProps) {
 
   function onClose() {
     setIsOpen(false);
+
+    setName(props.template.name);
+    resetPoster();
+    setCategory(props.template.category.id.toString());
+    setLanguage(props.template.language.id.toString());
+    setDescription(props.template.description || "");
   }
 
   function onUpdate() {
@@ -116,16 +140,28 @@ export default function UpdateDialog(props: UpdateDialogProps) {
       name,
       category: parseInt(category),
       language: parseInt(language),
+      description,
     };
 
-    setIsLoading(true);
-
     void updateTextTemplate(props.template.id, data).then(() => {
-      setIsLoading(false);
-      onClose();
+      const form = new FormData();
+      let promise = Promise.resolve();
 
-      startTransition(() => {
-        router.refresh();
+      if (poster && poster.name !== props.template.poster?.url) {
+        form.append("poster", poster);
+
+        promise = updateTextTemplatePoster(props.template.id, form);
+      } else if (props.template.poster && !poster) {
+        promise = updateTextTemplatePoster(props.template.id, form);
+      }
+
+      void promise.then(() => {
+        setIsLoading(false);
+        setIsOpen(false);
+
+        startTransition(() => {
+          router.refresh();
+        });
       });
     });
   }

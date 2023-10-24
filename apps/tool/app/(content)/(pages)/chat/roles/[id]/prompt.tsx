@@ -44,7 +44,7 @@ export default function Prompt(props: PromptProps) {
         size="lg"
         title="Edit system prompt"
       >
-        <TextField onChange={setPrompt} rows={16} value={prompt} />
+        <TextField className="col-span-2" onChange={setPrompt} rows={16} value={prompt} />
       </Dialog>
       {(isLoading || isPending) && (
         <div className="fixed inset-0 z-50 flex bg-slate-950/75">

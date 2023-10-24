@@ -8,7 +8,7 @@ import Table from "@components/common/table";
 import TextField from "@components/form/text-field";
 import SelectField from "@components/form/select-field";
 import type { ChatRole } from "@lib/actions/chat";
-import { deleteChatRole, createChatRole } from "@lib/actions/chat";
+import { deleteChatRole, createChatRole, updateChatRolePoster } from "@lib/actions/chat";
 import DeleteDialog from "@components/dialog/delete";
 import Edit from "@components/icon/edit";
 import AnalyticsDialog from "@components/dialog/analytics";
@@ -134,17 +134,25 @@ export default function Collection(props: CollectionProps) {
     });
   }
 
-  function onCreate(data: ChatRole) {
+  function onCreate({ poster, ...data }: ChatRole) {
     setIsLoading(true);
 
     void createChatRole(data).then((role) => {
-      handlers.prepend(role);
-      setIsLoading(false);
+      const form = new FormData();
 
-      startTransition(() => {
-        router.push(`/chat/roles/${role.id}`);
+      if (poster) {
+        form.append("poster", poster);
+      }
 
-        refresh();
+      void updateChatRolePoster(role.id, form).then(() => {
+        handlers.prepend(role);
+        setIsLoading(false);
+
+        startTransition(() => {
+          router.push(`/chat/roles/${role.id}`);
+
+          refresh();
+        });
       });
     });
   }

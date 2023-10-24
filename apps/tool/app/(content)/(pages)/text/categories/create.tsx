@@ -36,10 +36,10 @@ export default function CreateDialog(props: CreateDialogProps) {
         open={isOpen}
         title="Create category"
       >
-        <FieldGroup label="Name">
+        <FieldGroup className="col-span-2" label="Name">
           <TextField onChange={setName} value={name} />
         </FieldGroup>
-        <FieldGroup label="Language">
+        <FieldGroup className="col-span-2" label="Language">
           <SelectField
             onChange={setLanguage}
             options={props.languages.map((item) => ({

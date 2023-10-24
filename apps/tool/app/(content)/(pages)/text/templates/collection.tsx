@@ -10,7 +10,7 @@ import SelectField from "@components/form/select-field";
 import DeleteDialog from "@components/dialog/delete";
 import Edit from "@components/icon/edit";
 import type { TextTemplate } from "@lib/actions/text";
-import { createTextTemplate, deleteTextTemplate } from "@lib/actions/text";
+import { createTextTemplate, deleteTextTemplate, updateTextTemplatePoster } from "@lib/actions/text";
 import AnalyticsDialog from "@components/dialog/analytics";
 import CreateDialog from "./create";
 
@@ -134,17 +134,25 @@ export default function Collection(props: CollectionProps) {
     });
   }
 
-  function onCreate(data: TextTemplate) {
+  function onCreate({ poster, ...data }: TextTemplate) {
     setIsLoading(true);
 
     void createTextTemplate(data).then((template) => {
-      handlers.prepend(template);
-      setIsLoading(false);
+      const form = new FormData();
 
-      startTransition(() => {
-        router.push(`/text/templates/${template.id}`);
+      if (poster) {
+        form.append("poster", poster);
+      }
 
-        refresh();
+      void updateTextTemplatePoster(template.id, form).then(() => {
+        handlers.prepend(template);
+        setIsLoading(false);
+
+        startTransition(() => {
+          router.push(`/text/templates/${template.id}`);
+
+          refresh();
+        });
       });
     });
   }

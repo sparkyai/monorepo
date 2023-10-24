@@ -1,10 +1,16 @@
 "use server";
 
 import prisma from "@lib/utils/prisma";
+import { uploadObject, deleteObject } from "@lib/utils/s3";
+
+function getRolePosterKey(id: number) {
+  return `char-role-${id}-poster`;
+}
 
 export type ChatRole = {
   name: string;
   prompt?: string;
+  poster?: null | File;
   category: number;
   language: number;
   parameters?: {
@@ -14,6 +20,7 @@ export type ChatRole = {
     present_penalty?: number;
     frequency_penalty?: number;
   };
+  description?: string;
 };
 
 export async function createChatRole(data: ChatRole) {
@@ -21,6 +28,7 @@ export async function createChatRole(data: ChatRole) {
     data: {
       name: data.name.trim(),
       prompt: data.prompt?.trim(),
+      // poster?: imagesCreateNestedOneWithoutChat_rolesInput
       category: {
         connect: {
           id: data.category,
@@ -34,8 +42,7 @@ export async function createChatRole(data: ChatRole) {
       parameters: {
         create: data.parameters || {},
       },
-      // poster?: imagesCreateNestedOneWithoutChat_rolesInput
-      // description?: string | null
+      description: data.description?.trim(),
     },
     select: {
       id: true,
@@ -76,19 +83,68 @@ export async function updateChatRole(id: number, data: Partial<ChatRole>) {
             update: data.parameters,
           }
         : void 0,
-      // poster?: imagesCreateNestedOneWithoutChat_rolesInput
-      // description?: string | null
+      description: data.description?.trim(),
     },
     where: { id },
     select: { id: true },
   });
 }
 
+export async function updateChatRolePoster(id: number, data: FormData) {
+  if (data.has("poster")) {
+    const url = await uploadObject(getRolePosterKey(id), data.get("poster") as File);
+
+    await prisma.chat_roles.update({
+      data: {
+        poster: {
+          create: {
+            url,
+          },
+        },
+      },
+      where: { id },
+      select: { id: true },
+    });
+  } else {
+    const poster = await prisma.chat_roles.findUniqueOrThrow({ where: { id } }).poster({
+      select: {
+        id: true,
+        url: true,
+      },
+    });
+
+    if (poster) {
+      await prisma.images.delete({
+        where: { id: poster.id },
+        select: { id: true },
+      });
+
+      await deleteObject(getRolePosterKey(id));
+    }
+  }
+}
+
 export async function deleteChatRole(id: number) {
-  await prisma.chat_roles.delete({
+  const role = await prisma.chat_roles.delete({
     where: { id },
-    select: { id: true },
+    select: {
+      poster: {
+        select: {
+          id: true,
+        },
+      },
+    },
   });
+
+  if (role.poster) {
+    await Promise.all([
+      deleteObject(getRolePosterKey(id)),
+      prisma.images.delete({
+        where: { id: role.poster.id },
+        select: { id: true },
+      }),
+    ]);
+  }
 }
 
 export type ChatCategory = {

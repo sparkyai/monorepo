@@ -35,9 +35,11 @@ export default function DeleteDialog(props: DeleteDialogProps) {
         open={isOpen}
         title={props.title}
       >
-        {props.description.split(/\n+/).map((text) => (
-          <p key={text}>{text}</p>
-        ))}
+        <div className="col-span-2 flex flex-col gap-1">
+          {props.description.split(/\n+/).map((text) => (
+            <p key={text}>{text}</p>
+          ))}
+        </div>
       </Dialog>
     </>
   );
