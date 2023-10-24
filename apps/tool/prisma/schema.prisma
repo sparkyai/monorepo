@@ -19,7 +19,7 @@ model users {
 }
 
 model languages {
-  id              Int               @id @default(autoincrement()) @db.SmallInt
+  id              Int               @id @default(autoincrement())
   name            String            @unique
   code            String            @unique @db.VarChar(2)
   roles           chat_roles[]

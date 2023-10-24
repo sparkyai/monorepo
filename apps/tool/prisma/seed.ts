@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
-import categories from "./categories.json";
+import chat from "./chat.json";
+import text from "./text.json";
 
 const prisma = new PrismaClient();
 
@@ -12,20 +13,12 @@ async function seed() {
     prisma.telegram_clients.deleteMany(),
   ]);
 
-  const language = await prisma.$transaction(async () => {
-    await prisma.languages.createMany({
-      data: [
-        { name: "English", code: "en" },
-        { name: "Русский", code: "ru" },
-        { name: "Українська", code: "uk" },
-      ],
-    });
-
-    return prisma.languages.findFirstOrThrow({
-      where: {
-        code: "ru",
-      },
-    });
+  await prisma.languages.createMany({
+    data: [
+      { name: "English", code: "en" },
+      { name: "Русский", code: "ru" },
+      { name: "Українська", code: "uk" },
+    ],
   });
 
   await prisma.users.create({
@@ -37,93 +30,28 @@ async function seed() {
     },
   });
 
-  let id = 1;
   await Promise.all(
-    categories.map((category) =>
+    chat.map((category) =>
       prisma.chat_categories.create({
         data: {
           name: category.name,
           roles: {
-            create: category.templates.map((template) => ({
-              name: template.name,
-              poster: {
-                create: {
-                  url: faker.image.url(),
-                },
-              },
-              prompt: template.messages[0].content,
+            create: category.roles.map((role) => ({
+              name: role.name,
+              prompt: role.prompt || "",
               language: {
                 connect: {
-                  id: language.id,
+                  code: role.language.code,
                 },
               },
               parameters: {
-                create: {
-                  top_p: template.topP,
-                  model: template.model,
-                  temperature: template.temperature,
-                  present_penalty: template.presentPenalty,
-                  frequency_penalty: template.frequencyPenalty,
-                },
-              },
-              description: faker.lorem.lines(2),
-              interactions: {
-                create: [
-                  faker.helpers.multiple(
-                    () => {
-                      const date = faker.date.recent({ days: 60 });
-
-                      return {
-                        type: "generate" as const,
-                        client: {
-                          connectOrCreate: {
-                            where: { id },
-                            create: { id },
-                          },
-                        },
-                        created_at: date,
-                        updated_at: date,
-                      };
-                    },
-                    { count: { min: 10, max: 100 } },
-                  ),
-                  faker.helpers.multiple(
-                    () => {
-                      const oldId = id++;
-
-                      return faker.helpers.maybe(() => ({
-                        type: faker.helpers.arrayElement(["like", "dislike"]),
-                        client: {
-                          connectOrCreate: {
-                            where: { id: oldId },
-                            create: { id: oldId },
-                          },
-                        },
-                      })) as {
-                        type: "like";
-                        client: {
-                          connectOrCreate: {
-                            where: {
-                              id: number;
-                            };
-                            create: {
-                              id: number;
-                            };
-                          };
-                        };
-                      };
-                    },
-                    { count: 1 },
-                  ),
-                ]
-                  .flat()
-                  .filter(Boolean),
+                create: role.parameters,
               },
             })),
           },
           language: {
             connect: {
-              id: language.id,
+              code: category.language.code,
             },
           },
         },
@@ -131,97 +59,63 @@ async function seed() {
     ),
   );
 
-  id = 1;
   await Promise.all(
-    categories.map((category) =>
+    text.map((category) =>
       prisma.text_categories.create({
         data: {
           name: category.name,
           language: {
             connect: {
-              id: language.id,
+              code: category.language.code,
             },
           },
           templates: {
             create: category.templates.map((template) => ({
               name: template.name,
-              poster: {
-                create: {
-                  url: faker.image.url(),
-                },
-              },
               messages: {
-                create: template.messages.map((message) => ({
-                  role: message.role,
-                  content: message.content,
-                })),
+                create: template.messages,
               },
               language: {
                 connect: {
-                  id: language.id,
+                  code: category.language.code,
                 },
               },
               parameters: {
-                create: {
-                  top_p: template.topP,
-                  model: template.model,
-                  temperature: template.temperature,
-                  present_penalty: template.presentPenalty,
-                  frequency_penalty: template.frequencyPenalty,
-                },
+                create: template.parameters,
               },
-              description: faker.lorem.lines(2),
               interactions: {
-                create: [
-                  faker.helpers.multiple(
-                    () => {
-                      const date = faker.date.recent({ days: 60 });
-
-                      return {
-                        type: "generate" as const,
-                        client: {
-                          connectOrCreate: {
-                            where: { id },
-                            create: { id },
+                create: faker.helpers
+                  .multiple(
+                    () => ({
+                      type: "regenerated",
+                      client: {
+                        connectOrCreate: {
+                          where: {
+                            id: 0,
+                          },
+                          create: {
+                            id: 0,
                           },
                         },
-                        created_at: date,
-                        updated_at: date,
-                      };
-                    },
-                    { count: { min: 10, max: 100 } },
-                  ),
-                  faker.helpers.multiple(
-                    () => {
-                      const oldId = id++;
-
-                      return faker.helpers.maybe(() => ({
-                        type: faker.helpers.arrayElement(["like", "dislike"]),
-                        client: {
-                          connectOrCreate: {
-                            where: { id: oldId },
-                            create: { id: oldId },
+                      },
+                    }),
+                    { count: template.regenerated },
+                  )
+                  .concat(
+                    template.reactions?.map((reaction) => ({
+                      type: reaction.liked ? "like" : "dislike",
+                      client: {
+                        connectOrCreate: {
+                          where: {
+                            id: reaction.client_id,
+                          },
+                          create: {
+                            id: reaction.client_id,
                           },
                         },
-                      })) as {
-                        type: "like";
-                        client: {
-                          connectOrCreate: {
-                            where: {
-                              id: number;
-                            };
-                            create: {
-                              id: number;
-                            };
-                          };
-                        };
-                      };
-                    },
-                    { count: 1 },
+                      },
+                    })) || [],
                   ),
-                ]
-                  .flat()
-                  .filter(Boolean),
               },
             })),
           },
@@ -230,84 +124,277 @@ async function seed() {
     ),
   );
 
-  id = 1;
-  await Promise.all(
-    categories
-      .map((category) =>
-        category.templates.map((template) =>
-          prisma.image_templates.create({
-            data: {
-              name: template.name,
-              poster: {
-                create: {
-                  url: faker.image.url(),
-                },
-              },
-              provider: "DALL·E",
-              language: {
-                connect: {
-                  id: language.id,
-                },
-              },
-              description: faker.lorem.lines(2),
-              interactions: {
-                create: [
-                  faker.helpers.multiple(
-                    () => {
-                      const date = faker.date.recent({ days: 60 });
-
-                      return {
-                        type: "generate" as const,
-                        client: {
-                          connectOrCreate: {
-                            where: { id },
-                            create: { id },
-                          },
-                        },
-                        created_at: date,
-                        updated_at: date,
-                      };
-                    },
-                    { count: { min: 10, max: 100 } },
-                  ),
-                  faker.helpers.multiple(
-                    () => {
-                      const oldId = id++;
-
-                      return faker.helpers.maybe(() => ({
-                        type: faker.helpers.arrayElement(["like", "dislike"]),
-                        client: {
-                          connectOrCreate: {
-                            where: { id: oldId },
-                            create: { id: oldId },
-                          },
-                        },
-                      })) as {
-                        type: "like";
-                        client: {
-                          connectOrCreate: {
-                            where: {
-                              id: number;
-                            };
-                            create: {
-                              id: number;
-                            };
-                          };
-                        };
-                      };
-                    },
-                    { count: 1 },
-                  ),
-                ]
-                  .flat()
-                  .filter(Boolean),
-              },
-            },
-          }),
-        ),
-      )
-      .flat(),
-  );
+  // let id = 1;
+  // await Promise.all(
+  //   categories.map((category) =>
+  //     prisma.chat_categories.create({
+  //       data: {
+  //         name: category.name,
+  //         roles: {
+  //           create: category.templates.map((template) => ({
+  //             name: template.name,
+  //             poster: {
+  //               create: {
+  //                 url: faker.image.url(),
+  //               },
+  //             },
+  //             prompt: template.messages[0].content,
+  //             language: {
+  //               connect: {
+  //                 id: language.id,
+  //               },
+  //             },
+  //             parameters: {
+  //               create: {
+  //                 top_p: template.topP,
+  //                 model: template.model,
+  //                 temperature: template.temperature,
+  //                 present_penalty: template.presentPenalty,
+  //                 frequency_penalty: template.frequencyPenalty,
+  //               },
+  //             },
+  //             description: faker.lorem.lines(2),
+  //             interactions: {
+  //               create: [
+  //                 faker.helpers.multiple(
+  //                   () => {
+  //                     const date = faker.date.recent({ days: 60 });
+  //
+  //                     return {
+  //                       type: "generate" as const,
+  //                       client: {
+  //                         connectOrCreate: {
+  //                           where: { id },
+  //                           create: { id },
+  //                         },
+  //                       },
+  //                       created_at: date,
+  //                       updated_at: date,
+  //                     };
+  //                   },
+  //                   { count: { min: 10, max: 100 } },
+  //                 ),
+  //                 faker.helpers.multiple(
+  //                   () => {
+  //                     const oldId = id++;
+  //
+  //                     return faker.helpers.maybe(() => ({
+  //                       type: faker.helpers.arrayElement(["like", "dislike"]),
+  //                       client: {
+  //                         connectOrCreate: {
+  //                           where: { id: oldId },
+  //                           create: { id: oldId },
+  //                         },
+  //                       },
+  //                     })) as {
+  //                       type: "like";
+  //                       client: {
+  //                         connectOrCreate: {
+  //                           where: {
+  //                             id: number;
+  //                           };
+  //                           create: {
+  //                             id: number;
+  //                           };
+  //                         };
+  //                       };
+  //                     };
+  //                   },
+  //                   { count: 1 },
+  //                 ),
+  //               ]
+  //                 .flat()
+  //                 .filter(Boolean),
+  //             },
+  //           })),
+  //         },
+  //         language: {
+  //           connect: {
+  //             id: language.id,
+  //           },
+  //         },
+  //       },
+  //     }),
+  //   ),
+  // );
+  //
+  // id = 1;
+  // await Promise.all(
+  //   categories.map((category) =>
+  //     prisma.text_categories.create({
+  //       data: {
+  //         name: category.name,
+  //         language: {
+  //           connect: {
+  //             id: language.id,
+  //           },
+  //         },
+  //         templates: {
+  //           create: category.templates.map((template) => ({
+  //             name: template.name,
+  //             poster: {
+  //               create: {
+  //                 url: faker.image.url(),
+  //               },
+  //             },
+  //             messages: {
+  //               create: template.messages.map((message) => ({
+  //                 role: message.role,
+  //                 content: message.content,
+  //               })),
+  //             },
+  //             language: {
+  //               connect: {
+  //                 id: language.id,
+  //               },
+  //             },
+  //             parameters: {
+  //               create: {
+  //                 top_p: template.topP,
+  //                 model: template.model,
+  //                 temperature: template.temperature,
+  //                 present_penalty: template.presentPenalty,
+  //                 frequency_penalty: template.frequencyPenalty,
+  //               },
+  //             },
+  //             description: faker.lorem.lines(2),
+  //             interactions: {
+  //               create: [
+  //                 faker.helpers.multiple(
+  //                   () => {
+  //                     const date = faker.date.recent({ days: 60 });
+  //
+  //                     return {
+  //                       type: "generate" as const,
+  //                       client: {
+  //                         connectOrCreate: {
+  //                           where: { id },
+  //                           create: { id },
+  //                         },
+  //                       },
+  //                       created_at: date,
+  //                       updated_at: date,
+  //                     };
+  //                   },
+  //                   { count: { min: 10, max: 100 } },
+  //                 ),
+  //                 faker.helpers.multiple(
+  //                   () => {
+  //                     const oldId = id++;
+  //
+  //                     return faker.helpers.maybe(() => ({
+  //                       type: faker.helpers.arrayElement(["like", "dislike"]),
+  //                       client: {
+  //                         connectOrCreate: {
+  //                           where: { id: oldId },
+  //                           create: { id: oldId },
+  //                         },
+  //                       },
+  //                     })) as {
+  //                       type: "like";
+  //                       client: {
+  //                         connectOrCreate: {
+  //                           where: {
+  //                             id: number;
+  //                           };
+  //                           create: {
+  //                             id: number;
+  //                           };
+  //                         };
+  //                       };
+  //                     };
+  //                   },
+  //                   { count: 1 },
+  //                 ),
+  //               ]
+  //                 .flat()
+  //                 .filter(Boolean),
+  //             },
+  //           })),
+  //         },
+  //       },
+  //     }),
+  //   ),
+  // );
+  //
+  // id = 1;
+  // await Promise.all(
+  //   categories
+  //     .map((category) =>
+  //       category.templates.map((template) =>
+  //         prisma.image_templates.create({
+  //           data: {
+  //             name: template.name,
+  //             poster: {
+  //               create: {
+  //                 url: faker.image.url(),
+  //               },
+  //             },
+  //             provider: "DALL·E",
+  //             language: {
+  //               connect: {
+  //                 id: language.id,
+  //               },
+  //             },
+  //             description: faker.lorem.lines(2),
+  //             interactions: {
+  //               create: [
+  //                 faker.helpers.multiple(
+  //                   () => {
+  //                     const date = faker.date.recent({ days: 60 });
+  //
+  //                     return {
+  //                       type: "generate" as const,
+  //                       client: {
+  //                         connectOrCreate: {
+  //                           where: { id },
+  //                           create: { id },
+  //                         },
+  //                       },
+  //                       created_at: date,
+  //                       updated_at: date,
+  //                     };
+  //                   },
+  //                   { count: { min: 10, max: 100 } },
+  //                 ),
+  //                 faker.helpers.multiple(
+  //                   () => {
+  //                     const oldId = id++;
+  //
+  //                     return faker.helpers.maybe(() => ({
+  //                       type: faker.helpers.arrayElement(["like", "dislike"]),
+  //                       client: {
+  //                         connectOrCreate: {
+  //                           where: { id: oldId },
+  //                           create: { id: oldId },
+  //                         },
+  //                       },
+  //                     })) as {
+  //                       type: "like";
+  //                       client: {
+  //                         connectOrCreate: {
+  //                           where: {
+  //                             id: number;
+  //                           };
+  //                           create: {
+  //                             id: number;
+  //                           };
+  //                         };
+  //                       };
+  //                     };
+  //                   },
+  //                   { count: 1 },
+  //                 ),
+  //               ]
+  //                 .flat()
+  //                 .filter(Boolean),
+  //             },
+  //           },
+  //         }),
+  //       ),
+  //     )
+  //     .flat(),
+  // );
 }
 
 async function success() {
