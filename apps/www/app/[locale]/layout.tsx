@@ -9,11 +9,6 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  robots: {
-    index: false,
-    follow: false,
-  },
-
   metadataBase: new URL(www()),
   themeColor: "#1E1E1E",
   openGraph: {
