@@ -43,7 +43,7 @@ export default async function TeamPreview(props: TeamPreviewProps) {
               component={NextLink}
               href={`/${props.page.locale}${props.page.slug ? `/${props.page.slug}` : ""}`}
             >
-              {dictionary["Read more"]}
+              {dictionary["Read more about us"]}
             </ButtonBlueFilled>
           )}
         </div>
