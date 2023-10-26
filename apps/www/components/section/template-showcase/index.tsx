@@ -19,7 +19,7 @@ type TemplateShowcaseProps = {
       example: string;
       summary: string;
     };
-    category: {
+    category?: {
       review?: {
         author?: {
           name: string;
@@ -48,7 +48,7 @@ export default async function TemplateShowcase(props: TemplateShowcaseProps) {
         <Group
           key={category.id}
           {...category}
-          review={category.showCategoryReview ? category.category.review : void 0}
+          review={category.showCategoryReview ? category.category?.review : void 0}
         />
       ))}
     </Section>
