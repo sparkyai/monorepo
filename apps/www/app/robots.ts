@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
+import { www } from "lib/utils/url";
 
 export default async function robots(): Promise<MetadataRoute.Robots> {
   return {
     rules: { allow: "/" },
-    sitemap: `${process.env.WWW_URL}/sitemap.xml`,
+    sitemap: www("sitemap.xml"),
   };
 }
