@@ -41,11 +41,8 @@ export default function Collapsible(props: CollapsibleProps) {
 
   return (
     <Component
-      aria-expanded={props.open}
       className={twMerge("overflow-y-hidden transition-all duration-500", props.className)}
       onTransitionEnd={onTransitionEnd}
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- controlled
-      // @ts-expect-error
       ref={content}
       style={{ height: 0 }}
     >
