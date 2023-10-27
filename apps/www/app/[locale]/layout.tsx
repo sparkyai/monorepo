@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import type { Metadata } from "next";
 import "./common.css";
 import { www } from "lib/utils/url";
+import GoogleTagManager from "components/common/google-tag-manager";
 
 const inter = Inter({
   subsets: ["cyrillic", "latin"],
@@ -31,7 +32,10 @@ type LocaleLayoutProps = PropsWithChildren<{
 export default function LocaleLayout(props: LocaleLayoutProps) {
   return (
     <html className={inter.className} lang={props.params?.locale}>
-      <body className="flex min-h-screen flex-col">{props.children}</body>
+      <body className="flex min-h-screen flex-col">
+        <GoogleTagManager id="GTM-K9HJ7QBZ" />
+        {props.children}
+      </body>
     </html>
   );
 }
