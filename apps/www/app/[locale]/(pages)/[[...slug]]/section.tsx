@@ -7,6 +7,7 @@ const SECTIONS = {
   pricing: dynamic(() => import("components/section/pricing")),
   reviews: dynamic(() => import("components/section/reviews")),
   donation: dynamic(() => import("components/section/donation")),
+  paragraph: dynamic(() => import("components/section/paragraph")),
   advantages: dynamic(() => import("components/section/advantages")),
   "hero-about": dynamic(() => import("components/section/hero-about")),
   "tools-cards": dynamic(() => import("components/section/tools-cards")),
