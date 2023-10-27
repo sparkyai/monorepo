@@ -1,5 +1,5 @@
 import type { PropsWithChildren } from "react";
-import Image from "next/image";
+import NextImage from "next/image";
 import HeroSection from "components/layout/hero-section";
 import type { ImageData } from "lib/data/api";
 import { getStaticImageData } from "lib/data/api";
@@ -37,7 +37,7 @@ export default async function Hero(props: HeroProps) {
     <HeroSection action={action} avatars={props.avatars} locale={props.locale} {...props.header}>
       {props.media && (
         <div className="aspect-video overflow-hidden rounded-md lg:mx-auto lg:w-10/12">
-          <Image
+          <NextImage
             alt={props.media.alt}
             placeholder="blur"
             sizes="(min-width: 1024px) 1200px, 100vw"

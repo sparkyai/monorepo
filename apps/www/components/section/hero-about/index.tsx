@@ -1,4 +1,4 @@
-import Image from "next/image";
+import NextImage from "next/image";
 import HeroSection from "components/layout/hero-section";
 import type { ImageData } from "lib/data/api";
 import { getStaticImageData } from "lib/data/api";
@@ -17,7 +17,7 @@ export default function HeroAbout(props: HeroAboutProps) {
     <HeroSection {...props.header} locale={props.locale}>
       {props.media && (
         <div className="relative aspect-[21/9] overflow-hidden rounded-md">
-          <Image
+          <NextImage
             alt={props.media.alt}
             fill
             placeholder="blur"

@@ -9,9 +9,15 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  robots: {
+    index: true,
+    follow: true,
+  },
+
   metadataBase: new URL(www()),
   themeColor: "#1E1E1E",
   openGraph: {
+    type: "article",
     siteName: "Sparky",
   },
 };
