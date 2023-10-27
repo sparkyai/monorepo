@@ -30,6 +30,7 @@ export default function ToolsCards(props: ToolsCardsProps) {
             <NextImage
               alt={card.image.alt}
               className="rounded-xs mb-5 aspect-video bg-blue-200"
+              sizes="290px"
               src={getStaticImageData(card.image)}
             />
             <h3 className="mb-3 text-2xl font-bold text-gray-50">{card.title}</h3>

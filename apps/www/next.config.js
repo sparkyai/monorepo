@@ -10,6 +10,7 @@ module.exports = withBundleAnalyzer({
         hostname: "**.amazonaws.com",
       },
     ],
+    dangerouslyAllowSVG: true,
   },
   experimental: {
     serverActions: true,
