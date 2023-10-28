@@ -7,7 +7,7 @@ type GoogleTagManagerProps = {
 };
 
 export default function GoogleTagManager(props: GoogleTagManagerProps) {
-  if (process.env.NODE_ENV !== "production" || props.id) {
+  if (process.env.NODE_ENV !== "production" || !props.id) {
     return null;
   }
 
