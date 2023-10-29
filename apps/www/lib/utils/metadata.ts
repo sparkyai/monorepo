@@ -24,7 +24,11 @@ export function defineMetadata(options: Options) {
   };
 
   metadata.twitter = {};
-  metadata.openGraph = { locale: options.locale };
+  metadata.openGraph = {
+    type: "article",
+    locale: options.locale,
+    siteName: "Sparky",
+  };
 
   // eslint-disable-next-line no-multi-assign -- controlled assign
   metadata.title = metadata.twitter.title = metadata.openGraph.title = options.title;
