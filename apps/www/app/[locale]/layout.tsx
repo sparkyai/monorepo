@@ -15,12 +15,8 @@ export const metadata: Metadata = {
     follow: true,
   },
 
-  metadataBase: new URL(www()),
   themeColor: "#1E1E1E",
-  openGraph: {
-    type: "article",
-    siteName: "Sparky",
-  },
+  metadataBase: new URL(www()),
 };
 
 type LocaleLayoutProps = PropsWithChildren<{
