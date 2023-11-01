@@ -1,5 +1,6 @@
 import type { ServerRuntime } from "next";
 import { NextResponse } from "next/server";
+import { stringify } from "qs";
 import type { StrapiEntity, StrapiEntityRelation } from "lib/utils/strapi";
 import strapi, { getEntityData } from "lib/utils/strapi";
 
@@ -20,10 +21,24 @@ export async function GET() {
     let lastPage = 1;
 
     while (page <= lastPage) {
-      // eslint-disable-next-line no-await-in-loop -- controlled
-      const { data, meta } = await strapi.get<Page[]>(
-        `${space}?fields[]=slug&fields[]=locale&&fields[]=updatedAt&populate[localizations][fields][]=slug&populate[localizations][fields][]=locale&populate[localizations][fields][]=updatedAt&pagination[page]=${page}&pagination[pageSize]=2`,
+      const query = stringify(
+        {
+          fields: ["slug", "locale", "updatedAt"],
+          populate: {
+            localizations: {
+              fields: ["slug", "locale", "updatedAt"],
+            },
+          },
+          pagination: { page },
+        },
+        {
+          skipNulls: true,
+          addQueryPrefix: true,
+          encodeValuesOnly: true,
+        },
       );
+      // eslint-disable-next-line no-await-in-loop -- controlled
+      const { data, meta } = await strapi.get<Page[]>(`${space}${query}`);
 
       for (const item of data) {
         const pageData = getEntityData(item);

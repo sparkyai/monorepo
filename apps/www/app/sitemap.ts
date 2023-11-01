@@ -1,6 +1,8 @@
-import type { MetadataRoute } from "next";
+import type { MetadataRoute, ServerRuntime } from "next";
 import { getPageMetadataCollection } from "lib/data/page";
 import { www } from "lib/utils/url";
+
+export const runtime: ServerRuntime = "edge";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pages = await getPageMetadataCollection();
