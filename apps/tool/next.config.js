@@ -2,7 +2,6 @@ const { withSentryConfig } = require("@sentry/nextjs");
 
 module.exports = withSentryConfig(
   {
-    sentry: {},
     images: {
       remotePatterns: [
         {
@@ -22,7 +21,7 @@ module.exports = withSentryConfig(
 
     // Suppresses source map uploading logs during build
     silent: true,
-    org: "sparky-03",
+    org: "sparky-ai",
     project: "tool",
   },
   {

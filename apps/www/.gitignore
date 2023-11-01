@@ -36,3 +36,6 @@ yarn-error.log*
 
 # analyzer
 /analyze
+
+# Sentry Config File
+.sentryclirc
