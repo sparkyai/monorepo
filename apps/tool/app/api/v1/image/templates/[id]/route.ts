@@ -1,18 +1,9 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { z } from "zod";
+import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
-import { base, poster, language } from "@lib/utils/schema";
 
 export const revalidate = 0;
-
-const output = base.extend({
-  model: z.nullable(z.string()),
-  poster: z.nullable(poster),
-  provider: z.string(),
-  language,
-  description: z.nullable(z.string()),
-});
 
 type TemplateProps = {
   params: {
@@ -21,29 +12,36 @@ type TemplateProps = {
 };
 
 export async function GET(_: NextRequest, props: TemplateProps) {
-  const template = await prisma.image_templates.findUniqueOrThrow({
-    where: {
-      id: parseInt(props.params.id),
-    },
-    select: {
-      id: true,
-      name: true,
-      poster: {
-        select: {
-          url: true,
-        },
+  try {
+    const role = await prisma.image_templates.findUnique({
+      where: {
+        id: parseInt(props.params.id),
       },
-      model: true,
-      provider: true,
-      language: {
-        select: {
-          code: true,
-          name: true,
+      select: {
+        id: true,
+        name: true,
+        poster: {
+          select: {
+            url: true,
+          },
         },
+        model: true,
+        provider: true,
+        language: {
+          select: {
+            code: true,
+            name: true,
+          },
+        },
+        description: true,
       },
-      description: true,
-    },
-  });
+    });
 
-  return NextResponse.json(output.parse(template));
+    return NextResponse.json({ data: role }, { status: role ? 200 : 404 });
+  } catch (error) {
+    // eslint-disable-next-line no-console -- console.error(error);
+    console.error(error);
+    Sentry.captureException(error);
+    return NextResponse.json({ error: { _errors: [] } }, { status: 500 });
+  }
 }

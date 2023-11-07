@@ -3,7 +3,7 @@ import { StreamingTextResponse } from "ai";
 import { z } from "zod";
 import { GPTChatCompletion } from "@lib/utils/langchain";
 import prisma from "@lib/utils/prisma";
-import { parameters } from "@lib/utils/schema";
+import { GPTParametersSchema } from "@lib/utils/schema";
 
 const messages = z.array(
   z.object({
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest, props: RoleProps) {
     },
   });
 
-  const stream = await GPTChatCompletion(data, parameters.parse(role.parameters));
+  const stream = await GPTChatCompletion(data, GPTParametersSchema.parse(role.parameters));
 
   request.signal.addEventListener("abort", () => {
     void stream.cancel("cancel").catch(() => void 0);

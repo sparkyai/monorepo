@@ -1,25 +1,18 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { parse } from "qs";
-import { z } from "zod";
 import prisma from "@lib/utils/prisma";
-import { base, language, query } from "@lib/utils/schema";
+import { ListQuerySchema } from "@lib/utils/schema";
+import { decoder } from "@lib/utils/qs";
 
 export const revalidate = 0;
 
-const output = z.array(
-  base.extend({
-    language,
-    templates: z.array(base),
-  }),
-);
-
 export async function GET(request: NextRequest) {
-  const params = query.parse(parse(request.nextUrl.search.slice(1)));
+  const params = ListQuerySchema.parse(parse(request.nextUrl.search.slice(1), { decoder }));
 
   const categories = await prisma.text_categories.findMany({
     take: params.limit,
-    skip: params.offset,
+    skip: params.start,
     where: {
       language: {
         code: params.locale,
@@ -48,5 +41,5 @@ export async function GET(request: NextRequest) {
     },
   });
 
-  return NextResponse.json(output.parse(categories));
+  return NextResponse.json(categories);
 }

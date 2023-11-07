@@ -1,7 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
-import chat from "./chat.json";
+import image from "./image.json";
 import text from "./text.json";
+import chat from "./chat.json";
 
 const prisma = new PrismaClient();
 
@@ -10,7 +11,7 @@ async function seed() {
     prisma.users.deleteMany(),
     prisma.images.deleteMany(),
     prisma.languages.deleteMany(),
-    prisma.telegram_clients.deleteMany(),
+    prisma.telegram_users.deleteMany(),
   ]);
 
   const languages = await prisma.$transaction(async () => {
@@ -32,10 +33,17 @@ async function seed() {
 
   await prisma.users.create({
     data: {
-      name: faker.person.firstName(),
       email: faker.internet.email(),
-      surname: faker.person.lastName(),
       password: "",
+      first_name: faker.person.firstName(),
+      last_name: faker.person.lastName(),
+    },
+  });
+
+  await prisma.telegram_users.create({
+    data: {
+      id: 0,
+      first_name: faker.person.firstName(),
     },
   });
 
@@ -45,16 +53,27 @@ async function seed() {
         data: {
           name: category.name,
           roles: {
-            create: category.roles.map((role) => ({
-              name: role.name,
-              prompt: role.prompt || "",
-              parameters: {
-                create: role.parameters,
-              },
-              language_id: getLanguageId(role.language.code),
-            })),
+            create: category.roles
+              ? category.roles.map((role) => ({
+                  name: role.name,
+                  prompt: role.prompt || "",
+                  poster: role.poster
+                    ? {
+                        create: role.poster,
+                      }
+                    : void 0,
+                  parameters: {
+                    create: role.parameters,
+                  },
+                  language: {
+                    connect: { id: getLanguageId(role.language.code) },
+                  },
+                }))
+              : [],
           },
-          language_id: getLanguageId(category.language.code),
+          language: {
+            connect: { id: getLanguageId(category.language.code) },
+          },
         },
       }),
     ),
@@ -68,50 +87,48 @@ async function seed() {
           templates: {
             create: category.templates.map((template) => ({
               name: template.name,
-              messages: {
-                create: template.messages,
+              poster: template.poster
+                ? {
+                    create: template.poster,
+                  }
+                : void 0,
+              messages: template.messages
+                ? {
+                    create: template.messages,
+                  }
+                : void 0,
+              language: {
+                connect: { id: getLanguageId(template.language.code) },
               },
               parameters: {
                 create: template.parameters,
               },
-              language_id: getLanguageId(template.language.code),
-              interactions: {
-                create: faker.helpers
-                  .multiple(
-                    () => ({
-                      type: "regenerated",
-                      client: {
-                        connectOrCreate: {
-                          where: {
-                            id: 0,
-                          },
-                          create: {
-                            id: 0,
-                          },
-                        },
-                      },
-                    }),
-                    { count: template.regenerated },
-                  )
-                  .concat(
-                    template.reactions?.map((reaction) => ({
-                      type: reaction.liked ? "like" : "dislike",
-                      client: {
-                        connectOrCreate: {
-                          where: {
-                            id: reaction.client_id,
-                          },
-                          create: {
-                            id: reaction.client_id,
-                          },
-                        },
-                      },
-                    })) || [],
-                  ),
-              },
             })),
           },
-          language_id: getLanguageId(category.language.code),
+          language: {
+            connect: { id: getLanguageId(category.language.code) },
+          },
+        },
+      }),
+    ),
+  );
+
+  await Promise.all(
+    image.map((template) =>
+      prisma.image_templates.create({
+        data: {
+          name: template.name,
+          model: template.model,
+          poster: template.poster
+            ? {
+                create: template.poster,
+              }
+            : void 0,
+          provider: template.provider,
+          language: {
+            connect: { id: getLanguageId(template.language.code) },
+          },
+          description: template.description,
         },
       }),
     ),

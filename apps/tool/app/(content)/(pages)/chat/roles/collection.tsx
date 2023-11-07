@@ -11,7 +11,6 @@ import type { ChatRole } from "@lib/actions/chat";
 import { deleteChatRole, createChatRole, updateChatRolePoster } from "@lib/actions/chat";
 import DeleteDialog from "@components/dialog/delete";
 import Edit from "@components/icon/edit";
-import AnalyticsDialog from "@components/dialog/analytics";
 import CreateDialog from "./create";
 
 type CollectionProps = {
@@ -96,7 +95,7 @@ export default function Collection(props: CollectionProps) {
               <span className="w-32 grow truncate">{role.category.name}</span>
               <span className="w-32 grow truncate">{role.language.name}</span>
               <div className="flex w-28 shrink-0 justify-end gap-2">
-                <AnalyticsDialog url={`/api/analytics/chat/roles/${role.id}`} />
+                {/*<AnalyticsDialog url={`/api/analytics/chat/roles/${role.id}`} />*/}
                 <NextLink
                   className="p-1.5 transition-colors hover:text-blue-400 active:text-blue-400"
                   href={`/chat/roles/${role.id}`}

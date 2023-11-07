@@ -9,7 +9,6 @@ import SelectField from "@components/form/select-field";
 import DeleteDialog from "@components/dialog/delete";
 import type { TextCategory } from "@lib/actions/text";
 import { createTextCategory, updateTextCategory, deleteTextCategory } from "@lib/actions/text";
-import AnalyticsDialog from "@components/dialog/analytics";
 import CreateDialog from "./create";
 import UpdateDialog from "./update";
 
@@ -75,7 +74,7 @@ export default function Collection(props: CollectionProps) {
               <span className="w-32 grow">{category.language.name}</span>
               <span className="w-32 grow">{category._count.templates}</span>
               <div className="flex w-28 shrink-0 justify-end gap-2">
-                <AnalyticsDialog url={`/api/analytics/text/categories/${category.id}`} />
+                {/*<AnalyticsDialog url={`/api/analytics/text/categories/${category.id}`} />*/}
                 <UpdateDialog
                   category={category}
                   languages={props.languages}

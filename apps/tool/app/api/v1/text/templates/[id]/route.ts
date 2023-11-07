@@ -1,19 +1,9 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { z } from "zod";
+import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
-import { base, poster, language, parameters, message } from "@lib/utils/schema";
 
 export const revalidate = 0;
-
-const output = base.extend({
-  poster: z.nullable(poster),
-  messages: z.array(message),
-  category: base,
-  language,
-  parameters,
-  description: z.nullable(z.string()),
-});
 
 type TemplateProps = {
   params: {
@@ -22,48 +12,55 @@ type TemplateProps = {
 };
 
 export async function GET(_: NextRequest, props: TemplateProps) {
-  const template = await prisma.text_templates.findUniqueOrThrow({
-    where: {
-      id: parseInt(props.params.id),
-    },
-    select: {
-      id: true,
-      name: true,
-      poster: {
-        select: {
-          url: true,
-        },
+  try {
+    const role = await prisma.text_templates.findUnique({
+      where: {
+        id: parseInt(props.params.id),
       },
-      messages: {
-        select: {
-          role: true,
-          content: true,
+      select: {
+        id: true,
+        name: true,
+        poster: {
+          select: {
+            url: true,
+          },
         },
-      },
-      category: {
-        select: {
-          id: true,
-          name: true,
+        messages: {
+          select: {
+            role: true,
+            content: true,
+          },
         },
-      },
-      language: {
-        select: {
-          code: true,
-          name: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
         },
-      },
-      parameters: {
-        select: {
-          model: true,
-          top_p: true,
-          temperature: true,
-          present_penalty: true,
-          frequency_penalty: true,
+        language: {
+          select: {
+            code: true,
+            name: true,
+          },
         },
+        parameters: {
+          select: {
+            model: true,
+            top_p: true,
+            temperature: true,
+            present_penalty: true,
+            frequency_penalty: true,
+          },
+        },
+        description: true,
       },
-      description: true,
-    },
-  });
+    });
 
-  return NextResponse.json(output.parse(template));
+    return NextResponse.json({ data: role }, { status: role ? 200 : 404 });
+  } catch (error) {
+    // eslint-disable-next-line no-console -- console.error(error);
+    console.error(error);
+    Sentry.captureException(error);
+    return NextResponse.json({ error: { _errors: [] } }, { status: 500 });
+  }
 }
