@@ -29,6 +29,9 @@ importers:
 
   apps/api:
     dependencies:
+      '@sentry/nextjs':
+        specifier: ^7.75.0
+        version: 7.75.0(next@13.4.19)(react@18.2.0)
       jose:
         specifier: ^4.14.6
         version: 4.14.6
