@@ -49,3 +49,32 @@ export const parameters = z.object({
   present_penalty: z.number().nonnegative(),
   frequency_penalty: z.number().nonnegative(),
 });
+
+export const PaginationSchema = z.object({
+  limit: z.optional(z.number().positive().int()).default(20),
+  start: z.optional(z.number().nonnegative().int()).default(0),
+});
+
+export const LanguageSchema = z.object({
+  code: z.string(),
+  name: z.string(),
+});
+
+export const ListQuerySchema = PaginationSchema.extend({
+  locale: z.optional(LanguageSchema.shape.code),
+});
+
+export const UserSchema = z.object({
+  id: z.bigint().or(z.number().int()),
+  language: z.optional(z.string().length(2)),
+  first_name: z.string().min(1),
+  last_name: z.optional(z.string().min(1)),
+});
+
+export const PaymentSchema = z.object({
+  id: z.string().uuid(),
+  amount: z.number().nonnegative(),
+  tokens: z.number().nonnegative(),
+  status: z.enum(["reversed", "created", "success", "failure", "expired", "hold"]).default("created"),
+  provider: z.string().min(1),
+});

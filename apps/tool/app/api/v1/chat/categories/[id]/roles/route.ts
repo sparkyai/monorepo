@@ -8,7 +8,22 @@ import { decoder } from "@lib/utils/qs";
 
 export const revalidate = 0;
 
-export async function GET(request: NextRequest) {
+type CategoryProps = {
+  params: {
+    id: string;
+  };
+};
+
+export async function GET(request: NextRequest, props: CategoryProps) {
+  const category = await prisma.chat_categories.findUnique({
+    where: { id: parseInt(props.params.id) },
+    select: { id: true },
+  });
+
+  if (!category) {
+    return NextResponse.json({ data: category }, { status: 404 });
+  }
+
   const params = ListQuerySchema.safeParse(parse(request.nextUrl.search.slice(1), { decoder }));
 
   if (!params.success) {
@@ -17,17 +32,19 @@ export async function GET(request: NextRequest) {
 
   try {
     const [total, data] = await Promise.all([
-      prisma.chat_categories.count({
+      prisma.chat_roles.count({
         where: {
+          category,
           language: {
             code: params.data.locale,
           },
         },
       }),
-      prisma.chat_categories.findMany({
+      prisma.chat_roles.findMany({
         take: params.data.limit,
         skip: params.data.start,
         where: {
+          category,
           language: {
             code: params.data.locale,
           },

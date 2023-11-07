@@ -10,7 +10,7 @@ async function seed() {
     prisma.users.deleteMany(),
     prisma.images.deleteMany(),
     prisma.languages.deleteMany(),
-    prisma.telegram_clients.deleteMany(),
+    prisma.telegram_users.deleteMany(),
   ]);
 
   const languages = await prisma.$transaction(async () => {
@@ -32,10 +32,17 @@ async function seed() {
 
   await prisma.users.create({
     data: {
-      name: faker.person.firstName(),
       email: faker.internet.email(),
-      surname: faker.person.lastName(),
       password: "",
+      first_name: faker.person.firstName(),
+      last_name: faker.person.lastName(),
+    },
+  });
+
+  await prisma.telegram_users.create({
+    data: {
+      id: 0,
+      first_name: faker.person.firstName(),
     },
   });
 
@@ -75,40 +82,6 @@ async function seed() {
                 create: template.parameters,
               },
               language_id: getLanguageId(template.language.code),
-              interactions: {
-                create: faker.helpers
-                  .multiple(
-                    () => ({
-                      type: "regenerated",
-                      client: {
-                        connectOrCreate: {
-                          where: {
-                            id: 0,
-                          },
-                          create: {
-                            id: 0,
-                          },
-                        },
-                      },
-                    }),
-                    { count: template.regenerated },
-                  )
-                  .concat(
-                    template.reactions?.map((reaction) => ({
-                      type: reaction.liked ? "like" : "dislike",
-                      client: {
-                        connectOrCreate: {
-                          where: {
-                            id: reaction.client_id,
-                          },
-                          create: {
-                            id: reaction.client_id,
-                          },
-                        },
-                      },
-                    })) || [],
-                  ),
-              },
             })),
           },
           language_id: getLanguageId(category.language.code),

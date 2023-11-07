@@ -11,26 +11,31 @@ datasource db {
 }
 
 model users {
-  id       Int    @id @default(autoincrement())
-  name     String
-  email    String @unique
-  surname  String
-  password String
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  password   String
+  first_name String
+  last_name  String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([first_name, last_name])
 }
 
 model languages {
   id              Int               @id @default(autoincrement())
   name            String            @unique
   code            String            @unique @db.VarChar(2)
-  roles           chat_roles[]
+  chat_roles      chat_roles[]
   text_templates  text_templates[]
+  telegram_users  telegram_users[]
   text_categories text_categories[]
   image_templates image_templates[]
   chat_categories chat_categories[]
 }
 
 model images {
-  id              BigInt            @id @default(autoincrement())
+  id              String            @id @default(uuid()) @db.Uuid
   url             String
   created_at      DateTime          @default(now())
   updated_at      DateTime          @updatedAt
@@ -39,50 +44,104 @@ model images {
   image_templates image_templates[]
 }
 
-model telegram_clients {
-  id                          BigInt                        @id
-  created_at                  DateTime                      @default(now())
-  updated_at                  DateTime                      @updatedAt
-  chat_role_interactions      chat_role_interactions[]
-  text_template_interactions  text_template_interactions[]
-  image_template_interactions image_template_interactions[]
+enum payment_status {
+  reversed
+  created
+  success
+  failure
+  expired
+  hold
+}
+
+model payments {
+  id         String         @id @default(uuid()) @db.Uuid
+  user       telegram_users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id    BigInt
+  amount     Int
+  tokens     Int
+  status     payment_status
+  provider   String?
+  created_at DateTime       @default(now())
+  updated_at DateTime       @unique @updatedAt
+  expired_at DateTime?
+
+  @@index([status, provider])
+}
+
+model telegram_users {
+  id                       BigInt                     @id
+  language                 languages?                 @relation(fields: [language_id], references: [id], onDelete: SetNull)
+  payments                 payments[]
+  language_id              Int?
+  first_name               String
+  last_name                String?
+  created_at               DateTime                   @default(now())
+  updated_at               DateTime                   @updatedAt
+  referrer                 telegram_users?            @relation("referrer", fields: [referrer_id], references: [id], onDelete: SetNull)
+  referrer_id              BigInt?
+  referrals                telegram_users[]           @relation("referrer")
+  chat_role_usage          chat_role_usage[]
+  text_template_usage      text_template_usage[]
+  image_template_usage     image_template_usage[]
+  chat_role_reactions      chat_role_reactions[]
+  text_template_reactions  text_template_reactions[]
+  image_template_reactions image_template_reactions[]
+
+  @@index([first_name, last_name])
 }
 
 model chat_roles {
-  id           Int                      @id @default(autoincrement())
-  name         String
-  prompt       String                   @default("")
-  poster       images?                  @relation(fields: [poster_id], references: [id], onDelete: SetNull)
-  poster_id    BigInt?
-  category     chat_categories          @relation(fields: [category_id], references: [id], onDelete: Cascade)
-  category_id  Int
-  language     languages                @relation(fields: [language_id], references: [id], onDelete: Cascade)
-  language_id  Int
-  parameters   chat_role_parameters?
-  description  String?
-  interactions chat_role_interactions[]
+  id          Int                   @id @default(autoincrement())
+  name        String                @unique
+  usage       chat_role_usage[]
+  prompt      String                @default("")
+  poster      images?               @relation(fields: [poster_id], references: [id], onDelete: SetNull)
+  poster_id   String?               @db.Uuid
+  category    chat_categories       @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  category_id Int
+  language    languages             @relation(fields: [language_id], references: [id], onDelete: Cascade)
+  language_id Int
+  reactions   chat_role_reactions[]
+  parameters  chat_role_parameters?
+  description String?
+}
+
+model chat_role_usage {
+  id         String         @id @default(uuid()) @db.Uuid
+  type       String
+  role       chat_roles     @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  role_id    Int
+  user       telegram_users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id    BigInt
+  tokens     Int
+  created_at DateTime       @default(now())
+
+  @@index([type])
 }
 
 model chat_role_parameters {
   id                Int        @id @default(autoincrement())
   role              chat_roles @relation(fields: [role_id], references: [id], onDelete: Cascade)
   role_id           Int        @unique
-  model             String     @default("gpt-3.5-turbo")
+  model             String
   top_p             Float      @default(1)
   temperature       Float      @default(1)
   present_penalty   Float      @default(0)
   frequency_penalty Float      @default(0)
 }
 
-model chat_role_interactions {
-  id         Int              @id @default(autoincrement())
+model chat_role_reactions {
+  id         Int            @id @default(autoincrement())
   type       String
-  role       chat_roles       @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  user       telegram_users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id    BigInt
+  role       chat_roles     @relation(fields: [role_id], references: [id], onDelete: Cascade)
   role_id    Int
-  client     telegram_clients @relation(fields: [client_id], references: [id], onDelete: Cascade)
-  client_id  BigInt
-  created_at DateTime         @default(now())
-  updated_at DateTime         @updatedAt
+  created_at DateTime       @default(now())
+  updated_at DateTime       @updatedAt
+
+  @@unique([user_id, role_id])
+  @@index([type])
 }
 
 model chat_categories {
@@ -94,23 +153,37 @@ model chat_categories {
 }
 
 model text_templates {
-  id           Int                          @id @default(autoincrement())
-  name         String
-  poster       images?                      @relation(fields: [poster_id], references: [id], onDelete: SetNull)
-  poster_id    BigInt?
-  messages     text_template_messages[]
-  category     text_categories              @relation(fields: [category_id], references: [id], onDelete: Cascade)
-  category_id  Int
-  language     languages                    @relation(fields: [language_id], references: [id], onDelete: Cascade)
-  language_id  Int
-  parameters   text_template_parameters?
-  description  String?
-  interactions text_template_interactions[]
+  id          Int                       @id @default(autoincrement())
+  name        String                    @unique
+  usage       text_template_usage[]
+  poster      images?                   @relation(fields: [poster_id], references: [id], onDelete: SetNull)
+  poster_id   String?                   @db.Uuid
+  messages    text_template_messages[]
+  category    text_categories           @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  category_id Int
+  language    languages                 @relation(fields: [language_id], references: [id], onDelete: Cascade)
+  language_id Int
+  reactions   text_template_reactions[]
+  parameters  text_template_parameters?
+  description String?
+}
+
+model text_template_usage {
+  id          String         @id @default(uuid()) @db.Uuid
+  type        String
+  user        telegram_users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id     BigInt
+  tokens      Int
+  template    text_templates @relation(fields: [template_id], references: [id], onDelete: Cascade)
+  template_id Int
+  created_at  DateTime       @default(now())
+
+  @@index([type])
 }
 
 model text_template_parameters {
   id                Int            @id @default(autoincrement())
-  model             String         @default("gpt-3.5-turbo")
+  model             String
   top_p             Float          @default(1)
   template          text_templates @relation(fields: [template_id], references: [id], onDelete: Cascade)
   template_id       Int            @unique
@@ -120,24 +193,27 @@ model text_template_parameters {
 }
 
 model text_template_messages {
-  id           BigInt         @id @default(autoincrement())
-  role         String
-  content      String
-  template     text_templates @relation(fields: [templates_id], references: [id], onDelete: Cascade)
-  templates_id Int
-  created_at   DateTime       @default(now())
-  updated_at   DateTime       @updatedAt
+  id          BigInt         @id @default(autoincrement())
+  role        String
+  content     String
+  template    text_templates @relation(fields: [template_id], references: [id], onDelete: Cascade)
+  template_id Int
+  created_at  DateTime       @default(now())
+  updated_at  DateTime       @updatedAt
 }
 
-model text_template_interactions {
-  id          Int              @id @default(autoincrement())
+model text_template_reactions {
+  id          Int            @id @default(autoincrement())
   type        String
-  client      telegram_clients @relation(fields: [client_id], references: [id], onDelete: Cascade)
-  client_id   BigInt
-  template    text_templates   @relation(fields: [template_id], references: [id], onDelete: Cascade)
+  user        telegram_users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id     BigInt
+  template    text_templates @relation(fields: [template_id], references: [id], onDelete: Cascade)
   template_id Int
-  created_at  DateTime         @default(now())
-  updated_at  DateTime         @updatedAt
+  created_at  DateTime       @default(now())
+  updated_at  DateTime       @updatedAt
+
+  @@unique([user_id, template_id])
+  @@index([type])
 }
 
 model text_categories {
@@ -149,25 +225,45 @@ model text_categories {
 }
 
 model image_templates {
-  id           Int                           @id @default(autoincrement())
-  name         String
+  id           Int                        @id @default(autoincrement())
+  name         String                     @unique
   model        String?
-  poster       images?                       @relation(fields: [poster_id], references: [id], onDelete: SetNull)
-  poster_id    BigInt?
+  usage        image_template_usage[]
+  poster       images?                    @relation(fields: [poster_id], references: [id], onDelete: SetNull)
+  poster_id    String?                    @db.Uuid
   provider     String
-  language     languages                     @relation(fields: [languages_id], references: [id], onDelete: Cascade)
+  language     languages                  @relation(fields: [languages_id], references: [id], onDelete: Cascade)
   languages_id Int
+  reactions    image_template_reactions[]
   description  String?
-  interactions image_template_interactions[]
+
+  @@index([provider])
 }
 
-model image_template_interactions {
-  id          Int              @id @default(autoincrement())
+model image_template_usage {
+  id          String          @id @default(uuid()) @db.Uuid
   type        String
-  client      telegram_clients @relation(fields: [client_id], references: [id], onDelete: Cascade)
-  client_id   BigInt
-  template    image_templates  @relation(fields: [template_id], references: [id], onDelete: Cascade)
+  user        telegram_users  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id     BigInt
+  tokens      Int
+  template    image_templates @relation(fields: [template_id], references: [id], onDelete: Cascade)
   template_id Int
-  created_at  DateTime         @default(now())
-  updated_at  DateTime         @updatedAt
+  resolution  String
+  created_at  DateTime        @default(now())
+
+  @@index([type])
+}
+
+model image_template_reactions {
+  id          Int             @id @default(autoincrement())
+  type        String
+  user        telegram_users  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id     BigInt
+  template    image_templates @relation(fields: [template_id], references: [id], onDelete: Cascade)
+  template_id Int
+  created_at  DateTime        @default(now())
+  updated_at  DateTime        @updatedAt
+
+  @@unique([user_id, template_id])
+  @@index([type])
 }

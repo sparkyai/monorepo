@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react";
 
 type ProfileProps = {
   user: {
-    name: string;
-    surname: string;
+    first_name: string;
+    last_name: string;
   };
 };
 
@@ -37,12 +37,12 @@ export default function Profile(props: ProfileProps) {
         onClick={onClick}
         type="button"
       >
-        {props.user.name} {props.user.surname}
+        {props.user.first_name} {props.user.last_name}
       </button>
       <div className="flex h-9 w-9 rounded-full bg-slate-700">
         <span className="m-auto font-bold uppercase tracking-wider">
-          {props.user.name[0]}
-          {props.user.surname[0]}
+          {props.user.first_name[0]}
+          {props.user.last_name[0]}
         </span>
       </div>
       {isOpen && (

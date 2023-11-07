@@ -1,19 +1,9 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { z } from "zod";
+import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
-import { base, language, parameters, poster } from "@lib/utils/schema";
 
 export const revalidate = 0;
-
-const output = base.extend({
-  poster: z.nullable(poster),
-  prompt: z.string(),
-  category: base,
-  language,
-  parameters,
-  description: z.nullable(z.string()),
-});
 
 type RoleProps = {
   params: {
@@ -22,43 +12,50 @@ type RoleProps = {
 };
 
 export async function GET(_: NextRequest, props: RoleProps) {
-  const role = await prisma.chat_roles.findUniqueOrThrow({
-    where: {
-      id: parseInt(props.params.id),
-    },
-    select: {
-      id: true,
-      name: true,
-      poster: {
-        select: {
-          url: true,
-        },
+  try {
+    const role = await prisma.chat_roles.findUnique({
+      where: {
+        id: parseInt(props.params.id),
       },
-      prompt: true,
-      category: {
-        select: {
-          id: true,
-          name: true,
+      select: {
+        id: true,
+        name: true,
+        poster: {
+          select: {
+            url: true,
+          },
         },
-      },
-      language: {
-        select: {
-          code: true,
-          name: true,
+        prompt: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
         },
-      },
-      parameters: {
-        select: {
-          model: true,
-          top_p: true,
-          temperature: true,
-          present_penalty: true,
-          frequency_penalty: true,
+        language: {
+          select: {
+            code: true,
+            name: true,
+          },
         },
+        parameters: {
+          select: {
+            model: true,
+            top_p: true,
+            temperature: true,
+            present_penalty: true,
+            frequency_penalty: true,
+          },
+        },
+        description: true,
       },
-      description: true,
-    },
-  });
+    });
 
-  return NextResponse.json(output.parse(role));
+    return NextResponse.json({ data: role }, { status: role ? 200 : 404 });
+  } catch (error) {
+    // eslint-disable-next-line no-console -- console.error(error);
+    console.error(error);
+    Sentry.captureException(error);
+    return NextResponse.json({ error: { _errors: [] } }, { status: 500 });
+  }
 }
