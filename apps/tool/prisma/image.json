@@ -1,0 +1,288 @@
+[
+  {
+    "name": "DreamShaper",
+    "model": "ac614f96-1082-45bf-be9d-757f2d31c174",
+    "provider": "Leonardo",
+    "description": "Ваш личный ИИ-дизайнер. От блогерских визуалов до маркетинговых материалов, создавайте уникальный контент, который расскажет вашу историю и привлечет аудиторию. Скорость, стиль и инновации для каждого поста, страницы и кампании.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-7-poster"
+    },
+    "language": {
+      "code": "ru",
+      "name": "Русский"
+    }
+  },
+  {
+    "name": "Leonardo Vision XL",
+    "model": "5c232a9e-9061-4777-980a-ddc8e65647c6",
+    "provider": "Leonardo",
+    "description": "Универсальная модель для создания реалистичных изображений и фотографии. Для лучших результатов используйте более длинные запросы. Подходит для фотореализма, визуальных эффектов и других областей, требующих высокого качества.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-3-poster"
+    },
+    "language": {
+      "code": "ru",
+      "name": "Русский"
+    }
+  },
+  {
+    "name": "Leonardo Diffusion",
+    "model": "1e60896f-3c26-4296-8ecc-53e2afecc132",
+    "provider": "Leonardo",
+    "description": "Инновации в каждом пикселе. Перевоплотите свои самые смелые маркетинговые идеи в реальность, создавая изображения, которые не только привлекают взгляд, но и мотивируют к действию.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-5-poster"
+    },
+    "language": {
+      "code": "ru",
+      "name": "Русский"
+    }
+  },
+  {
+    "name": "Anime Pastel Dream",
+    "model": "1aa0f478-51be-4efd-94e8-76bfc8f533af",
+    "provider": "Leonardo",
+    "description": "От тонких акварельных линий до ярких киберпанк-городов — Anime Pastel Dream предоставляет неограниченное разнообразие для иллюстраций аниме, сочетая качество и мастерство в каждом изображении.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-2-poster"
+    },
+    "language": {
+      "code": "ru",
+      "name": "Русский"
+    }
+  },
+  {
+    "name": "Magic Items",
+    "model": "2d18c0af-374e-4391-9ca2-639f59837c85",
+    "provider": "Leonardo",
+    "description": "Ваш источник волшебных визуалов. Дайте волю своему воображению и преобразуйте любую идею в магнетические изображения, которые притягивают взгляды.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-6-poster"
+    },
+    "language": {
+      "code": "ru",
+      "name": "Русский"
+    }
+  },
+  {
+    "name": "Leonardo Vision XL",
+    "model": "5c232a9e-9061-4777-980a-ddc8e65647c6",
+    "provider": "Leonardo",
+    "description": "Універсальна модель для створення реалістичних зображень і фотографії. Для найкращих результатів використовуйте більш довгі запити. Підходить для фотореалізму, візуальних ефектів та інших галузей, які вимагають високої якості.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-12-poster"
+    },
+    "language": {
+      "code": "uk",
+      "name": "Українська"
+    }
+  },
+  {
+    "name": "DreamShaper v7",
+    "model": "ac614f96-1082-45bf-be9d-757f2d31c174",
+    "provider": "Leonardo",
+    "description": "Lykon повернувся з ще одним оновленням. Це потужний інструмент, здатний аналізувати різні стилі та елементи для створення зображень, що відповідають цим стилям. Це корисне рішення для художників, дизайнерів та креативних професіоналів, яке дозволяє легко генерувати зображення, відповідні їх потребам.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-8-poster"
+    },
+    "language": {
+      "code": "uk",
+      "name": "Українська"
+    }
+  },
+  {
+    "name": "Magic Items",
+    "model": "2d18c0af-374e-4391-9ca2-639f59837c85",
+    "provider": "Leonardo",
+    "description": "Create a variety of magical items, including weapons, shields, boots, and books. This is a versatile solution for your magical needs.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-15-poster"
+    },
+    "language": {
+      "code": "en",
+      "name": "English"
+    }
+  },
+  {
+    "name": "Magic Items",
+    "model": "2d18c0af-374e-4391-9ca2-639f59837c85",
+    "provider": "Leonardo",
+    "description": "Створюйте різноманітні магічні предмети, включаючи зброю, щити, взуття та книги. Це універсальне рішення для вашого магічного споживання.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-9-poster"
+    },
+    "language": {
+      "code": "uk",
+      "name": "Українська"
+    }
+  },
+  {
+    "name": "Anime Pastel Dream",
+    "model": "1aa0f478-51be-4efd-94e8-76bfc8f533af",
+    "provider": "Leonardo",
+    "description": "Для почитателів аніме є можливість використовувати пастельний аніме-стиль спільно з PMv3 та аніме-пресетом, який надається моделлю Lykon. Пастельні кольори та аніме-стиль зазвичай створюють ніжні та милі зображення, що може бути цікавим для художників та дизайнерів.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-13-poster"
+    },
+    "language": {
+      "code": "uk",
+      "name": "Українська"
+    }
+  },
+  {
+    "name": "Leonardo Diffusion XL",
+    "model": "1e60896f-3c26-4296-8ecc-53e2afecc132",
+    "provider": "Leonardo",
+    "description": "Наступна фаза базової моделі Leonardo. Вражаючі результати навіть при коротких запитах.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-10-poster"
+    },
+    "language": {
+      "code": "uk",
+      "name": "Українська"
+    }
+  },
+  {
+    "name": "Absolute Reality v1.6",
+    "model": "e316348f-7773-490e-adcd-46757c738eb7",
+    "provider": "Leonardo",
+    "description": "Модель фотореализма от Lykon — ідеальний вибір для створення реалістичних ілюстрацій, візуальних ефектів та інших творчих проектів. Вона забезпечує високу деталізацію та якість, що сприяє втіленню найреалістичніших ідей.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-11-poster"
+    },
+    "language": {
+      "code": "uk",
+      "name": "Українська"
+    }
+  },
+  {
+    "name": "Leonardo Diffusion XL",
+    "model": "1e60896f-3c26-4296-8ecc-53e2afecc132",
+    "provider": "Leonardo",
+    "description": "The next phase of the base model Leonardo. Impressive results even with short prompts.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-16-poster"
+    },
+    "language": {
+      "code": "en",
+      "name": "English"
+    }
+  },
+  {
+    "name": "DreamShaper v7",
+    "model": "ac614f96-1082-45bf-be9d-757f2d31c174",
+    "provider": "Leonardo",
+    "description": "Lykon is back with another update. This is a powerful tool capable of analyzing various styles and elements to create images that match these styles. It's a valuable solution for artists, designers, and creative professionals, enabling them to easily generate images that suit their needs.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-14-poster"
+    },
+    "language": {
+      "code": "en",
+      "name": "English"
+    }
+  },
+  {
+    "name": "Absolute Reality",
+    "model": "e316348f-7773-490e-adcd-46757c738eb7",
+    "provider": "Leonardo",
+    "description": "The photorealism model by Lykon is an excellent choice for creating realistic illustrations, visual effects, and other creative projects. It provides high levels of detail and quality, helping bring the most realistic ideas to life.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-17-poster"
+    },
+    "language": {
+      "code": "en",
+      "name": "English"
+    }
+  },
+  {
+    "name": "Leonardo Vision XL",
+    "model": "5c232a9e-9061-4777-980a-ddc8e65647c6",
+    "provider": "Leonardo",
+    "description": "A versatile model for creating realistic images and photography. For best results, use longer prompts. Suitable for photorealism, visual effects, and other fields that require high quality.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-18-poster"
+    },
+    "language": {
+      "code": "en",
+      "name": "English"
+    }
+  },
+  {
+    "name": "Anime Pastel Dream",
+    "model": "1aa0f478-51be-4efd-94e8-76bfc8f533af",
+    "provider": "Leonardo",
+    "description": "For anime enthusiasts, there are opportunities to use a pastel anime style in conjunction with PMv3 and the anime preset provided by the Lykon model. Pastel colors and anime style typically create delicate and cute images, which can be of interest to artists and designers.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-19-poster"
+    },
+    "language": {
+      "code": "en",
+      "name": "English"
+    }
+  },
+  {
+    "name": "Absolute Reality",
+    "model": "e316348f-7773-490e-adcd-46757c738eb7",
+    "provider": "Leonardo",
+    "description": "Реализуйте свой креативный замысел быстро и без лишних расходов. Absolute Reality дает вам силу создавать впечатляющие реалистичные фото и иллюстрации, ускоряя ваш творческий процесс.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-4-poster"
+    },
+    "language": {
+      "code": "ru",
+      "name": "Русский"
+    }
+  },
+  {
+    "name": "Dream Sculptor",
+    "model": "ac614f96-1082-45bf-be9d-757f2d31c174",
+    "provider": "Leonardo",
+    "description": "Каждое из этих произведений искусства создано искусственным интеллектом, и каждое предлагает уникальный взгляд на мир, где границы реальности и фантазии стираются.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-20-poster"
+    },
+    "language": {
+      "code": "ru",
+      "name": "Русский"
+    }
+  },
+  {
+    "name": "3D Animation Style",
+    "model": "d69c8273-6b17-4a30-a13e-d6637ae1c644",
+    "provider": "Leonardo",
+    "description": "Эта мощная модель идеально подходит для создания фотореалистичных 3D-изображений и сцен, предлагая беспрецедентный уровень детализации и реализма. Она разработана для профессионалов в области визуальных эффектов, архитектурной визуализации и других сфер, где важно внимание к мелочам.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-21-poster"
+    },
+    "language": {
+      "code": "ru",
+      "name": "Русский"
+    }
+  },
+  {
+    "name": "Pixel Art",
+    "model": "e5a291b6-3990-495a-b1fa-7bd1864510a6",
+    "provider": "Leonardo",
+    "description": "Pixel Art вдыхает новую жизнь в классическое искусство 8-битной эры, приглашая вас воссоздать ностальгическую атмосферу ретро-игр и стилизованной графики с современным подходом.Дайте волю своему творчеству, создавая комплексные и выразительные пиксельные произведения искусства.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-22-poster"
+    },
+    "language": {
+      "code": "ru",
+      "name": "Русский"
+    }
+  },
+  {
+    "name": "Artifex Visio",
+    "model": "458ecfff-f76c-402c-8b85-f09f6fb198de",
+    "provider": "Leonardo",
+    "description": "Эта модель раскрывает безграничные возможности для создания персонажей и сцен, полных характера и атмосферы. С его помощью вы сможете легко интегрировать сложные элементы и темы в свои проекты, создавая произведения, которые будут вызывать восхищение у аудитории и устанавливать новые стандарты в мире цифрового дизайна.",
+    "poster": {
+      "url": "https://tool-aws-s3-frankfurt-bucket.s3.eu-central-1.amazonaws.com/image-template-23-poster"
+    },
+    "language": {
+      "code": "ru",
+      "name": "Русский"
+    }
+  }
+]

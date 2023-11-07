@@ -62,7 +62,7 @@ model payments {
   status     payment_status
   provider   String?
   created_at DateTime       @default(now())
-  updated_at DateTime       @unique @updatedAt
+  updated_at DateTime       @updatedAt
   expired_at DateTime?
 
   @@index([status, provider])
@@ -92,7 +92,7 @@ model telegram_users {
 
 model chat_roles {
   id          Int                   @id @default(autoincrement())
-  name        String                @unique
+  name        String
   usage       chat_role_usage[]
   prompt      String                @default("")
   poster      images?               @relation(fields: [poster_id], references: [id], onDelete: SetNull)
@@ -146,7 +146,7 @@ model chat_role_reactions {
 
 model chat_categories {
   id          Int          @id @default(autoincrement())
-  name        String       @unique
+  name        String
   roles       chat_roles[]
   language    languages    @relation(fields: [language_id], references: [id], onDelete: Cascade)
   language_id Int
@@ -154,7 +154,7 @@ model chat_categories {
 
 model text_templates {
   id          Int                       @id @default(autoincrement())
-  name        String                    @unique
+  name        String
   usage       text_template_usage[]
   poster      images?                   @relation(fields: [poster_id], references: [id], onDelete: SetNull)
   poster_id   String?                   @db.Uuid
@@ -218,24 +218,24 @@ model text_template_reactions {
 
 model text_categories {
   id          Int              @id @default(autoincrement())
-  name        String           @unique
+  name        String
   language    languages        @relation(fields: [language_id], references: [id], onDelete: Cascade)
   language_id Int
   templates   text_templates[]
 }
 
 model image_templates {
-  id           Int                        @id @default(autoincrement())
-  name         String                     @unique
-  model        String?
-  usage        image_template_usage[]
-  poster       images?                    @relation(fields: [poster_id], references: [id], onDelete: SetNull)
-  poster_id    String?                    @db.Uuid
-  provider     String
-  language     languages                  @relation(fields: [languages_id], references: [id], onDelete: Cascade)
-  languages_id Int
-  reactions    image_template_reactions[]
-  description  String?
+  id          Int                        @id @default(autoincrement())
+  name        String
+  model       String?
+  usage       image_template_usage[]
+  poster      images?                    @relation(fields: [poster_id], references: [id], onDelete: SetNull)
+  poster_id   String?                    @db.Uuid
+  provider    String
+  language    languages                  @relation(fields: [language_id], references: [id], onDelete: Cascade)
+  language_id Int
+  reactions   image_template_reactions[]
+  description String?
 
   @@index([provider])
 }
