@@ -9,7 +9,6 @@ import SelectField from "@components/form/select-field";
 import type { ChatCategory } from "@lib/actions/chat";
 import { createChatCategory, deleteChatCategory, updateChatCategory } from "@lib/actions/chat";
 import DeleteDialog from "@components/dialog/delete";
-import AnalyticsDialog from "@components/dialog/analytics";
 import CreateDialog from "./create";
 import UpdateDialog from "./update";
 
@@ -75,7 +74,7 @@ export default function Collection(props: CollectionProps) {
               <span className="w-32 grow">{category.language.name}</span>
               <span className="w-32 grow">{category._count.roles}</span>
               <div className="flex w-28 shrink-0 justify-end gap-2">
-                <AnalyticsDialog url={`/api/analytics/chat/categories/${category.id}`} />
+                {/*<AnalyticsDialog url={`/api/analytics/chat/categories/${category.id}`} />*/}
                 <UpdateDialog
                   category={category}
                   languages={props.languages}

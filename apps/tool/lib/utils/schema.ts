@@ -1,40 +1,5 @@
 import { z } from "zod";
 
-export const query = z.object({
-  limit: z.optional(
-    z
-      .string()
-      .transform((val) => parseInt(val))
-      .refine((val) => val >= 0),
-  ),
-  offset: z.optional(
-    z
-      .string()
-      .transform((val) => parseInt(val))
-      .refine((val) => val >= 0),
-  ),
-  locale: z.optional(z.string()),
-});
-
-export const base = z.object({
-  id: z.number().positive(),
-  name: z.string(),
-});
-
-export const language = z.object({
-  code: z.string(),
-  name: z.string(),
-});
-
-export const message = z.object({
-  role: z.string(),
-  content: z.string(),
-});
-
-export const poster = z.object({
-  url: z.string().url(),
-});
-
 export const interaction = z.object({
   type: z.enum(["like", "dislike", "generate", "regenerate"]),
   client: z.object({
@@ -42,22 +7,14 @@ export const interaction = z.object({
   }),
 });
 
-export const parameters = z.object({
-  model: z.string(),
-  top_p: z.number().nonnegative(),
-  temperature: z.number().nonnegative(),
-  present_penalty: z.number().nonnegative(),
-  frequency_penalty: z.number().nonnegative(),
+export const LanguageSchema = z.object({
+  code: z.string(),
+  name: z.string(),
 });
 
 export const PaginationSchema = z.object({
   limit: z.optional(z.number().positive().int()).default(20),
   start: z.optional(z.number().nonnegative().int()).default(0),
-});
-
-export const LanguageSchema = z.object({
-  code: z.string(),
-  name: z.string(),
 });
 
 export const ListQuerySchema = PaginationSchema.extend({
@@ -77,4 +34,29 @@ export const PaymentSchema = z.object({
   tokens: z.number().nonnegative(),
   status: z.enum(["reversed", "created", "success", "failure", "expired", "hold"]).default("created"),
   provider: z.string().min(1),
+});
+
+export const ImageSchema = z.object({
+  url: z.string().url(),
+});
+
+export const GPTParametersSchema = z.object({
+  model: z.string(),
+  top_p: z.number().min(0).max(1),
+  temperature: z.number().min(0).max(1),
+  present_penalty: z.number().min(0).max(1),
+  frequency_penalty: z.number().min(0).max(1),
+});
+
+export const ChatRoleSchema = z.object({
+  id: z.number().positive(),
+  name: z.number().min(1),
+  // usage: 1,
+  prompt: z.string(),
+  poster: z.optional(ImageSchema),
+  // category: 1,
+  // language: 1,
+  // reactions: 1,
+  parameters: z.optional(GPTParametersSchema),
+  // description: 1,
 });

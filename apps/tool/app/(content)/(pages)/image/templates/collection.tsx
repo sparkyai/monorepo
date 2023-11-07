@@ -14,7 +14,6 @@ import {
   deleteImageTemplate,
   updateImageTemplatePoster,
 } from "@lib/actions/image";
-import AnalyticsDialog from "@components/dialog/analytics";
 import CreateDialog from "./create";
 import UpdateDialog from "./update";
 
@@ -98,7 +97,7 @@ export default function Collection(props: CollectionProps) {
               <span className="w-32 grow">{template.language.name}</span>
               <span className="w-32 grow">{template.provider}</span>
               <div className="flex w-28 shrink-0 justify-end gap-2">
-                <AnalyticsDialog url={`/api/analytics/image/templates/${template.id}`} />
+                {/*<AnalyticsDialog url={`/api/analytics/image/templates/${template.id}`} />*/}
                 <UpdateDialog
                   languages={props.languages}
                   leonardo={props.leonardo}
