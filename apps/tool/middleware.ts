@@ -5,7 +5,7 @@ import { jwtVerify } from "jose";
 const JWT_KEY = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export const config = {
-  matcher: ["/categories", "/templates", "/image"],
+  matcher: ["/api/categories/:path*", "/api/templates/:path*", "/api/v1/:path*"],
 };
 
 export default async function middleware(request: NextRequest) {
@@ -20,5 +20,5 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  return new NextResponse("Unauthorized", { status: 401 });
+  return NextResponse.json({ error: { _errors: ["Unauthorized"] } }, { status: 401 });
 }
