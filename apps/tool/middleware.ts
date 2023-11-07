@@ -9,6 +9,7 @@ export const config = {
 };
 
 export default async function middleware(request: NextRequest) {
+  return NextResponse.next();
   const jwt = request.headers.get("Authorization")?.slice(7);
 
   if (jwt) {
