@@ -68,6 +68,7 @@ async function seed() {
                   language: {
                     connect: { id: getLanguageId(role.language.code) },
                   },
+                  description: role.description,
                 }))
               : [],
           },
@@ -103,6 +104,7 @@ async function seed() {
               parameters: {
                 create: template.parameters,
               },
+              description: template.description,
             })),
           },
           language: {
