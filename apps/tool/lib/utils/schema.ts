@@ -46,9 +46,9 @@ export const ImageSchema = z.object({
 export const GPTParametersSchema = z.object({
   model: z.string(),
   top_p: z.number().min(0).max(1),
-  temperature: z.number().min(0).max(1),
-  present_penalty: z.number().min(0).max(1),
-  frequency_penalty: z.number().min(0).max(1),
+  temperature: z.number().min(0).max(2),
+  present_penalty: z.number().min(0).max(2),
+  frequency_penalty: z.number().min(0).max(2),
 });
 
 export const ChatRoleSchema = z.object({
