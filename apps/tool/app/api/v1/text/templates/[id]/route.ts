@@ -2,6 +2,8 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
+import { getPosterUrl } from "@lib/utils/data";
+import { getTemplateParameters } from "@lib/utils/model";
 
 export const revalidate = 0;
 
@@ -13,16 +15,19 @@ type TemplateProps = {
 
 export async function GET(_: NextRequest, props: TemplateProps) {
   try {
-    const role = await prisma.text_templates.findUnique({
+    const template = await prisma.text_templates.findUnique({
       where: {
-        id: parseInt(props.params.id),
+        id: Number(props.params.id),
       },
       select: {
         id: true,
         name: true,
         poster: {
           select: {
-            url: true,
+            mime: true,
+            width: true,
+            height: true,
+            pathname: true,
           },
         },
         messages: {
@@ -56,7 +61,17 @@ export async function GET(_: NextRequest, props: TemplateProps) {
       },
     });
 
-    return NextResponse.json({ data: role }, { status: role ? 200 : 404 });
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- -
+    // @ts-expect-error
+    template.input = getTemplateParameters(template.messages);
+
+    if (template?.poster) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- -
+      // @ts-expect-error
+      template.poster.url = getPosterUrl(template.poster.pathname);
+    }
+
+    return NextResponse.json({ data: template }, { status: template ? 200 : 404 });
   } catch (error) {
     // eslint-disable-next-line no-console -- console.error(error);
     console.error(error);

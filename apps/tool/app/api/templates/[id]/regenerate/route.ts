@@ -15,7 +15,10 @@ export async function PUT(_: NextRequest, props: TemplateProps) {
       user: {
         connect: { id: 0 },
       },
-      tokens: 0,
+      input: {},
+      prompt: "",
+      prompt_tokens: 0,
+      completion_tokens: 0,
       template: {
         connect: { id: parseInt(props.params.id) },
       },

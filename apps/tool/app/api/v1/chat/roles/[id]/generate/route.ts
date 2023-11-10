@@ -13,6 +13,8 @@ const PayloadSchema = z.object({
       id: true,
     }),
   }),
+  prompt_tokens: z.number().nonnegative().int(),
+  completion_tokens: z.number().nonnegative().int(),
 });
 
 type TemplateProps = {
@@ -29,27 +31,22 @@ export async function PUT(request: NextRequest, props: TemplateProps) {
   }
 
   try {
-    const reaction = await prisma.text_template_reactions.upsert({
-      where: {
-        user_id_template_id: {
-          user_id: payload.data.telegram.user.id,
-          template_id: Number(props.params.id),
-        },
-      },
-      update: { type: "like" },
-      create: {
-        type: "like",
+    const usage = await prisma.chat_role_usage.create({
+      data: {
+        type: "generate",
         user: {
           connect: payload.data.telegram.user,
         },
-        template: {
+        role: {
           connect: { id: Number(props.params.id) },
         },
+        prompt_tokens: payload.data.prompt_tokens,
+        completion_tokens: payload.data.completion_tokens,
       },
       select: { id: true },
     });
 
-    return NextResponse.json({ data: reaction });
+    return NextResponse.json({ data: usage });
   } catch (error) {
     // eslint-disable-next-line no-console -- console.error(error);
     console.error(error);

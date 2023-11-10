@@ -16,7 +16,7 @@ type CategoryProps = {
 
 export async function GET(request: NextRequest, props: CategoryProps) {
   const category = await prisma.text_categories.findUnique({
-    where: { id: parseInt(props.params.id) },
+    where: { id: Number(props.params.id) },
     select: { id: true },
   });
 
@@ -35,9 +35,7 @@ export async function GET(request: NextRequest, props: CategoryProps) {
       prisma.text_templates.count({
         where: {
           category,
-          language: {
-            code: params.data.locale,
-          },
+          language: { code: params.data.locale },
         },
       }),
       prisma.text_templates.findMany({
@@ -45,9 +43,7 @@ export async function GET(request: NextRequest, props: CategoryProps) {
         skip: params.data.start,
         where: {
           category,
-          language: {
-            code: params.data.locale,
-          },
+          language: { code: params.data.locale },
         },
         select: {
           id: true,
@@ -59,9 +55,7 @@ export async function GET(request: NextRequest, props: CategoryProps) {
             },
           },
         },
-        orderBy: {
-          name: "asc",
-        },
+        orderBy: { name: "asc" },
       }),
     ]);
 

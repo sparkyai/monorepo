@@ -8,12 +8,15 @@ import { UserSchema } from "@lib/utils/schema";
 export const revalidate = 0;
 
 const PayloadSchema = z.object({
-  tokens: z.number().nonnegative(),
+  input: z.record(z.string().min(1)),
+  prompt: z.string().min(1),
   telegram: z.object({
     user: UserSchema.pick({
       id: true,
     }),
   }),
+  prompt_tokens: z.number().nonnegative().int(),
+  completion_tokens: z.number().nonnegative().int(),
 });
 
 type TemplateProps = {
@@ -30,21 +33,24 @@ export async function PUT(request: NextRequest, props: TemplateProps) {
   }
 
   try {
-    await prisma.text_template_usage.create({
+    const usage = await prisma.text_template_usage.create({
       data: {
         type: "regenerate",
         user: {
           connect: payload.data.telegram.user,
         },
-        tokens: payload.data.tokens,
+        input: payload.data.input,
+        prompt: payload.data.prompt,
         template: {
-          connect: { id: parseInt(props.params.id) },
+          connect: { id: Number(props.params.id) },
         },
+        prompt_tokens: payload.data.prompt_tokens,
+        completion_tokens: payload.data.completion_tokens,
       },
       select: { id: true },
     });
 
-    return NextResponse.json({ data: null });
+    return NextResponse.json({ data: usage });
   } catch (error) {
     // eslint-disable-next-line no-console -- console.error(error);
     console.error(error);

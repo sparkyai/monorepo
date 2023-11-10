@@ -7,7 +7,6 @@ import FieldGroup from "@components/form/field-group";
 import TextField from "@components/form/text-field";
 import SelectField from "@components/form/select-field";
 import type { ImageTemplate } from "@lib/actions/image";
-import ImageField from "@components/form/image-field";
 import usePoster from "@lib/hooks/use-poster";
 
 type CreateDialogProps = {
@@ -25,7 +24,7 @@ type CreateDialogProps = {
 export default function CreateDialog(props: CreateDialogProps) {
   const [name, setName] = useState("");
   const [model, setModel] = useState<null | string>(null);
-  const [poster, setPoster, resetPoster] = usePoster();
+  const [poster, _, resetPoster] = usePoster();
   const [isOpen, setIsOpen] = useState(false);
   const [provider, setProvider] = useState("");
   const [language, setLanguage] = useState("");
@@ -83,9 +82,9 @@ export default function CreateDialog(props: CreateDialogProps) {
             />
           </FieldGroup>
         )}
-        <FieldGroup className="col-span-2" label="Poster">
-          <ImageField className="aspect-video" onChange={setPoster} value={poster} />
-        </FieldGroup>
+        {/*<FieldGroup className="col-span-2" label="Poster">*/}
+        {/*  <ImageField className="aspect-video" onChange={setPoster} value={poster} />*/}
+        {/*</FieldGroup>*/}
         <FieldGroup className="col-span-2" label="Description">
           <TextField onChange={setDescription} rows={7} value={description} />
         </FieldGroup>

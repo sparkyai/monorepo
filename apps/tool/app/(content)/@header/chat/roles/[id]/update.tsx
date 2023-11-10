@@ -8,17 +8,18 @@ import FieldGroup from "@components/form/field-group";
 import TextField from "@components/form/text-field";
 import SelectField from "@components/form/select-field";
 import Edit from "@components/icon/edit";
-import { updateChatRole, updateChatRolePoster } from "@lib/actions/chat";
+import { updateChatRole } from "@lib/actions/chat";
 import Loader from "@components/common/loader";
-import ImageField from "@components/form/image-field";
-import usePoster from "@lib/hooks/use-poster";
 
 type UpdateDialogProps = {
   role: {
     id: number;
     name: string;
     poster: null | {
-      url: string;
+      mime: string;
+      width: number;
+      height: number;
+      pathname: string;
     };
     category: {
       id: number;
@@ -44,7 +45,7 @@ export default function UpdateDialog(props: UpdateDialogProps) {
   const router = useRouter();
 
   const [name, setName] = useState(props.role.name);
-  const [poster, setPoster, resetPoster] = usePoster(props.role.poster?.url);
+  // const [poster, _, resetPoster] = usePoster(props.role.poster?.url);
   const [isOpen, setIsOpen] = useState(false);
   const [category, setCategory] = useState(props.role.category.id.toString());
   const [language, setLanguage] = useState(props.role.language.id.toString());
@@ -69,9 +70,9 @@ export default function UpdateDialog(props: UpdateDialogProps) {
               name.trim() === props.role.name &&
               description.trim() === (props.role.description || "") &&
               category === props.role.category.id.toString() &&
-              language === props.role.language.id.toString() &&
-              typeof poster === typeof props.role.poster &&
-              poster?.name === props.role.poster?.url
+              language === props.role.language.id.toString()
+              // typeof poster === typeof props.role.poster &&
+              // poster?.name === props.role.poster?.url
             }
             onClick={onUpdate}
           >
@@ -106,9 +107,9 @@ export default function UpdateDialog(props: UpdateDialogProps) {
             value={language}
           />
         </FieldGroup>
-        <FieldGroup className="col-span-2" label="Poster">
-          <ImageField className="aspect-video" onChange={setPoster} value={poster} />
-        </FieldGroup>
+        {/*<FieldGroup className="col-span-2" label="Poster">*/}
+        {/*  <ImageField className="aspect-video" onChange={setPoster} value={poster} />*/}
+        {/*</FieldGroup>*/}
         <FieldGroup className="col-span-2" label="Description">
           <TextField onChange={setDescription} rows={7} value={description} />
         </FieldGroup>
@@ -129,7 +130,7 @@ export default function UpdateDialog(props: UpdateDialogProps) {
     setIsOpen(false);
 
     setName(props.role.name);
-    resetPoster();
+    // resetPoster();
     setCategory(props.role.category.id.toString());
     setLanguage(props.role.language.id.toString());
     setDescription(props.role.description || "");
@@ -146,25 +147,25 @@ export default function UpdateDialog(props: UpdateDialogProps) {
     };
 
     void updateChatRole(props.role.id, data).then(() => {
-      const form = new FormData();
-      let promise = Promise.resolve();
+      // const form = new FormData();
+      // let promise = Promise.resolve();
 
-      if (poster && poster.name !== props.role.poster?.url) {
-        form.append("poster", poster);
+      // if (poster && poster.name !== props.role.poster?.url) {
+      //   form.append("poster", poster);
+      //
+      //   promise = updateChatRolePoster(props.role.id, form);
+      // } else if (props.role.poster && !poster) {
+      //   promise = updateChatRolePoster(props.role.id, form);
+      // }
 
-        promise = updateChatRolePoster(props.role.id, form);
-      } else if (props.role.poster && !poster) {
-        promise = updateChatRolePoster(props.role.id, form);
-      }
+      // void promise.then(() => {
+      setIsLoading(false);
+      setIsOpen(false);
 
-      void promise.then(() => {
-        setIsLoading(false);
-        setIsOpen(false);
-
-        startTransition(() => {
-          router.refresh();
-        });
+      startTransition(() => {
+        router.refresh();
       });
+      // });
     });
   }
 }

@@ -8,6 +8,7 @@ import { UserSchema } from "@lib/utils/schema";
 export const revalidate = 0;
 
 const PayloadSchema = z.object({
+  prompt: z.string().min(1),
   tokens: z.number().nonnegative(),
   telegram: z.object({
     user: UserSchema.pick({
@@ -31,22 +32,23 @@ export async function PUT(request: NextRequest, props: TemplateProps) {
   }
 
   try {
-    await prisma.image_template_usage.create({
+    const usage = await prisma.image_template_usage.create({
       data: {
         type: "generate",
         user: {
           connect: payload.data.telegram.user,
         },
+        prompt: payload.data.prompt,
         tokens: payload.data.tokens,
         template: {
-          connect: { id: parseInt(props.params.id) },
+          connect: { id: Number(props.params.id) },
         },
         resolution: payload.data.resolution,
       },
       select: { id: true },
     });
 
-    return NextResponse.json({ data: null });
+    return NextResponse.json({ data: usage });
   } catch (error) {
     // eslint-disable-next-line no-console -- console.error(error);
     console.error(error);

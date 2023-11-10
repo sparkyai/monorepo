@@ -67,11 +67,11 @@ export async function updateImageTemplatePoster(id: number, data: FormData) {
 
     await prisma.image_templates.update({
       data: {
-        poster: {
-          create: {
-            url,
-          },
-        },
+        // poster: {
+        //   create: {
+        //     url,
+        //   },
+        // },
       },
       where: { id },
       select: { id: true },
@@ -83,7 +83,7 @@ export async function updateImageTemplatePoster(id: number, data: FormData) {
   const poster = await prisma.image_templates.findUniqueOrThrow({ where: { id } }).poster({
     select: {
       id: true,
-      url: true,
+      // url: true,
     },
   });
 

@@ -3,19 +3,27 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
-import { UserSchema, PaymentSchema } from "@lib/utils/schema";
+import { UserSchema } from "@lib/utils/schema";
 
 export const revalidate = 0;
 
-const PayloadSchema = PaymentSchema.omit({ id: true, status: true }).extend({
+const PayloadSchema = z.object({
   telegram: z.object({
     user: UserSchema.pick({
       id: true,
     }),
   }),
+  prompt_tokens: z.number().nonnegative().int(),
+  completion_tokens: z.number().nonnegative().int(),
 });
 
-export async function POST(request: NextRequest) {
+type TemplateProps = {
+  params: {
+    id: string;
+  };
+};
+
+export async function PUT(request: NextRequest, props: TemplateProps) {
   const payload = PayloadSchema.safeParse(await request.json());
 
   if (!payload.success) {
@@ -23,31 +31,22 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const payment = await prisma.payments.create({
+    const usage = await prisma.chat_role_usage.create({
       data: {
+        type: "regenerate",
         user: {
           connect: payload.data.telegram.user,
         },
-        amount: payload.data.amount,
-        tokens: payload.data.tokens,
-        status: "created",
-        provider: payload.data.provider,
-      },
-      select: {
-        id: true,
-        user: {
-          select: {
-            id: true,
-          },
+        role: {
+          connect: { id: Number(props.params.id) },
         },
-        amount: true,
-        tokens: true,
-        status: true,
-        provider: true,
+        prompt_tokens: payload.data.prompt_tokens,
+        completion_tokens: payload.data.completion_tokens,
       },
+      select: { id: true },
     });
 
-    return NextResponse.json({ data: payment });
+    return NextResponse.json({ data: usage });
   } catch (error) {
     // eslint-disable-next-line no-console -- console.error(error);
     console.error(error);

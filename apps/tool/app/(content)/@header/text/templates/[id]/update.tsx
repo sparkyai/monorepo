@@ -9,16 +9,17 @@ import TextField from "@components/form/text-field";
 import SelectField from "@components/form/select-field";
 import Edit from "@components/icon/edit";
 import Loader from "@components/common/loader";
-import { updateTextTemplate, updateTextTemplatePoster } from "@lib/actions/text";
-import ImageField from "@components/form/image-field";
-import usePoster from "@lib/hooks/use-poster";
+import { updateTextTemplate } from "@lib/actions/text";
 
 type UpdateDialogProps = {
   template: {
     id: number;
     name: string;
     poster: null | {
-      url: string;
+      mime: string;
+      width: number;
+      height: number;
+      pathname: string;
     };
     category: {
       id: number;
@@ -44,7 +45,7 @@ export default function UpdateDialog(props: UpdateDialogProps) {
   const router = useRouter();
 
   const [name, setName] = useState(props.template.name);
-  const [poster, setPoster, resetPoster] = usePoster(props.template.poster?.url);
+  // const [poster, _, resetPoster] = usePoster(props.template.poster?.url);
   const [isOpen, setIsOpen] = useState(false);
   const [category, setCategory] = useState(props.template.category.id.toString());
   const [language, setLanguage] = useState(props.template.language.id.toString());
@@ -69,9 +70,9 @@ export default function UpdateDialog(props: UpdateDialogProps) {
               name.trim() === props.template.name &&
               description.trim() === (props.template.description || "") &&
               category === props.template.category.id.toString() &&
-              language === props.template.language.id.toString() &&
-              typeof poster === typeof props.template.poster &&
-              poster?.name === props.template.poster?.url
+              language === props.template.language.id.toString()
+              // typeof poster === typeof props.template.poster &&
+              // poster?.name === props.template.poster?.url
             }
             onClick={onUpdate}
           >
@@ -106,9 +107,9 @@ export default function UpdateDialog(props: UpdateDialogProps) {
             value={language}
           />
         </FieldGroup>
-        <FieldGroup className="col-span-2" label="Poster">
-          <ImageField className="aspect-video" onChange={setPoster} value={poster} />
-        </FieldGroup>
+        {/*<FieldGroup className="col-span-2" label="Poster">*/}
+        {/*  <ImageField className="aspect-video" onChange={setPoster} value={poster} />*/}
+        {/*</FieldGroup>*/}
         <FieldGroup className="col-span-2" label="Description">
           <TextField onChange={setDescription} rows={7} value={description} />
         </FieldGroup>
@@ -129,7 +130,7 @@ export default function UpdateDialog(props: UpdateDialogProps) {
     setIsOpen(false);
 
     setName(props.template.name);
-    resetPoster();
+    // resetPoster();
     setCategory(props.template.category.id.toString());
     setLanguage(props.template.language.id.toString());
     setDescription(props.template.description || "");
@@ -144,25 +145,25 @@ export default function UpdateDialog(props: UpdateDialogProps) {
     };
 
     void updateTextTemplate(props.template.id, data).then(() => {
-      const form = new FormData();
-      let promise = Promise.resolve();
+      // const form = new FormData();
+      // let promise = Promise.resolve();
 
-      if (poster && poster.name !== props.template.poster?.url) {
-        form.append("poster", poster);
+      // if (poster && poster.name !== props.template.poster?.url) {
+      //   form.append("poster", poster);
+      //
+      //   promise = updateTextTemplatePoster(props.template.id, form);
+      // } else if (props.template.poster && !poster) {
+      //   promise = updateTextTemplatePoster(props.template.id, form);
+      // }
 
-        promise = updateTextTemplatePoster(props.template.id, form);
-      } else if (props.template.poster && !poster) {
-        promise = updateTextTemplatePoster(props.template.id, form);
-      }
+      // void promise.then(() => {
+      setIsLoading(false);
+      setIsOpen(false);
 
-      void promise.then(() => {
-        setIsLoading(false);
-        setIsOpen(false);
-
-        startTransition(() => {
-          router.refresh();
-        });
+      startTransition(() => {
+        router.refresh();
       });
+      // });
     });
   }
 }

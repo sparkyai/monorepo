@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@lib/utils/prisma";
-import { uploadObject, deleteObject } from "@lib/utils/s3";
+import { deleteObject } from "@lib/utils/s3";
 
 function getRolePosterKey(id: number) {
   return `char-role-${id}-poster`;
@@ -92,15 +92,15 @@ export async function updateChatRole(id: number, data: Partial<ChatRole>) {
 
 export async function updateChatRolePoster(id: number, data: FormData) {
   if (data.has("poster")) {
-    const url = await uploadObject(getRolePosterKey(id), data.get("poster") as File);
+    // const url = await uploadObject(getRolePosterKey(id), data.get("poster") as File);
 
     await prisma.chat_roles.update({
       data: {
-        poster: {
-          create: {
-            url,
-          },
-        },
+        // poster: {
+        //   create: {
+        //     url,
+        //   },
+        // },
       },
       where: { id },
       select: { id: true },
@@ -109,7 +109,7 @@ export async function updateChatRolePoster(id: number, data: FormData) {
     const poster = await prisma.chat_roles.findUniqueOrThrow({ where: { id } }).poster({
       select: {
         id: true,
-        url: true,
+        // url: true,
       },
     });
 
