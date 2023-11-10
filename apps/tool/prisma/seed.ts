@@ -8,23 +8,22 @@ import * as languages from "./seed/languages";
 async function run() {
   await prisma.$connect();
 
-  await prisma.$transaction(async () => {
-    await users.clean(prisma);
-    await languages.clean(prisma);
+  // clean
+  await users.clean(prisma);
+  await languages.clean(prisma);
 
-    await prisma.images.deleteMany();
-  });
+  await prisma.images.deleteMany();
 
-  await prisma.$transaction(async () => {
-    await languages.seed(prisma);
+  // seed
+  await languages.seed(prisma);
 
-    await users.seed(prisma);
+  await users.seed(prisma);
 
-    await chat.seed(prisma);
-    await text.seed(prisma);
-    await image.seed(prisma);
-  });
+  await chat.seed(prisma);
+  await text.seed(prisma);
+  await image.seed(prisma);
 
+  //
   await prisma.$disconnect();
 }
 
