@@ -18,7 +18,10 @@ type CollectionProps = {
     id: number;
     name: string;
     poster: null | {
-      url: string;
+      mime: string;
+      width: number;
+      height: number;
+      pathname: string;
     };
     category: {
       id: number;

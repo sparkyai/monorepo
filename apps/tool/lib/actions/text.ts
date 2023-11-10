@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@lib/utils/prisma";
-import { uploadObject, deleteObject } from "@lib/utils/s3";
+import { deleteObject } from "@lib/utils/s3";
 
 function getTemplatePosterKey(id: number) {
   return `text-template-${id}-poster`;
@@ -88,15 +88,15 @@ export async function updateTextTemplate(id: number, data: Partial<TextTemplate>
 
 export async function updateTextTemplatePoster(id: number, data: FormData) {
   if (data.has("poster")) {
-    const url = await uploadObject(getTemplatePosterKey(id), data.get("poster") as File);
+    // const url = await uploadObject(getTemplatePosterKey(id), data.get("poster") as File);
 
     await prisma.text_templates.update({
       data: {
-        poster: {
-          create: {
-            url,
-          },
-        },
+        // poster: {
+        //   create: {
+        //     url,
+        //   },
+        // },
       },
       where: { id },
       select: { id: true },
@@ -105,7 +105,7 @@ export async function updateTextTemplatePoster(id: number, data: FormData) {
     const poster = await prisma.text_templates.findUniqueOrThrow({ where: { id } }).poster({
       select: {
         id: true,
-        url: true,
+        // url: true,
       },
     });
 

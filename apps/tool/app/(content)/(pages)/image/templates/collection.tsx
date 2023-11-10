@@ -8,21 +8,18 @@ import TextField from "@components/form/text-field";
 import SelectField from "@components/form/select-field";
 import DeleteDialog from "@components/dialog/delete";
 import type { ImageTemplate } from "@lib/actions/image";
-import {
-  createImageTemplate,
-  updateImageTemplate,
-  deleteImageTemplate,
-  updateImageTemplatePoster,
-} from "@lib/actions/image";
+import { createImageTemplate, deleteImageTemplate } from "@lib/actions/image";
 import CreateDialog from "./create";
-import UpdateDialog from "./update";
 
 type Template = {
   id: number;
   name: string;
   model: null | string;
   poster: null | {
-    url: string;
+    mime: string;
+    width: number;
+    height: number;
+    pathname: string;
   };
   provider: string;
   language: {
@@ -98,14 +95,14 @@ export default function Collection(props: CollectionProps) {
               <span className="w-32 grow">{template.provider}</span>
               <div className="flex w-28 shrink-0 justify-end gap-2">
                 {/*<AnalyticsDialog url={`/api/analytics/image/templates/${template.id}`} />*/}
-                <UpdateDialog
-                  languages={props.languages}
-                  leonardo={props.leonardo}
-                  onUpdate={(data) => {
-                    onUpdate(template, data);
-                  }}
-                  template={template}
-                />
+                {/*<UpdateDialog*/}
+                {/*  languages={props.languages}*/}
+                {/*  leonardo={props.leonardo}*/}
+                {/*  onUpdate={(data) => {*/}
+                {/*    onUpdate(template, data);*/}
+                {/*  }}*/}
+                {/*  template={template}*/}
+                {/*/>*/}
                 <DeleteDialog
                   description="Are you sure you want to delete the template?"
                   onDelete={() => {
@@ -137,57 +134,57 @@ export default function Collection(props: CollectionProps) {
     });
   }
 
-  function onUpdate(template: Template, { poster, ...data }: Partial<ImageTemplate>) {
-    setIsLoading(true);
-
-    void updateImageTemplate(template.id, data).then(() => {
-      const form = new FormData();
-      let promise = Promise.resolve(template.poster?.url);
-
-      if (poster && poster.name !== template.poster?.url) {
-        form.append("poster", poster);
-
-        promise = updateImageTemplatePoster(template.id, form);
-      } else if (template.poster && !poster) {
-        promise = updateImageTemplatePoster(template.id, form);
-      }
-
-      void promise.then((url) => {
-        handlers.applyWhere(
-          (item) => item.id === template.id,
-          () => ({
-            id: template.id,
-            name: data.name || template.name,
-            model: data.model || template.model,
-            poster: url ? { url } : template.poster,
-            provider: data.provider || template.provider,
-            language: props.languages.find((lang) => lang.id === data.language) || template.language,
-            description: data.description || template.description,
-          }),
-        );
-        setIsLoading(false);
-
-        refresh();
-      });
-    });
-  }
+  // function onUpdate(template: Template, { poster, ...data }: Partial<ImageTemplate>) {
+  //   setIsLoading(true);
+  //
+  //   void updateImageTemplate(template.id, data).then(() => {
+  //     const form = new FormData();
+  //     let promise = Promise.resolve(template.poster?.url);
+  //
+  //     if (poster && poster.name !== template.poster?.url) {
+  //       form.append("poster", poster);
+  //
+  //       promise = updateImageTemplatePoster(template.id, form);
+  //     } else if (template.poster && !poster) {
+  //       promise = updateImageTemplatePoster(template.id, form);
+  //     }
+  //
+  //     void promise.then((url) => {
+  //       handlers.applyWhere(
+  //         (item) => item.id === template.id,
+  //         () => ({
+  //           id: template.id,
+  //           name: data.name || template.name,
+  //           model: data.model || template.model,
+  //           poster: url ? { url } : template.poster,
+  //           provider: data.provider || template.provider,
+  //           language: props.languages.find((lang) => lang.id === data.language) || template.language,
+  //           description: data.description || template.description,
+  //         }),
+  //       );
+  //       setIsLoading(false);
+  //
+  //       refresh();
+  //     });
+  //   });
+  // }
 
   function onCreate({ poster, ...data }: ImageTemplate) {
     setIsLoading(true);
 
-    void createImageTemplate(data).then((template) => {
+    void createImageTemplate(data).then(() => {
       const form = new FormData();
 
       if (poster) {
         form.append("poster", poster);
       }
 
-      void updateImageTemplatePoster(template.id, form).then((url) => {
-        handlers.prepend({ ...template, poster: url ? { url } : null });
-        setIsLoading(false);
-
-        refresh();
-      });
+      // void updateImageTemplatePoster(template.id, form).then((url) => {
+      //   handlers.prepend({ ...template, poster: url ? { url } : null });
+      //   setIsLoading(false);
+      //
+      //   refresh();
+      // });
     });
   }
 }
