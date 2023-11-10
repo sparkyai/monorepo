@@ -30,14 +30,17 @@ export const UserSchema = z.object({
 
 export const PaymentSchema = z.object({
   id: z.string().uuid(),
-  amount: z.number().nonnegative(),
-  tokens: z.number().nonnegative(),
+  amount: z.number().nonnegative().int(),
+  tokens: z.number().nonnegative().int(),
   status: z.enum(["reversed", "created", "success", "failure", "expired", "hold"]).default("created"),
-  provider: z.string().min(1),
+  method: z.string().min(1),
 });
 
 export const ImageSchema = z.object({
-  url: z.string().url(),
+  path: z.string(),
+  mine: z.string(),
+  width: z.number().positive().int(),
+  height: z.number().positive().int(),
 });
 
 export const GPTParametersSchema = z.object({

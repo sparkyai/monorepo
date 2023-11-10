@@ -29,29 +29,27 @@ export async function PUT(request: NextRequest, props: RoleProps) {
   }
 
   try {
-    await prisma.chat_role_reactions.upsert({
+    const reaction = await prisma.chat_role_reactions.upsert({
       where: {
         user_id_role_id: {
           user_id: payload.data.telegram.user.id,
-          role_id: parseInt(props.params.id),
+          role_id: Number(props.params.id),
         },
       },
-      update: {
-        type: "like",
-      },
+      update: { type: "like" },
       create: {
         type: "like",
         user: {
           connect: payload.data.telegram.user,
         },
         role: {
-          connect: { id: parseInt(props.params.id) },
+          connect: { id: Number(props.params.id) },
         },
       },
       select: { id: true },
     });
 
-    return NextResponse.json({ data: null });
+    return NextResponse.json({ data: reaction });
   } catch (error) {
     // eslint-disable-next-line no-console -- console.error(error);
     console.error(error);

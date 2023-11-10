@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 // @ts-expect-error eslint-disable-next-line no-extend-native -- controlled
 // eslint-disable-next-line no-extend-native,func-names -- controlled
 BigInt.prototype.toJSON = function () {
-  return this.toString();
+  return Number(this);
 };
 
 if (!global.prisma) {

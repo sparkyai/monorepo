@@ -1,8 +1,8 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
 import { UserSchema } from "@lib/utils/schema";
+import { getTokenBalance } from "@lib/utils/data";
 
 export const revalidate = 0;
 
@@ -15,9 +15,7 @@ type UserProps = {
 export async function GET(_: NextRequest, props: UserProps) {
   try {
     const user = await prisma.telegram_users.findUnique({
-      where: {
-        id: parseInt(props.params.id),
-      },
+      where: { id: Number(props.params.id) },
       select: {
         id: true,
         language: {
@@ -26,16 +24,24 @@ export async function GET(_: NextRequest, props: UserProps) {
             name: true,
           },
         },
-        first_name: true,
         last_name: true,
+        first_name: true,
       },
     });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- d
-    // @ts-expect-error
-    user.tokens = 1000;
+    if (!user) {
+      return NextResponse.json({ data: user }, { status: 404 });
+    }
 
-    return NextResponse.json({ data: user }, { status: user ? 200 : 404 });
+    return NextResponse.json({
+      data: {
+        id: user.id,
+        tokens: await getTokenBalance(user.id),
+        language: user.language,
+        last_name: user.last_name,
+        first_name: user.first_name,
+      },
+    });
   } catch (error) {
     // eslint-disable-next-line no-console -- console.error(error);
     console.error(error);
@@ -52,37 +58,29 @@ export async function PUT(request: NextRequest, props: UserProps) {
   }
 
   try {
+    let language: object | undefined = void 0;
+
+    if (payload.data.language) {
+      language = {
+        connect: {
+          code: payload.data.language,
+        },
+      };
+    }
+
     const user = await prisma.telegram_users.update({
       data: {
-        first_name: payload.data.first_name,
+        language,
         last_name: payload.data.last_name,
-        language: payload.data.language
-          ? {
-              connect: {
-                code: payload.data.language,
-              },
-            }
-          : void 0,
+        first_name: payload.data.first_name,
       },
-      where: { id: parseInt(props.params.id) },
-      select: {
-        id: true,
-        language: {
-          select: {
-            code: true,
-            name: true,
-          },
-        },
-        first_name: true,
-        last_name: true,
-      },
+      where: { id: Number(props.params.id) },
+      select: { id: true },
     });
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- d
-    // @ts-expect-error
-    user.tokens = 1000;
-
-    return NextResponse.json({ data: user });
+    return GET(new NextRequest(request.url), {
+      params: { id: user.id.toString() },
+    });
   } catch (error) {
     // eslint-disable-next-line no-console -- console.error(error);
     console.error(error);

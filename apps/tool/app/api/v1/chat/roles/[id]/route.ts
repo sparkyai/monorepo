@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
+import { getPosterUrl } from "@lib/utils/data";
 
 export const revalidate = 0;
 
@@ -14,15 +15,16 @@ type RoleProps = {
 export async function GET(_: NextRequest, props: RoleProps) {
   try {
     const role = await prisma.chat_roles.findUnique({
-      where: {
-        id: parseInt(props.params.id),
-      },
+      where: { id: Number(props.params.id) },
       select: {
         id: true,
         name: true,
         poster: {
           select: {
-            url: true,
+            mime: true,
+            width: true,
+            height: true,
+            pathname: true,
           },
         },
         prompt: true,
@@ -50,6 +52,12 @@ export async function GET(_: NextRequest, props: RoleProps) {
         description: true,
       },
     });
+
+    if (role?.poster) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- -
+      // @ts-expect-error
+      role.poster.url = getPosterUrl(role.poster.pathname);
+    }
 
     return NextResponse.json({ data: role }, { status: role ? 200 : 404 });
   } catch (error) {

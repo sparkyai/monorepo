@@ -1,9 +1,9 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
 import { UserSchema, PaymentSchema } from "@lib/utils/schema";
+import { GET } from "./[id]/route";
 
 export const revalidate = 0;
 
@@ -25,29 +25,20 @@ export async function POST(request: NextRequest) {
   try {
     const payment = await prisma.payments.create({
       data: {
-        user: {
-          connect: payload.data.telegram.user,
-        },
+        user: { connect: payload.data.telegram.user },
         amount: payload.data.amount,
         tokens: payload.data.tokens,
         status: payload.data.status,
-        provider: payload.data.provider,
+        method: payload.data.method,
       },
-      select: {
-        id: true,
-        user: {
-          select: {
-            id: true,
-          },
-        },
-        amount: true,
-        tokens: true,
-        status: true,
-        provider: true,
-      },
+      select: { id: true },
     });
 
-    return NextResponse.json({ data: payment });
+    const url = `${request.nextUrl.origin}${request.nextUrl.pathname}/${payment.id}${request.nextUrl.search}`;
+
+    return GET(new NextRequest(url), {
+      params: { id: payment.id.toString() },
+    });
   } catch (error) {
     // eslint-disable-next-line no-console -- console.error(error);
     console.error(error);

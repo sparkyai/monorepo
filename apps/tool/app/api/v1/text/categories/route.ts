@@ -19,18 +19,14 @@ export async function GET(request: NextRequest) {
     const [total, data] = await Promise.all([
       prisma.text_categories.count({
         where: {
-          language: {
-            code: params.data.locale,
-          },
+          language: { code: params.data.locale },
         },
       }),
       prisma.text_categories.findMany({
         take: params.data.limit,
         skip: params.data.start,
         where: {
-          language: {
-            code: params.data.locale,
-          },
+          language: { code: params.data.locale },
         },
         select: {
           id: true,
@@ -42,9 +38,7 @@ export async function GET(request: NextRequest) {
             },
           },
         },
-        orderBy: {
-          name: "asc",
-        },
+        orderBy: { name: "asc" },
       }),
     ]);
 

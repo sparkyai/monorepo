@@ -29,29 +29,27 @@ export async function PUT(request: NextRequest, props: TemplateProps) {
   }
 
   try {
-    await prisma.text_template_reactions.upsert({
+    const reaction = await prisma.text_template_reactions.upsert({
       where: {
         user_id_template_id: {
           user_id: payload.data.telegram.user.id,
-          template_id: parseInt(props.params.id),
+          template_id: Number(props.params.id),
         },
       },
-      update: {
-        type: "dislike",
-      },
+      update: { type: "dislike" },
       create: {
         type: "dislike",
         user: {
           connect: payload.data.telegram.user,
         },
         template: {
-          connect: { id: parseInt(props.params.id) },
+          connect: { id: Number(props.params.id) },
         },
       },
       select: { id: true },
     });
 
-    return NextResponse.json({ data: null });
+    return NextResponse.json({ data: reaction });
   } catch (error) {
     // eslint-disable-next-line no-console -- console.error(error);
     console.error(error);
