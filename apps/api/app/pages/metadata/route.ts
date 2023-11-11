@@ -1,10 +1,7 @@
-import type { ServerRuntime } from "next";
 import { NextResponse } from "next/server";
 import { stringify } from "qs";
 import type { StrapiEntity, StrapiEntityRelation } from "lib/utils/strapi";
 import strapi, { getEntityData } from "lib/utils/strapi";
-
-export const runtime: ServerRuntime = "edge";
 
 type Page = StrapiEntity<{
   slug: string | null;
