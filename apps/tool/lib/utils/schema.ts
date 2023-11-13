@@ -8,8 +8,8 @@ export const interaction = z.object({
 });
 
 export const LanguageSchema = z.object({
-  code: z.string(),
-  name: z.string(),
+  code: z.string().length(2),
+  name: z.string().min(1),
 });
 
 export const PaginationSchema = z.object({
@@ -18,7 +18,7 @@ export const PaginationSchema = z.object({
 });
 
 export const ListQuerySchema = PaginationSchema.extend({
-  locale: z.optional(LanguageSchema.shape.code),
+  locale: LanguageSchema.shape.code,
 });
 
 export const UserSchema = z.object({
@@ -37,14 +37,14 @@ export const PaymentSchema = z.object({
 });
 
 export const ImageSchema = z.object({
-  path: z.string(),
-  mine: z.string(),
+  mime: z.string().min(1),
   width: z.number().positive().int(),
   height: z.number().positive().int(),
+  pathname: z.string().min(1),
 });
 
 export const GPTParametersSchema = z.object({
-  model: z.string(),
+  model: z.string().min(1),
   top_p: z.number().min(0).max(1),
   temperature: z.number().min(0).max(2),
   present_penalty: z.number().min(0).max(2),
@@ -52,14 +52,44 @@ export const GPTParametersSchema = z.object({
 });
 
 export const ChatRoleSchema = z.object({
-  id: z.number().positive(),
-  name: z.number().min(1),
-  // usage: 1,
-  prompt: z.string(),
+  name: z.string().min(1),
+  prompt: z.optional(z.string()),
   poster: z.optional(ImageSchema),
-  // category: 1,
-  // language: 1,
-  // reactions: 1,
+  category: z.number().positive(),
+  language: LanguageSchema.shape.code,
   parameters: z.optional(GPTParametersSchema),
-  // description: 1,
+  description: z.optional(z.string()),
+});
+
+export const ChatCategorySchema = z.object({
+  name: z.string().min(1),
+  language: LanguageSchema.shape.code,
+});
+
+export const ImageTemplateSchema = z.object({
+  name: z.string().min(1),
+  model: z.optional(z.nullable(z.string().min(1))),
+  poster: z.optional(ImageSchema),
+  provider: z.string().min(1),
+  language: LanguageSchema.shape.code,
+  description: z.optional(z.string()),
+});
+
+export const MessageSchema = z.object({
+  role: z.string().min(1),
+  content: z.string(),
+});
+
+export const TextTemplateSchema = z.object({
+  name: z.string().min(1),
+  poster: z.optional(ImageSchema),
+  category: z.number().positive(),
+  language: LanguageSchema.shape.code,
+  parameters: z.optional(GPTParametersSchema),
+  description: z.optional(z.nullable(z.string())),
+});
+
+export const TextCategorySchema = z.object({
+  name: z.string().min(1),
+  language: LanguageSchema.shape.code,
 });

@@ -2,13 +2,22 @@ import type { PropsWithChildren, ReactNode } from "react";
 import { twMerge } from "tailwind-merge";
 import Close from "@components/icon/close";
 import Portal from "@components/common/portal";
+import ButtonDanger from "@components/button/button-danger";
+import IconButton from "@components/button/icon-button";
+import ButtonPrimary from "@components/button/button-primary";
 
 type DialogProps = PropsWithChildren<{
   title: string;
   open?: boolean;
-  size?: "md" | "lg";
   footer?: ReactNode;
   onClose?: VoidFunction;
+  onCreate?: VoidFunction;
+  onUpdate?: VoidFunction;
+  onDelete?: VoidFunction;
+  className?: string;
+  canCreate?: boolean;
+  canUpdate?: boolean;
+  canDelete?: boolean;
 }>;
 
 export default function Dialog(props: DialogProps) {
@@ -18,22 +27,52 @@ export default function Dialog(props: DialogProps) {
         <div className="fixed inset-0 z-30 flex overflow-auto bg-slate-950/75 p-4">
           <div
             className={twMerge(
-              "m-auto grid w-full max-w-sm grid-cols-2 gap-4 rounded-xl bg-slate-800 p-4",
-              props.size && "max-w-xl",
+              "max-w-sm",
+              props.className,
+              "relative m-auto grid w-full gap-4 rounded-xl bg-slate-800 p-4",
             )}
           >
-            <header className="col-span-2 mb-3 flex justify-between gap-3">
-              <h2 className="text-2xl font-bold">{props.title}</h2>
-              <button
-                className="p-1.5 transition-colors hover:text-red-400 active:text-red-400"
-                onClick={props.onClose}
-                type="button"
-              >
+            <header className="col-span-full mb-3 flex justify-between gap-3">
+              <h2 className="grow truncate text-2xl font-bold">{props.title}</h2>
+              <IconButton onClick={props.onClose}>
                 <Close size={20} />
-              </button>
+              </IconButton>
             </header>
             {props.children}
-            {props.footer && <footer className="col-span-2 mt-6 flex gap-3">{props.footer}</footer>}
+            {(props.onCreate || props.onUpdate || props.onDelete) && (
+              <footer className="col-span-full mt-6 flex justify-end gap-3">
+                {props.onCreate && (
+                  <ButtonPrimary
+                    className="w-1/2"
+                    disabled={typeof props.canCreate === "boolean" && !props.canCreate}
+                    onClick={props.onCreate}
+                    size="lg"
+                  >
+                    Create
+                  </ButtonPrimary>
+                )}
+                {props.onUpdate && (
+                  <ButtonPrimary
+                    className="w-1/2"
+                    disabled={typeof props.canUpdate === "boolean" && !props.canUpdate}
+                    onClick={props.onUpdate}
+                    size="lg"
+                  >
+                    Update
+                  </ButtonPrimary>
+                )}
+                {props.onDelete && (
+                  <ButtonDanger
+                    className="w-1/2"
+                    disabled={typeof props.canDelete === "boolean" && !props.canDelete}
+                    onClick={props.onDelete}
+                    size="lg"
+                  >
+                    Delete
+                  </ButtonDanger>
+                )}
+              </footer>
+            )}
           </div>
         </div>
       )}

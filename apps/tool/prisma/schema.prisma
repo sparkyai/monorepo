@@ -201,7 +201,7 @@ model text_template_parameters {
 }
 
 model text_template_messages {
-  id          BigInt         @id @default(autoincrement())
+  id          String         @id @default(uuid()) @db.Uuid
   role        String
   content     String
   template    text_templates @relation(fields: [template_id], references: [id], onDelete: Cascade)

@@ -32,3 +32,7 @@ export async function deleteObject(key: string) {
     }),
   );
 }
+
+export function getObjectUrl(pathname: string) {
+  return `https://${process.env.S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com${pathname}`;
+}

@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
-import { getPosterUrl } from "@lib/utils/data";
+import { getObjectUrl } from "@lib/utils/s3";
 
 export const revalidate = 0;
 
@@ -56,7 +56,7 @@ export async function GET(_: NextRequest, props: RoleProps) {
     if (role?.poster) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- -
       // @ts-expect-error
-      role.poster.url = getPosterUrl(role.poster.pathname);
+      role.poster.url = getObjectUrl(role.poster.pathname);
     }
 
     return NextResponse.json({ data: role }, { status: role ? 200 : 404 });
