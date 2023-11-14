@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { getLocaleCollection } from "lib/data/locale";
 
 export const config = {
-  matcher: ["/((?!_next|api|favicon.ico|robots.txt|payeer_1961742666.txt|sitemap.xml).*)"],
+  matcher: ["/((?!_next|api|favicon.ico|robots.txt|payeer_1961742666.txt|sitemap.xml|monitoring).*)"],
 };
 
 const IGNORE = /\.(?:png|jpe?g)$/;
