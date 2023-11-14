@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import prisma from "@lib/utils/prisma";
 import Back from "@app/@header/back";
 import { getLanguageCollection } from "@lib/data/language";
+import { getObjectUrl } from "@lib/utils/s3";
 import UpdateRole from "./update";
 
 type RoleHeaderProps = {
@@ -22,7 +23,7 @@ export default async function RoleHeader(props: RoleHeaderProps) {
             mime: true,
             width: true,
             height: true,
-            pathname: true,
+            s3_key: true,
           },
         },
         category: {
@@ -52,11 +53,16 @@ export default async function RoleHeader(props: RoleHeaderProps) {
     notFound();
   }
 
+  const update = {
+    ...role,
+    poster: role.poster ? getObjectUrl(role.poster.s3_key) : null,
+  };
+
   return (
     <>
       <Back />
       <h1 className="max-w-xs truncate text-3xl font-medium tracking-wide">{role.name}</h1>
-      <UpdateRole categories={categories} languages={languages} role={role} />
+      <UpdateRole categories={categories} languages={languages} role={update} />
     </>
   );
 }

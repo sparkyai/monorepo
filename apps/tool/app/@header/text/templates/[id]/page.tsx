@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import prisma from "@lib/utils/prisma";
 import Back from "@app/@header/back";
 import { getLanguageCollection } from "@lib/data/language";
+import { getObjectUrl } from "@lib/utils/s3";
 import UpdateTemplate from "./update";
 
 type TemplateHeaderProps = {
@@ -22,7 +23,7 @@ export default async function TemplateHeader(props: TemplateHeaderProps) {
             mime: true,
             width: true,
             height: true,
-            pathname: true,
+            s3_key: true,
           },
         },
         category: {
@@ -52,11 +53,16 @@ export default async function TemplateHeader(props: TemplateHeaderProps) {
     notFound();
   }
 
+  const update = {
+    ...template,
+    poster: template.poster ? getObjectUrl(template.poster.s3_key) : null,
+  };
+
   return (
     <>
       <Back />
       <h1 className="max-w-xs truncate text-3xl font-medium tracking-wide">{template.name}</h1>
-      <UpdateTemplate categories={categories} languages={languages} template={template} />
+      <UpdateTemplate categories={categories} languages={languages} template={update} />
     </>
   );
 }

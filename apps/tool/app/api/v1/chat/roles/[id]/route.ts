@@ -24,7 +24,7 @@ export async function GET(_: NextRequest, props: RoleProps) {
             mime: true,
             width: true,
             height: true,
-            pathname: true,
+            s3_key: true,
           },
         },
         prompt: true,
@@ -56,7 +56,10 @@ export async function GET(_: NextRequest, props: RoleProps) {
     if (role?.poster) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- -
       // @ts-expect-error
-      role.poster.url = getObjectUrl(role.poster.pathname);
+      role.poster.url = getObjectUrl(role.poster.s3_key);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- -
+      // @ts-expect-error
+      delete role.poster.s3_key;
     }
 
     return NextResponse.json({ data: role }, { status: role ? 200 : 404 });

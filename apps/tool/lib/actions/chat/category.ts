@@ -5,6 +5,7 @@ import type { TypeOf } from "zod";
 import { revalidatePath } from "next/cache";
 import prisma from "@lib/utils/prisma";
 import { ChatCategorySchema } from "@lib/utils/schema";
+import { remove } from "@lib/actions/s3";
 
 function revalidate() {
   revalidatePath("/chat/categories");
@@ -79,7 +80,7 @@ export async function deleteChatCategory(id: number) {
             poster: {
               select: {
                 id: true,
-                pathname: true,
+                s3_key: true,
               },
             },
           },
@@ -87,13 +88,13 @@ export async function deleteChatCategory(id: number) {
       },
     });
 
-    const images = category.roles.map((role) => role.poster).filter(Boolean) as { id: string; pathname: string }[];
+    const images = category.roles.map((role) => role.poster).filter(Boolean) as { id: string; s3_key: string }[];
+
+    await Promise.all(images.map((image) => remove(image.s3_key)));
 
     await prisma.images.deleteMany({
       where: { id: { in: images.map((image) => image.id) } },
     });
-
-    // todo(aws): remove image from s3
 
     revalidate();
 

@@ -7,6 +7,7 @@ import TableWrap from "@components/table/wrap";
 import prisma from "@lib/utils/prisma";
 import { getLanguageCollection } from "@lib/data/language";
 import { getLeonardoModelCollection } from "@lib/leonardo/model";
+import { getObjectUrl } from "@lib/utils/s3";
 import TemplateAnalytics from "./analytics";
 import DeleteTemplate from "./delete";
 import UpdateTemplate from "./update";
@@ -27,7 +28,7 @@ export default async function Table(props: TableProps) {
     provider: props.provider ? { contains: props.provider, mode: "insensitive" } : void 0,
   } satisfies Prisma.image_templatesWhereInput;
 
-  const [total, templates, langauges, leonardo] = await Promise.all([
+  const [total, templates, language, leonardo] = await Promise.all([
     prisma.image_templates.count({ where }),
     prisma.image_templates.findMany({
       skip: start,
@@ -42,7 +43,7 @@ export default async function Table(props: TableProps) {
             mime: true,
             width: true,
             height: true,
-            pathname: true,
+            s3_key: true,
           },
         },
         provider: true,
@@ -80,6 +81,11 @@ export default async function Table(props: TableProps) {
         </p>
       )}
       {templates.map((template) => {
+        const update = {
+          ...template,
+          poster: template.poster ? getObjectUrl(template.poster.s3_key) : null,
+        };
+
         const reaction = {
           like: 0,
           dislike: 0,
@@ -105,7 +111,7 @@ export default async function Table(props: TableProps) {
               </Fragment>,
               <Fragment key={`:actions:template:${template.id}:`}>
                 <TemplateAnalytics template={template} />
-                <UpdateTemplate languages={langauges} leonardo={leonardo} template={template} />
+                <UpdateTemplate languages={language} leonardo={leonardo} template={update} />
                 <DeleteTemplate template={template} />
               </Fragment>,
             ]}

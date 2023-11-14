@@ -9,8 +9,11 @@ import ButtonPrimary from "@components/button/button-primary";
 import FieldGroup from "@components/form/field-group";
 import TextField from "@components/form/text-field";
 import SelectField from "@components/form/select-field";
-import type { LanguageSchema } from "@lib/utils/schema";
+import type { LanguageSchema, ImageSchema } from "@lib/utils/schema";
 import { createTextTemplate } from "@lib/actions/text/template";
+import Poster from "@components/common/poster";
+import FileField from "@components/form/file-field";
+import { upload } from "@lib/actions/s3";
 
 type CreateTemplateProps = {
   languages: TypeOf<typeof LanguageSchema>[];
@@ -25,7 +28,8 @@ export default function CreateTemplate(props: CreateTemplateProps) {
   const pathname = usePathname();
 
   const [name, setName] = useState("");
-  // const [poster, setPoster] = useState();
+  const [file, setFile] = useState<null | File>(null);
+  const [poster, setPoster] = useState<null | string>(null);
   const [category, setCategory] = useState("");
   const [language, setLanguage] = useState("");
   const [description, setDescription] = useState("");
@@ -69,9 +73,10 @@ export default function CreateTemplate(props: CreateTemplateProps) {
             value={language}
           />
         </FieldGroup>
-        {/*<FieldGroup className="col-span-2" label="Poster">*/}
-        {/*  <ImageField className="aspect-video" onChange={setPoster} value={poster} />*/}
-        {/*</FieldGroup>*/}
+        <FieldGroup className="col-span-2" label="Poster">
+          <Poster file={file as never} poster={poster} />
+          <FileField accept="image/*" onChange={setFile} value={file} />
+        </FieldGroup>
         <FieldGroup className="col-span-2" label="Description">
           <TextField onChange={setDescription} rows={7} value={description} />
         </FieldGroup>
@@ -88,7 +93,8 @@ export default function CreateTemplate(props: CreateTemplateProps) {
     setIsOpen(false);
 
     setName("");
-    // resetPoster();
+    setFile(null);
+    setPoster(null);
     setCategory("");
     setLanguage("");
     setDescription("");
@@ -96,8 +102,24 @@ export default function CreateTemplate(props: CreateTemplateProps) {
 
   function onCreate() {
     startTransition(async () => {
+      let posterData: TypeOf<typeof ImageSchema> | undefined | null = void 0;
+
+      if (file) {
+        const posterFile = file as File & { width: number; height: number };
+        const data = new FormData();
+        data.append("file", file);
+
+        posterData = {
+          mime: posterFile.type,
+          width: posterFile.width,
+          height: posterFile.height,
+          s3_key: await upload(data),
+        };
+      }
+
       const response = await createTextTemplate({
         name: name.trim(),
+        poster: posterData,
         category: Number(category),
         language,
         description: description.trim(),
@@ -107,7 +129,7 @@ export default function CreateTemplate(props: CreateTemplateProps) {
         throw new Error(JSON.stringify(response.error, void 0, 2));
       }
 
-      router.replace(pathname);
+      router.replace(`${pathname}/${response.data.id}`);
       onClose();
     });
   }

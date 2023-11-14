@@ -11,7 +11,6 @@ export async function seed(prisma: PrismaClient) {
             create: category.roles?.map((role) => {
               let poster: object | undefined = void 0;
 
-              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- d
               if (role.poster) {
                 const url = new URL(role.poster.url);
 
@@ -20,7 +19,7 @@ export async function seed(prisma: PrismaClient) {
                     mime: "",
                     width: 0,
                     height: 0,
-                    pathname: url.pathname,
+                    s3_key: url.pathname.slice(1),
                   },
                 };
               }

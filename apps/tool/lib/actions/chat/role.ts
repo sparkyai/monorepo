@@ -5,9 +5,10 @@ import type { TypeOf } from "zod";
 import { revalidatePath } from "next/cache";
 import prisma from "@lib/utils/prisma";
 import { ChatRoleSchema } from "@lib/utils/schema";
+import { remove } from "@lib/actions/s3";
 
-function revalidate() {
-  revalidatePath("/chat/roles");
+function revalidate(id?: number) {
+  revalidatePath(id ? `/chat/roles/${id}` : "/chat/roles");
 }
 
 export async function createChatRole(payload: TypeOf<typeof ChatRoleSchema>) {
@@ -72,10 +73,27 @@ export async function updateChatRole(id: number, payload: Partial<TypeOf<typeof 
   try {
     let poster: object | undefined = void 0;
 
-    if (role.data.poster) {
-      poster = {
-        update: role.data.poster,
-      };
+    if ("poster" in role.data) {
+      const image = await prisma.chat_roles.findUniqueOrThrow({ where: { id } }).poster({
+        select: { s3_key: true },
+      });
+
+      if (image) {
+        await remove(image.s3_key);
+      }
+
+      if (role.data.poster) {
+        poster = {
+          upsert: {
+            update: role.data.poster,
+            create: role.data.poster,
+          },
+        };
+      } else {
+        poster = {
+          delete: {},
+        };
+      }
     }
 
     let category: object | undefined = void 0;
@@ -119,7 +137,7 @@ export async function updateChatRole(id: number, payload: Partial<TypeOf<typeof 
       select: { id: true },
     });
 
-    revalidate();
+    revalidate(id);
 
     return { data: null };
   } catch (error) {
@@ -138,19 +156,19 @@ export async function deleteChatRole(id: number) {
         poster: {
           select: {
             id: true,
-            pathname: true,
+            s3_key: true,
           },
         },
       },
     });
 
     if (role.poster) {
-      await prisma.images.delete({
+      const image = await prisma.images.delete({
         where: { id: role.poster.id },
-        select: { id: true },
+        select: { s3_key: true },
       });
 
-      // todo(aws): remove image from s3
+      await remove(image.s3_key);
     }
 
     revalidate();

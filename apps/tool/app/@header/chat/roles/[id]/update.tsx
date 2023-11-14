@@ -8,20 +8,18 @@ import Loader from "@components/common/loader";
 import FieldGroup from "@components/form/field-group";
 import TextField from "@components/form/text-field";
 import SelectField from "@components/form/select-field";
-import type { LanguageSchema } from "@lib/utils/schema";
+import type { LanguageSchema, ImageSchema } from "@lib/utils/schema";
 import { updateChatRole } from "@lib/actions/chat/role";
 import Edit from "@components/icon/edit";
+import Poster from "@components/common/poster";
+import FileField from "@components/form/file-field";
+import { upload } from "@lib/actions/s3";
 
 type UpdateRoleProps = {
   role: {
     id: number;
     name: string;
-    poster: null | {
-      mime: string;
-      width: number;
-      height: number;
-      pathname: string;
-    };
+    poster: null | string;
     category: {
       id: number;
     };
@@ -42,7 +40,8 @@ export default function UpdateRole(props: UpdateRoleProps) {
   const pathname = usePathname();
 
   const [name, setName] = useState(props.role.name);
-  // const [poster, setPoster] = useState();
+  const [file, setFile] = useState<null | File>(null);
+  const [poster, setPoster] = useState(props.role.poster);
   const [category, setCategory] = useState(props.role.category.id.toString());
   const [language, setLanguage] = useState(props.role.language.code);
   const [description, setDescription] = useState(props.role.description || "");
@@ -61,7 +60,9 @@ export default function UpdateRole(props: UpdateRoleProps) {
       </button>
       <Dialog
         canUpdate={Boolean(
-          name.trim() !== props.role.name ||
+          file ||
+            poster !== props.role.poster ||
+            name.trim() !== props.role.name ||
             language !== props.role.language.code ||
             description.trim() !== props.role.description ||
             category !== props.role.category.id.toString(),
@@ -95,9 +96,10 @@ export default function UpdateRole(props: UpdateRoleProps) {
             value={language}
           />
         </FieldGroup>
-        {/*<FieldGroup className="col-span-2" label="Poster">*/}
-        {/*  <ImageField className="aspect-video" onChange={setPoster} value={poster} />*/}
-        {/*</FieldGroup>*/}
+        <FieldGroup className="col-span-2" label="Poster">
+          <Poster file={file as never} onDelete={onDeletePoster} poster={poster} />
+          <FileField accept="image/*" onChange={setFile} value={file} />
+        </FieldGroup>
         <FieldGroup className="col-span-2" label="Description">
           <TextField onChange={setDescription} rows={7} value={description} />
         </FieldGroup>
@@ -113,17 +115,41 @@ export default function UpdateRole(props: UpdateRoleProps) {
   function onClose() {
     setIsOpen(false);
 
+    setFile(null);
     setName(props.role.name);
-    // setPoster();
+    setPoster(props.role.poster);
     setCategory(props.role.category.id.toString());
     setLanguage(props.role.language.code);
     setDescription(props.role.description || "");
   }
 
+  function onDeletePoster() {
+    setFile(null);
+    setPoster(null);
+  }
+
   function onUpdate() {
     startTransition(async () => {
+      let posterData: TypeOf<typeof ImageSchema> | undefined | null = void 0;
+
+      if (file) {
+        const posterFile = file as File & { width: number; height: number };
+        const data = new FormData();
+        data.append("file", file);
+
+        posterData = {
+          mime: posterFile.type,
+          width: posterFile.width,
+          height: posterFile.height,
+          s3_key: await upload(data),
+        };
+      } else if (!poster) {
+        posterData = null;
+      }
+
       const response = await updateChatRole(props.role.id, {
         name: name.trim(),
+        poster: posterData,
         category: Number(category),
         language,
         description: description.trim(),

@@ -27,7 +27,7 @@ export async function GET(_: NextRequest, props: TemplateProps) {
             mime: true,
             width: true,
             height: true,
-            pathname: true,
+            s3_key: true,
           },
         },
         messages: {
@@ -68,7 +68,10 @@ export async function GET(_: NextRequest, props: TemplateProps) {
     if (template?.poster) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- -
       // @ts-expect-error
-      template.poster.url = getObjectUrl(template.poster.pathname);
+      template.poster.url = getObjectUrl(template.poster.s3_key);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- -
+      // @ts-expect-error
+      delete template.poster.s3_key;
     }
 
     return NextResponse.json({ data: template }, { status: template ? 200 : 404 });

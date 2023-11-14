@@ -8,20 +8,18 @@ import Loader from "@components/common/loader";
 import FieldGroup from "@components/form/field-group";
 import TextField from "@components/form/text-field";
 import SelectField from "@components/form/select-field";
-import type { LanguageSchema } from "@lib/utils/schema";
+import type { LanguageSchema, ImageSchema } from "@lib/utils/schema";
 import { updateTextTemplate } from "@lib/actions/text/template";
 import Edit from "@components/icon/edit";
+import { upload } from "@lib/actions/s3";
+import Poster from "@components/common/poster";
+import FileField from "@components/form/file-field";
 
 type UpdateTemplateProps = {
   template: {
     id: number;
     name: string;
-    poster: null | {
-      mime: string;
-      width: number;
-      height: number;
-      pathname: string;
-    };
+    poster: null | string;
     category: {
       id: number;
     };
@@ -42,7 +40,8 @@ export default function UpdateTemplate(props: UpdateTemplateProps) {
   const pathname = usePathname();
 
   const [name, setName] = useState(props.template.name);
-  // const [poster, setPoster] = useState();
+  const [file, setFile] = useState<null | File>(null);
+  const [poster, setPoster] = useState(props.template.poster);
   const [category, setCategory] = useState(props.template.category.id.toString());
   const [language, setLanguage] = useState(props.template.language.code);
   const [description, setDescription] = useState(props.template.description || "");
@@ -61,7 +60,9 @@ export default function UpdateTemplate(props: UpdateTemplateProps) {
       </button>
       <Dialog
         canUpdate={Boolean(
-          name.trim() !== props.template.name ||
+          file ||
+            poster !== props.template.poster ||
+            name.trim() !== props.template.name ||
             language !== props.template.language.code ||
             description.trim() !== props.template.description ||
             category !== props.template.category.id.toString(),
@@ -95,9 +96,10 @@ export default function UpdateTemplate(props: UpdateTemplateProps) {
             value={language}
           />
         </FieldGroup>
-        {/*<FieldGroup className="col-span-2" label="Poster">*/}
-        {/*  <ImageField className="aspect-video" onChange={setPoster} value={poster} />*/}
-        {/*</FieldGroup>*/}
+        <FieldGroup className="col-span-2" label="Poster">
+          <Poster file={file as never} onDelete={onDeletePoster} poster={poster} />
+          <FileField accept="image/*" onChange={setFile} value={file} />
+        </FieldGroup>
         <FieldGroup className="col-span-2" label="Description">
           <TextField onChange={setDescription} rows={7} value={description} />
         </FieldGroup>
@@ -113,17 +115,44 @@ export default function UpdateTemplate(props: UpdateTemplateProps) {
   function onClose() {
     setIsOpen(false);
 
+    setFile(null);
     setName(props.template.name);
-    // setPoster();
+    setPoster(props.template.poster);
     setCategory(props.template.category.id.toString());
     setLanguage(props.template.language.code);
     setDescription(props.template.description || "");
   }
 
+  function onDeletePoster() {
+    setFile(null);
+    setPoster(null);
+  }
+
   function onUpdate() {
     startTransition(async () => {
+      let posterData: TypeOf<typeof ImageSchema> | undefined | null = void 0;
+
+      if (file) {
+        const posterFile = file as File & {
+          width: number;
+          height: number;
+        };
+        const data = new FormData();
+        data.append("file", file);
+
+        posterData = {
+          mime: posterFile.type,
+          width: posterFile.width,
+          height: posterFile.height,
+          s3_key: await upload(data),
+        };
+      } else if (!poster) {
+        posterData = null;
+      }
+
       const response = await updateTextTemplate(props.template.id, {
         name: name.trim(),
+        poster: posterData,
         category: Number(category),
         language,
         description: description.trim(),

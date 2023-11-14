@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect } from "react";
+import { useState, useTransition } from "react";
 import type { TypeOf } from "zod";
 import { useRouter, usePathname } from "next/navigation";
 import Dialog from "@components/common/dialog";
@@ -12,6 +12,9 @@ import type { LanguageSchema, ImageSchema } from "@lib/utils/schema";
 import { updateImageTemplate } from "@lib/actions/image/template";
 import Edit from "@components/icon/edit";
 import IconButtonSuccess from "@components/button/icon-button-success";
+import FileField from "@components/form/file-field";
+import Poster from "@components/common/poster";
+import { upload } from "@lib/actions/s3";
 
 type UpdateTemplateProps = {
   leonardo: {
@@ -22,7 +25,7 @@ type UpdateTemplateProps = {
     id: number;
     name: string;
     model: null | string;
-    poster: null | TypeOf<typeof ImageSchema>;
+    poster: null | string;
     provider: string;
     language: TypeOf<typeof LanguageSchema>;
     description: null | string;
@@ -35,8 +38,9 @@ export default function UpdateTemplate(props: UpdateTemplateProps) {
   const pathname = usePathname();
 
   const [name, setName] = useState(props.template.name);
+  const [file, setFile] = useState<null | File>(null);
   const [model, setModel] = useState(props.template.model);
-  // const [poster, setPoster] = useState();
+  const [poster, setPoster] = useState(props.template.poster);
   const [provider, setProvider] = useState(props.template.provider);
   const [language, setLanguage] = useState(props.template.language.code);
   const [description, setDescription] = useState(props.template.description || "");
@@ -44,18 +48,20 @@ export default function UpdateTemplate(props: UpdateTemplateProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  useEffect(() => {
-    setModel(["Leonardo"].includes(provider) ? "" : null);
-  }, [provider]);
-
   return (
     <>
       <IconButtonSuccess className="-my-1.5" onClick={onOpen}>
         <Edit size={16} />
       </IconButtonSuccess>
       <Dialog
-        // canCreate={Boolean(name.trim() && language && provider && model !== "")}
-        canUpdate={Boolean()}
+        canUpdate={Boolean(
+          file ||
+            poster !== props.template.poster ||
+            name.trim() !== props.template.name ||
+            language !== props.template.language.code ||
+            description.trim() !== props.template.description ||
+            (provider === props.template.provider ? model !== props.template.model && model !== "" : provider),
+        )}
         className="max-w-lg grid-cols-2 gap-2"
         onClose={onClose}
         onUpdate={onUpdate}
@@ -66,7 +72,14 @@ export default function UpdateTemplate(props: UpdateTemplateProps) {
           <TextField onChange={setName} value={name} />
         </FieldGroup>
         <FieldGroup label="Provider">
-          <SelectField onChange={setProvider} options={["DALL·E", "Leonardo"]} value={provider} />
+          <SelectField
+            onChange={(value) => {
+              setProvider(value);
+              setModel(["Leonardo"].includes(value) ? "" : null);
+            }}
+            options={["DALL·E", "Leonardo"]}
+            value={provider}
+          />
         </FieldGroup>
         <FieldGroup label="Language">
           <SelectField
@@ -90,9 +103,10 @@ export default function UpdateTemplate(props: UpdateTemplateProps) {
             />
           </FieldGroup>
         )}
-        {/*<FieldGroup className="col-span-2" label="Poster">*/}
-        {/*  <ImageField className="aspect-video" onChange={setPoster} value={poster} />*/}
-        {/*</FieldGroup>*/}
+        <FieldGroup className="col-span-2" label="Poster">
+          <Poster file={file as never} onDelete={onDeletePoster} poster={poster} />
+          <FileField accept="image/*" onChange={setFile} value={file} />
+        </FieldGroup>
         <FieldGroup className="col-span-2" label="Description">
           <TextField onChange={setDescription} rows={7} value={description} />
         </FieldGroup>
@@ -108,19 +122,43 @@ export default function UpdateTemplate(props: UpdateTemplateProps) {
   function onClose() {
     setIsOpen(false);
 
+    setFile(null);
     setName(props.template.name);
     setModel(props.template.model);
-    // resetPoster();
+    setPoster(props.template.poster);
     setProvider(props.template.provider);
     setLanguage(props.template.language.code);
     setDescription(props.template.description || "");
   }
 
+  function onDeletePoster() {
+    setFile(null);
+    setPoster(null);
+  }
+
   function onUpdate() {
     startTransition(async () => {
+      let posterData: TypeOf<typeof ImageSchema> | undefined | null = void 0;
+
+      if (file) {
+        const posterFile = file as File & { width: number; height: number };
+        const data = new FormData();
+        data.append("file", file);
+
+        posterData = {
+          mime: posterFile.type,
+          width: posterFile.width,
+          height: posterFile.height,
+          s3_key: await upload(data),
+        };
+      } else if (!poster) {
+        posterData = null;
+      }
+
       const response = await updateImageTemplate(props.template.id, {
         name: name.trim(),
         model,
+        poster: posterData,
         provider,
         language,
         description: description.trim(),

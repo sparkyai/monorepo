@@ -6,9 +6,10 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import prisma from "@lib/utils/prisma";
 import { TextTemplateSchema, MessageSchema } from "@lib/utils/schema";
+import { remove } from "@lib/actions/s3";
 
 function revalidate(id?: number) {
-  revalidatePath(id ? "/text/templates" : `/text/templates/${id}`);
+  revalidatePath(id ? `/text/templates/${id}` : "/text/templates");
 }
 
 export async function createTextTemplate(payload: TypeOf<typeof TextTemplateSchema>) {
@@ -72,10 +73,27 @@ export async function updateTextTemplate(id: number, payload: Partial<TypeOf<typ
   try {
     let poster: object | undefined = void 0;
 
-    if (template.data.poster) {
-      poster = {
-        create: template.data.poster,
-      };
+    if ("poster" in template.data) {
+      const image = await prisma.text_templates.findUniqueOrThrow({ where: { id } }).poster({
+        select: { s3_key: true },
+      });
+
+      if (image) {
+        await remove(image.s3_key);
+      }
+
+      if (template.data.poster) {
+        poster = {
+          upsert: {
+            update: template.data.poster,
+            create: template.data.poster,
+          },
+        };
+      } else {
+        poster = {
+          delete: {},
+        };
+      }
     }
 
     let category: object | undefined = void 0;
@@ -118,7 +136,7 @@ export async function updateTextTemplate(id: number, payload: Partial<TypeOf<typ
       select: { id: true },
     });
 
-    revalidate();
+    revalidate(id);
 
     return { data: null };
   } catch (error) {
@@ -137,19 +155,19 @@ export async function deleteTextTemplate(id: number) {
         poster: {
           select: {
             id: true,
-            pathname: true,
+            s3_key: true,
           },
         },
       },
     });
 
     if (template.poster) {
-      await prisma.images.delete({
+      const image = await prisma.images.delete({
         where: { id: template.poster.id },
-        select: { id: true },
+        select: { s3_key: true },
       });
 
-      // todo(aws): remove image from s3
+      await remove(image.s3_key);
     }
 
     revalidate();

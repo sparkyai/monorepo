@@ -40,7 +40,7 @@ export default async function Table(props: TableProps) {
             mime: true,
             width: true,
             height: true,
-            pathname: true,
+            s3_key: true,
           },
         },
         category: {

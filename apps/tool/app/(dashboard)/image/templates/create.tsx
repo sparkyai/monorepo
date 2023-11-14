@@ -9,8 +9,11 @@ import ButtonPrimary from "@components/button/button-primary";
 import FieldGroup from "@components/form/field-group";
 import TextField from "@components/form/text-field";
 import SelectField from "@components/form/select-field";
-import type { LanguageSchema } from "@lib/utils/schema";
+import type { LanguageSchema, ImageSchema } from "@lib/utils/schema";
 import { createImageTemplate } from "@lib/actions/image/template";
+import Poster from "@components/common/poster";
+import FileField from "@components/form/file-field";
+import { upload } from "@lib/actions/s3";
 
 type CreateTemplateProps = {
   leonardo: {
@@ -25,8 +28,9 @@ export default function CreateTemplate(props: CreateTemplateProps) {
   const pathname = usePathname();
 
   const [name, setName] = useState("");
+  const [file, setFile] = useState<null | File>(null);
   const [model, setModel] = useState<null | string>(null);
-  // const [poster, setPoster] = useState();
+  const [poster, setPoster] = useState<null | string>(null);
   const [provider, setProvider] = useState("");
   const [language, setLanguage] = useState("");
   const [description, setDescription] = useState("");
@@ -79,9 +83,10 @@ export default function CreateTemplate(props: CreateTemplateProps) {
             />
           </FieldGroup>
         )}
-        {/*<FieldGroup className="col-span-2" label="Poster">*/}
-        {/*  <ImageField className="aspect-video" onChange={setPoster} value={poster} />*/}
-        {/*</FieldGroup>*/}
+        <FieldGroup className="col-span-2" label="Poster">
+          <Poster file={file as never} poster={poster} />
+          <FileField accept="image/*" onChange={setFile} value={file} />
+        </FieldGroup>
         <FieldGroup className="col-span-2" label="Description">
           <TextField onChange={setDescription} rows={7} value={description} />
         </FieldGroup>
@@ -98,8 +103,9 @@ export default function CreateTemplate(props: CreateTemplateProps) {
     setIsOpen(false);
 
     setName("");
+    setFile(null);
     setModel(null);
-    // resetPoster();
+    setPoster(null);
     setProvider("");
     setLanguage("");
     setDescription("");
@@ -107,9 +113,25 @@ export default function CreateTemplate(props: CreateTemplateProps) {
 
   function onCreate() {
     startTransition(async () => {
+      let posterData: TypeOf<typeof ImageSchema> | undefined | null = void 0;
+
+      if (file) {
+        const posterFile = file as File & { width: number; height: number };
+        const data = new FormData();
+        data.append("file", file);
+
+        posterData = {
+          mime: posterFile.type,
+          width: posterFile.width,
+          height: posterFile.height,
+          s3_key: await upload(data),
+        };
+      }
+
       const response = await createImageTemplate({
         name: name.trim(),
         model,
+        poster: posterData,
         provider,
         language,
         description: description.trim(),

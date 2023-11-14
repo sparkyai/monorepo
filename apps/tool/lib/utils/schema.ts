@@ -40,7 +40,7 @@ export const ImageSchema = z.object({
   mime: z.string().min(1),
   width: z.number().positive().int(),
   height: z.number().positive().int(),
-  pathname: z.string().min(1),
+  s3_key: z.string().min(1),
 });
 
 export const GPTParametersSchema = z.object({
@@ -54,7 +54,7 @@ export const GPTParametersSchema = z.object({
 export const ChatRoleSchema = z.object({
   name: z.string().min(1),
   prompt: z.optional(z.string()),
-  poster: z.optional(ImageSchema),
+  poster: z.optional(z.nullable(ImageSchema)),
   category: z.number().positive(),
   language: LanguageSchema.shape.code,
   parameters: z.optional(GPTParametersSchema),
@@ -69,7 +69,7 @@ export const ChatCategorySchema = z.object({
 export const ImageTemplateSchema = z.object({
   name: z.string().min(1),
   model: z.optional(z.nullable(z.string().min(1))),
-  poster: z.optional(ImageSchema),
+  poster: z.optional(z.nullable(ImageSchema)),
   provider: z.string().min(1),
   language: LanguageSchema.shape.code,
   description: z.optional(z.string()),
@@ -82,7 +82,7 @@ export const MessageSchema = z.object({
 
 export const TextTemplateSchema = z.object({
   name: z.string().min(1),
-  poster: z.optional(ImageSchema),
+  poster: z.optional(z.nullable(ImageSchema)),
   category: z.number().positive(),
   language: LanguageSchema.shape.code,
   parameters: z.optional(GPTParametersSchema),

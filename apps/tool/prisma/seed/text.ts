@@ -20,7 +20,7 @@ export async function seed(prisma: PrismaClient) {
                     mime: "",
                     width: 0,
                     height: 0,
-                    pathname: url.pathname,
+                    s3_key: url.pathname.slice(1),
                   },
                 };
               }

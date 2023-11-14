@@ -5,6 +5,7 @@ import type { TypeOf } from "zod";
 import { revalidatePath } from "next/cache";
 import prisma from "@lib/utils/prisma";
 import { ImageTemplateSchema } from "@lib/utils/schema";
+import { remove } from "@lib/actions/s3";
 
 function revalidate() {
   revalidatePath("/image/templates");
@@ -61,10 +62,27 @@ export async function updateImageTemplate(id: number, payload: Partial<TypeOf<ty
   try {
     let poster: object | undefined = void 0;
 
-    if (template.data.poster) {
-      poster = {
-        update: template.data.poster,
-      };
+    if ("poster" in template.data) {
+      const image = await prisma.image_templates.findUniqueOrThrow({ where: { id } }).poster({
+        select: { s3_key: true },
+      });
+
+      if (image) {
+        await remove(image.s3_key);
+      }
+
+      if (template.data.poster) {
+        poster = {
+          upsert: {
+            update: template.data.poster,
+            create: template.data.poster,
+          },
+        };
+      } else {
+        poster = {
+          delete: {},
+        };
+      }
     }
 
     await prisma.image_templates.update({
@@ -101,19 +119,19 @@ export async function deleteImageTemplate(id: number) {
         poster: {
           select: {
             id: true,
-            pathname: true,
+            s3_key: true,
           },
         },
       },
     });
 
     if (role.poster) {
-      await prisma.images.delete({
+      const image = await prisma.images.delete({
         where: { id: role.poster.id },
-        select: { id: true },
+        select: { s3_key: true },
       });
 
-      // todo(aws): remove image from s3
+      await remove(image.s3_key);
     }
 
     revalidate();
