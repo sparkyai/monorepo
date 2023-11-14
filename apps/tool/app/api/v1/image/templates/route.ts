@@ -9,7 +9,7 @@ import { decoder } from "@lib/utils/qs";
 export const revalidate = 0;
 
 export async function GET(request: NextRequest) {
-  const params = ListQuerySchema.safeParse(parse(request.nextUrl.search.slice(1), { decoder }));
+  const params = ListQuerySchema.partial().safeParse(parse(request.nextUrl.search.slice(1), { decoder }));
 
   if (!params.success) {
     return NextResponse.json({ error: params.error.format() }, { status: 500 });

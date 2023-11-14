@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
 import { UserSchema } from "@lib/utils/schema";
-import { getTokenBalance } from "@lib/utils/data";
+import { getUserTokenBalance } from "@lib/data/telegram/user";
 
 export const revalidate = 0;
 
@@ -36,7 +36,7 @@ export async function GET(_: NextRequest, props: UserProps) {
     return NextResponse.json({
       data: {
         id: user.id,
-        tokens: await getTokenBalance(user.id),
+        tokens: await getUserTokenBalance(user.id),
         language: user.language,
         last_name: user.last_name,
         first_name: user.first_name,

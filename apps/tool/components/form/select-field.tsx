@@ -20,6 +20,7 @@ type TextFieldProps = {
   onChange?: (value: string) => void;
   className?: string;
   placeholder?: string;
+  defaultValue?: string;
 };
 
 export default function SelectField(props: TextFieldProps) {
@@ -57,6 +58,7 @@ export default function SelectField(props: TextFieldProps) {
           "w-full rounded-md bg-transparent px-4 py-2 leading-5 tracking-wider",
           props.value && "pr-12",
         )}
+        defaultValue={props.defaultValue}
         id={input}
         onChange={onChange}
         onFocus={onFocus}

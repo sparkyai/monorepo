@@ -2,8 +2,8 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
-import { getPosterUrl } from "@lib/utils/data";
 import { getTemplateParameters } from "@lib/utils/model";
+import { getObjectUrl } from "@lib/utils/s3";
 
 export const revalidate = 0;
 
@@ -27,7 +27,7 @@ export async function GET(_: NextRequest, props: TemplateProps) {
             mime: true,
             width: true,
             height: true,
-            pathname: true,
+            s3_key: true,
           },
         },
         messages: {
@@ -68,7 +68,10 @@ export async function GET(_: NextRequest, props: TemplateProps) {
     if (template?.poster) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- -
       // @ts-expect-error
-      template.poster.url = getPosterUrl(template.poster.pathname);
+      template.poster.url = getObjectUrl(template.poster.s3_key);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- -
+      // @ts-expect-error
+      delete template.poster.s3_key;
     }
 
     return NextResponse.json({ data: template }, { status: template ? 200 : 404 });

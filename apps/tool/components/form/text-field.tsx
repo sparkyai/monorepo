@@ -14,6 +14,7 @@ type TextFieldProps = {
   onChange?: (value: string) => void;
   className?: string;
   placeholder?: string;
+  defaultValue?: string;
 };
 
 export default function TextField(props: TextFieldProps) {
@@ -28,6 +29,7 @@ export default function TextField(props: TextFieldProps) {
           "w-full rounded-md bg-transparent px-4 py-2 leading-5 tracking-wider",
           props.value && "pr-12",
         )}
+        defaultValue={props.defaultValue}
         list={props.list && !isTextArea ? list : void 0}
         onChange={onChange}
         placeholder={props.placeholder}

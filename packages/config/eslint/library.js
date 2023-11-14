@@ -38,6 +38,7 @@ module.exports = {
     "import/no-extraneous-dependencies": "off",
     "@typescript-eslint/no-unsafe-return": "off",
     "@typescript-eslint/no-unsafe-argument": "off",
+    "@typescript-eslint/no-unnecessary-condition": "off",
     "@typescript-eslint/no-unnecessary-type-assertion": "off",
   },
 };
