@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import type { TypeOf } from "zod";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Dialog from "@components/common/dialog";
 import Loader from "@components/common/loader";
 import FieldGroup from "@components/form/field-group";
@@ -24,8 +24,6 @@ type UpdateCategoryProps = {
 
 export default function UpdateCategory(props: UpdateCategoryProps) {
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -83,7 +81,7 @@ export default function UpdateCategory(props: UpdateCategoryProps) {
         throw new Error(JSON.stringify(response.error, void 0, 2));
       }
 
-      router.replace([pathname, searchParams.toString()].filter(Boolean).join("?"));
+      router.refresh();
       setIsOpen(false);
     });
   }

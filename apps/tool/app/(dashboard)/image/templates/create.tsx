@@ -49,7 +49,7 @@ export default function CreateTemplate(props: CreateTemplateProps) {
       </ButtonPrimary>
       <Dialog
         canCreate={Boolean(name.trim() && language && provider && model !== "")}
-        className="max-w-lg grid-cols-2 gap-2"
+        className="max-w-screen-sm grid-cols-2 gap-2"
         onClose={onClose}
         onCreate={onCreate}
         open={isOpen}

@@ -10,6 +10,7 @@ type TablePaginationProps = {
   page: number;
   total: number;
   start: number;
+  disabled?: boolean;
 };
 
 export default function TablePagination(props: TablePaginationProps) {
@@ -20,10 +21,10 @@ export default function TablePagination(props: TablePaginationProps) {
   return (
     <div className="col-span-full flex items-start justify-end gap-2 border-t border-slate-700 px-4 py-2 text-sm">
       <span className="px-2 py-1 text-sm leading-5">{`${props.start} - ${props.end} of ${props.total}`}</span>
-      <IconButton disabled={props.page < 2} onClick={handler(props.page - 1)}>
+      <IconButton disabled={props.disabled || props.page < 2} onClick={handler(props.page - 1)}>
         <ChevronLeft size={16} />
       </IconButton>
-      <IconButton disabled={props.end === props.total} onClick={handler(props.page + 1)}>
+      <IconButton disabled={props.disabled || props.end === props.total} onClick={handler(props.page + 1)}>
         <ChevronRight size={16} />
       </IconButton>
     </div>

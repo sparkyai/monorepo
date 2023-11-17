@@ -24,7 +24,7 @@ export async function GET(request: NextRequest, props: CategoryProps) {
     return NextResponse.json({ data: category }, { status: 404 });
   }
 
-  const params = ListQuerySchema.partial().safeParse(parse(request.nextUrl.search.slice(1), { decoder }));
+  const params = ListQuerySchema.safeParse(parse(request.nextUrl.search.slice(1), { decoder }));
 
   if (!params.success) {
     return NextResponse.json({ error: params.error.format() }, { status: 500 });

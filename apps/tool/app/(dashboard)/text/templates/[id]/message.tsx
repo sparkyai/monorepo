@@ -45,7 +45,7 @@ export default function Message(props: MessageProps) {
       </div>
       <Dialog
         canUpdate={Boolean(role && (role !== props.message.role || content.trim() !== props.message.content))}
-        className="max-w-lg"
+        className="max-w-screen-sm"
         onClose={onClose}
         onUpdate={onUpdate}
         open={props.show}

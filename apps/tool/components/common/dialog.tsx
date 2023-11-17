@@ -11,6 +11,7 @@ type DialogProps = PropsWithChildren<{
   open?: boolean;
   footer?: ReactNode;
   onClose?: VoidFunction;
+  onTopUp?: VoidFunction;
   onCreate?: VoidFunction;
   onUpdate?: VoidFunction;
   onDelete?: VoidFunction;
@@ -39,7 +40,7 @@ export default function Dialog(props: DialogProps) {
               </IconButton>
             </header>
             {props.children}
-            {(props.onCreate || props.onUpdate || props.onDelete) && (
+            {(props.onCreate || props.onTopUp || props.onUpdate || props.onDelete) && (
               <footer className="col-span-full mt-6 flex justify-end gap-3">
                 {props.onCreate && (
                   <ButtonPrimary
@@ -49,6 +50,11 @@ export default function Dialog(props: DialogProps) {
                     size="lg"
                   >
                     Create
+                  </ButtonPrimary>
+                )}
+                {props.onTopUp && (
+                  <ButtonPrimary className="w-1/2" onClick={props.onTopUp} size="lg">
+                    Top Up
                   </ButtonPrimary>
                 )}
                 {props.onUpdate && (

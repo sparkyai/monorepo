@@ -17,7 +17,7 @@ export default function TableRow(props: TableRowProps) {
             "flex gap-2 truncate px-4 py-3",
           )}
           key={typeof item === "string" ? `:${item}:${i}:` : item.key}
-          title={typeof item === "string" ? `:${item}:${i}:` : void 0}
+          title={typeof item === "string" ? item : void 0}
         >
           {typeof item === "string" ? <span>{item}</span> : item}
         </div>

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import type { TypeOf } from "zod";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Dialog from "@components/common/dialog";
 import Loader from "@components/common/loader";
 import FieldGroup from "@components/form/field-group";
@@ -35,7 +35,6 @@ type UpdateTemplateProps = {
 
 export default function UpdateTemplate(props: UpdateTemplateProps) {
   const router = useRouter();
-  const pathname = usePathname();
 
   const [name, setName] = useState(props.template.name);
   const [file, setFile] = useState<null | File>(null);
@@ -62,7 +61,7 @@ export default function UpdateTemplate(props: UpdateTemplateProps) {
             description.trim() !== props.template.description ||
             (provider === props.template.provider ? model !== props.template.model && model !== "" : provider),
         )}
-        className="max-w-lg grid-cols-2 gap-2"
+        className="max-w-screen-sm grid-cols-2 gap-2"
         onClose={onClose}
         onUpdate={onUpdate}
         open={isOpen}
@@ -151,7 +150,7 @@ export default function UpdateTemplate(props: UpdateTemplateProps) {
           height: posterFile.height,
           s3_key: await upload(data),
         };
-      } else if (!poster) {
+      } else if (!poster && props.template.poster) {
         posterData = null;
       }
 
@@ -168,7 +167,7 @@ export default function UpdateTemplate(props: UpdateTemplateProps) {
         throw new Error(JSON.stringify(response.error, void 0, 2));
       }
 
-      router.replace(pathname);
+      router.refresh();
       setIsOpen(false);
     });
   }

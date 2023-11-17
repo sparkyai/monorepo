@@ -34,7 +34,7 @@ export default function Prompt(props: PromptProps) {
       </button>
       <Dialog
         canUpdate={prompt.trim() !== props.role.prompt}
-        className="max-w-lg"
+        className="max-w-screen-sm"
         onClose={onClose}
         onUpdate={onUpdate}
         open={isOpen}

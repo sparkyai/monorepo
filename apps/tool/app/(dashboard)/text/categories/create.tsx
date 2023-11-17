@@ -63,6 +63,9 @@ export default function CreateCategory(props: CreateCategoryProps) {
 
   function onClose() {
     setIsOpen(false);
+
+    setName("");
+    setLanguage("");
   }
 
   function onCreate() {
