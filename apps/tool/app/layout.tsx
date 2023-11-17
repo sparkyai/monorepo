@@ -41,6 +41,9 @@ export default async function RootLayout(props: RootLayoutProps) {
           <SidebarGroup label="Image">
             <SidebarLink href="/image/templates">Templates</SidebarLink>
           </SidebarGroup>
+          <SidebarGroup label="Telegram">
+            <SidebarLink href="/telegram/users">Users</SidebarLink>
+          </SidebarGroup>
         </SidebarLayout>
         <div className="flex grow flex-col">
           {props.header}

@@ -44,7 +44,7 @@ export default function CreateRole(props: CreateRoleProps) {
       </ButtonPrimary>
       <Dialog
         canCreate={Boolean(name && category && language)}
-        className="max-w-lg grid-cols-2 gap-2"
+        className="max-w-screen-sm grid-cols-2 gap-2"
         onClose={onClose}
         onCreate={onCreate}
         open={isOpen}

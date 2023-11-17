@@ -7,6 +7,8 @@ export const interaction = z.object({
   }),
 });
 
+export const AnalyticPeriod = z.enum(["day", "week", "month", "year"]);
+
 export const LanguageSchema = z.object({
   code: z.string().length(2),
   name: z.string().min(1),
@@ -18,7 +20,7 @@ export const PaginationSchema = z.object({
 });
 
 export const ListQuerySchema = PaginationSchema.extend({
-  locale: LanguageSchema.shape.code,
+  locale: z.optional(LanguageSchema.shape.code),
 });
 
 export const UserSchema = z.object({
@@ -26,6 +28,7 @@ export const UserSchema = z.object({
   language: z.optional(z.string().length(2)),
   first_name: z.string().min(1),
   last_name: z.optional(z.string().min(1)),
+  show_notification: z.optional(z.boolean()),
 });
 
 export const PaymentSchema = z.object({

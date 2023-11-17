@@ -146,7 +146,7 @@ export default function UpdateTemplate(props: UpdateTemplateProps) {
           height: posterFile.height,
           s3_key: await upload(data),
         };
-      } else if (!poster) {
+      } else if (!poster && props.template.poster) {
         posterData = null;
       }
 

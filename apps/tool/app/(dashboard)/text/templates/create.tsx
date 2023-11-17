@@ -44,7 +44,7 @@ export default function CreateTemplate(props: CreateTemplateProps) {
       </ButtonPrimary>
       <Dialog
         canCreate={Boolean(name.trim() && category && language)}
-        className="max-w-lg grid-cols-2 gap-2"
+        className="max-w-screen-sm grid-cols-2 gap-2"
         onClose={onClose}
         onCreate={onCreate}
         open={isOpen}
@@ -129,7 +129,8 @@ export default function CreateTemplate(props: CreateTemplateProps) {
         throw new Error(JSON.stringify(response.error, void 0, 2));
       }
 
-      router.replace(`${pathname}/${response.data.id}`);
+      router.refresh();
+      router.push(`${pathname}/${response.data.id}`);
       onClose();
     });
   }

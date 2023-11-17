@@ -26,7 +26,7 @@ export async function getUserTokenBalance(id: bigint) {
     if (payment.expired_at) {
       const [chat, text, image] = await Promise.all([
         prisma.chat_role_usage.aggregate({
-          _sum: { prompt_tokens: true, completion_tokens: true },
+          _sum: { completion_tokens: true },
           where: {
             user: { id },
             created_at: {
@@ -36,7 +36,7 @@ export async function getUserTokenBalance(id: bigint) {
           },
         }),
         prisma.text_template_usage.aggregate({
-          _sum: { prompt_tokens: true, completion_tokens: true },
+          _sum: { completion_tokens: true },
           where: {
             user: { id },
             created_at: {
@@ -59,9 +59,7 @@ export async function getUserTokenBalance(id: bigint) {
 
       tokens +=
         payment.tokens -
-        (chat._sum.prompt_tokens || 0) -
         (chat._sum.completion_tokens || 0) -
-        (text._sum.prompt_tokens || 0) -
         (text._sum.completion_tokens || 0) -
         (image._sum.tokens || 0);
     }

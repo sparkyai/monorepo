@@ -118,6 +118,8 @@ export async function POST(request: NextRequest, props: UserProps) {
         },
         last_name: payload.data.last_name,
         first_name: payload.data.first_name,
+        extra_tokens: Number(process.env.REGISTERED_USER_TOKENS),
+        show_notification: payload.data.show_notification,
       },
       select: { id: true },
     });

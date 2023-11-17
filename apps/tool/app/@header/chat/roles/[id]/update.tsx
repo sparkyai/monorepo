@@ -143,7 +143,7 @@ export default function UpdateRole(props: UpdateRoleProps) {
           height: posterFile.height,
           s3_key: await upload(data),
         };
-      } else if (!poster) {
+      } else if (!poster && props.role.poster) {
         posterData = null;
       }
 

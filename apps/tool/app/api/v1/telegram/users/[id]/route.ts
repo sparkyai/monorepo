@@ -26,6 +26,7 @@ export async function GET(_: NextRequest, props: UserProps) {
         },
         last_name: true,
         first_name: true,
+        show_notification: true,
       },
     });
 

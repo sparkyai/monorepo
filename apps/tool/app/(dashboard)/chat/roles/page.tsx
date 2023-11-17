@@ -22,7 +22,7 @@ export default async function ChatRoles(props: ChatRolesProps) {
   const category = props.searchParams?.category || "";
   const locale = props.searchParams?.locale || "";
   const query = props.searchParams?.query || "";
-  const limit = 10;
+  const limit = 20;
   const page = Number(props.searchParams?.page || "1");
 
   if (page < 1) {

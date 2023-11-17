@@ -7,7 +7,7 @@ type WidgetProps = PropsWithChildren<{
 
 export default function Widget(props: WidgetProps) {
   return (
-    <div className={twMerge("flex flex-col rounded-md border border-slate-700 bg-slate-800", props.className)}>
+    <div className={twMerge("flex flex-col rounded-md border border-slate-700 bg-slate-800 p-2", props.className)}>
       {props.children}
     </div>
   );
