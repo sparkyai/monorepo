@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
-import { UserSchema } from "@lib/utils/schema";
+import { TelegramUserSchema } from "@lib/utils/schema";
 import { getUserTokenBalance } from "@lib/data/telegram/user";
 
 export const revalidate = 0;
@@ -52,7 +52,7 @@ export async function GET(_: NextRequest, props: UserProps) {
 }
 
 export async function PUT(request: NextRequest, props: UserProps) {
-  const payload = UserSchema.partial().safeParse(await request.json());
+  const payload = TelegramUserSchema.partial().safeParse(await request.json());
 
   if (!payload.success) {
     return NextResponse.json({ error: payload.error.format() }, { status: 500 });

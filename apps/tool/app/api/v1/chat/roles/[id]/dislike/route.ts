@@ -3,13 +3,13 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
-import { UserSchema } from "@lib/utils/schema";
+import { TelegramUserSchema } from "@lib/utils/schema";
 
 export const revalidate = 0;
 
 const PayloadSchema = z.object({
   telegram: z.object({
-    user: UserSchema.pick({
+    user: TelegramUserSchema.pick({
       id: true,
     }),
   }),

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { parse } from "qs";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
-import { PaginationSchema, UserSchema } from "@lib/utils/schema";
+import { PaginationSchema, TelegramUserSchema } from "@lib/utils/schema";
 import { decoder } from "@lib/utils/qs";
 import { GET as GETUser } from "../route";
 
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest, props: UserProps) {
     return NextResponse.json({ data: referrer }, { status: 404 });
   }
 
-  const payload = UserSchema.safeParse(await request.json());
+  const payload = TelegramUserSchema.safeParse(await request.json());
 
   if (!payload.success) {
     return NextResponse.json({ error: payload.error.format() }, { status: 500 });

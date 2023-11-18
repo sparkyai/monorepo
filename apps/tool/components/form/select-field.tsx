@@ -67,7 +67,7 @@ export default function SelectField(props: TextFieldProps) {
         value={query}
       />
       {query && (
-        <button className="absolute right-0 rounded-r-md p-2.5" onClick={onClear} type="button">
+        <button className="absolute right-0 rounded-r-md p-2.5" onClick={onClear} tabIndex={-1} type="button">
           <Close size={16} />
         </button>
       )}

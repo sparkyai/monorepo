@@ -28,7 +28,7 @@ export default function NumberField(props: NumberFieldProps) {
         value={props.value}
       />
       {props.value !== 0 && (
-        <button className="absolute right-0 rounded-r-md p-2.5" onClick={onClick} type="button">
+        <button className="absolute right-0 rounded-r-md p-2.5" onClick={onClick} tabIndex={-1} type="button">
           <Close size={16} />
         </button>
       )}

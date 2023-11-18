@@ -1,10 +1,10 @@
 import { z } from "zod";
 
-export const interaction = z.object({
-  type: z.enum(["like", "dislike", "generate", "regenerate"]),
-  client: z.object({
-    id: z.number().positive(),
-  }),
+export const UserSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+  last_name: z.string().min(1),
+  first_name: z.string().min(1),
 });
 
 export const AnalyticPeriod = z.enum(["day", "week", "month", "year"]);
@@ -23,7 +23,7 @@ export const ListQuerySchema = PaginationSchema.extend({
   locale: z.optional(LanguageSchema.shape.code),
 });
 
-export const UserSchema = z.object({
+export const TelegramUserSchema = z.object({
   id: z.bigint().or(z.number().int()),
   language: z.optional(z.string().length(2)),
   first_name: z.string().min(1),

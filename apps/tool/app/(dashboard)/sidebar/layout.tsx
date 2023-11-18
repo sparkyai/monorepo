@@ -3,7 +3,7 @@ import Sparky from "@components/brand/sparky";
 
 export default function SidebarLayout(props: PropsWithChildren) {
   return (
-    <aside className="flex w-60 shrink-0 flex-col gap-4 overflow-y-auto bg-slate-950">
+    <aside className="flex w-60 shrink-0 flex-col bg-slate-950">
       <div className="px-4">
         <div className="flex items-center justify-center gap-3 py-4">
           <Sparky size={40} />
@@ -11,7 +11,7 @@ export default function SidebarLayout(props: PropsWithChildren) {
         </div>
         <hr className="border-slate-700" />
       </div>
-      {props.children}
+      <div className="flex grow flex-col gap-4 overflow-y-auto py-4">{props.children}</div>
     </aside>
   );
 }

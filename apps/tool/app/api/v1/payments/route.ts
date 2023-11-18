@@ -2,14 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
-import { UserSchema, PaymentSchema } from "@lib/utils/schema";
+import { TelegramUserSchema, PaymentSchema } from "@lib/utils/schema";
 import { GET } from "./[id]/route";
 
 export const revalidate = 0;
 
 const PayloadSchema = PaymentSchema.omit({ id: true }).extend({
   telegram: z.object({
-    user: UserSchema.pick({
+    user: TelegramUserSchema.pick({
       id: true,
     }),
   }),
