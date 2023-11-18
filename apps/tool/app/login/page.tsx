@@ -1,8 +1,6 @@
-import { redirect } from "next/navigation";
 import Widget from "@components/common/widget";
 import Sparky from "@components/brand/sparky";
 import prisma from "@lib/utils/prisma";
-import { getSessionUser } from "@lib/utils/next-auth";
 import Form from "./form";
 
 type LoginProps = {
@@ -12,10 +10,6 @@ type LoginProps = {
 };
 
 export default async function Login(props: LoginProps) {
-  if (await getSessionUser()) {
-    redirect("/");
-  }
-
   let user: { email: string } | null = null;
 
   if (props.searchParams.signature) {
