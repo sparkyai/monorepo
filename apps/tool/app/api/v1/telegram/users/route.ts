@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
-import { UserSchema } from "@lib/utils/schema";
+import { TelegramUserSchema } from "@lib/utils/schema";
+import { withTokenVerify } from "@lib/utils/validate";
 import { GET } from "./[id]/route";
 
 export const revalidate = 0;
 
-export async function POST(request: NextRequest) {
-  const payload = UserSchema.safeParse(await request.json());
+export const POST = withTokenVerify(async function POST(request: NextRequest) {
+  const payload = TelegramUserSchema.safeParse(await request.json());
 
   if (!payload.success) {
     return NextResponse.json({ error: payload.error.format() }, { status: 500 });
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     const url = `${request.nextUrl.origin}${request.nextUrl.pathname}/${user.id}${request.nextUrl.search}`;
 
-    return GET(new NextRequest(url), {
+    return GET(new NextRequest(url, { headers: request.headers }), {
       params: { id: user.id.toString() },
     });
   } catch (error) {
@@ -47,4 +48,4 @@ export async function POST(request: NextRequest) {
     Sentry.captureException(error);
     return NextResponse.json({ error: { _errors: [] } }, { status: 500 });
   }
-}
+});

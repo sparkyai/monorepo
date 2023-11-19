@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
-import { UserSchema } from "@lib/utils/schema";
+import { TelegramUserSchema } from "@lib/utils/schema";
+import { withTokenVerify } from "@lib/utils/validate";
 
 export const revalidate = 0;
 
@@ -11,7 +12,7 @@ const PayloadSchema = z.object({
   input: z.record(z.string().min(1)),
   prompt: z.string().min(1),
   telegram: z.object({
-    user: UserSchema.pick({
+    user: TelegramUserSchema.pick({
       id: true,
     }),
   }),
@@ -25,7 +26,7 @@ type TemplateProps = {
   };
 };
 
-export async function PUT(request: NextRequest, props: TemplateProps) {
+export const PUT = withTokenVerify(async function PUT(request: NextRequest, props: TemplateProps) {
   const payload = PayloadSchema.safeParse(await request.json());
 
   if (!payload.success) {
@@ -57,4 +58,4 @@ export async function PUT(request: NextRequest, props: TemplateProps) {
     Sentry.captureException(error);
     return NextResponse.json({ error: { _errors: [] } }, { status: 500 });
   }
-}
+});

@@ -27,7 +27,7 @@ export default function Search(props: SearchProps) {
     router.replace(`${pathname}?${params.toString()}`);
   }, 300);
 
-  return <TextField className="w-60" onChange={onChant} placeholder={props.placeholder} type="search" value={query} />;
+  return <TextField className="w-72" onChange={onChant} placeholder={props.placeholder} type="search" value={query} />;
 
   function onChant(value: string) {
     setQuery(value);

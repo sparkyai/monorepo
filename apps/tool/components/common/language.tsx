@@ -28,7 +28,7 @@ export default function Language(props: LanguageProps) {
 
   return (
     <SelectField
-      className="w-36"
+      className="w-40"
       onChange={setLanguage}
       options={props.languages.map((item) => ({
         label: item.name,

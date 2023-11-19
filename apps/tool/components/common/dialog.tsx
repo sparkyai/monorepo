@@ -13,10 +13,12 @@ type DialogProps = PropsWithChildren<{
   onClose?: VoidFunction;
   onTopUp?: VoidFunction;
   onCreate?: VoidFunction;
+  onInvite?: VoidFunction;
   onUpdate?: VoidFunction;
   onDelete?: VoidFunction;
   className?: string;
   canCreate?: boolean;
+  canInvite?: boolean;
   canUpdate?: boolean;
   canDelete?: boolean;
 }>;
@@ -40,7 +42,7 @@ export default function Dialog(props: DialogProps) {
               </IconButton>
             </header>
             {props.children}
-            {(props.onCreate || props.onTopUp || props.onUpdate || props.onDelete) && (
+            {(props.onCreate || props.onInvite || props.onTopUp || props.onUpdate || props.onDelete) && (
               <footer className="col-span-full mt-6 flex justify-end gap-3">
                 {props.onCreate && (
                   <ButtonPrimary
@@ -50,6 +52,11 @@ export default function Dialog(props: DialogProps) {
                     size="lg"
                   >
                     Create
+                  </ButtonPrimary>
+                )}
+                {props.onInvite && (
+                  <ButtonPrimary className="w-1/2" onClick={props.onInvite} size="lg">
+                    Invite
                   </ButtonPrimary>
                 )}
                 {props.onTopUp && (

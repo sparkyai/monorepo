@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
 import { getObjectUrl } from "@lib/utils/s3";
+import { withTokenVerify } from "@lib/utils/validate";
 
 export const revalidate = 0;
 
@@ -12,7 +13,7 @@ type RoleProps = {
   };
 };
 
-export async function GET(_: NextRequest, props: RoleProps) {
+export const GET = withTokenVerify(async function GET(_: NextRequest, props: RoleProps) {
   try {
     const role = await prisma.chat_roles.findUnique({
       where: { id: Number(props.params.id) },
@@ -69,4 +70,4 @@ export async function GET(_: NextRequest, props: RoleProps) {
     Sentry.captureException(error);
     return NextResponse.json({ error: { _errors: [] } }, { status: 500 });
   }
-}
+});

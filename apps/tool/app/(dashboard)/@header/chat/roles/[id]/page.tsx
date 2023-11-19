@@ -1,19 +1,19 @@
 import { notFound } from "next/navigation";
 import prisma from "@lib/utils/prisma";
-import Back from "@app/@header/back";
+import Back from "@app/(dashboard)/@header/back";
 import { getLanguageCollection } from "@lib/data/language";
 import { getObjectUrl } from "@lib/utils/s3";
-import UpdateTemplate from "./update";
+import UpdateRole from "./update";
 
-type TemplateHeaderProps = {
+type RoleHeaderProps = {
   params: {
     id: string;
   };
 };
 
-export default async function TemplateHeader(props: TemplateHeaderProps) {
-  const [template, categories, languages] = await Promise.all([
-    prisma.text_templates.findUnique({
+export default async function RoleHeader(props: RoleHeaderProps) {
+  const [role, categories, languages] = await Promise.all([
+    prisma.chat_roles.findUnique({
       where: { id: Number(props.params.id) },
       select: {
         id: true,
@@ -39,7 +39,7 @@ export default async function TemplateHeader(props: TemplateHeaderProps) {
         description: true,
       },
     }),
-    prisma.text_categories.findMany({
+    prisma.chat_categories.findMany({
       select: {
         id: true,
         name: true,
@@ -49,20 +49,20 @@ export default async function TemplateHeader(props: TemplateHeaderProps) {
     getLanguageCollection(),
   ]);
 
-  if (!template) {
+  if (!role) {
     notFound();
   }
 
   const update = {
-    ...template,
-    poster: template.poster ? getObjectUrl(template.poster.s3_key) : null,
+    ...role,
+    poster: role.poster ? getObjectUrl(role.poster.s3_key) : null,
   };
 
   return (
     <>
       <Back />
-      <h1 className="max-w-xs truncate text-3xl font-medium tracking-wide">{template.name}</h1>
-      <UpdateTemplate categories={categories} languages={languages} template={update} />
+      <h1 className="max-w-xs truncate text-3xl font-medium tracking-wide">{role.name}</h1>
+      <UpdateRole categories={categories} languages={languages} role={update} />
     </>
   );
 }

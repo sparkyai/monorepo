@@ -46,7 +46,7 @@ export default function ImageField(props: ImageFieldProps) {
       </label>
 
       {props.value && (
-        <button className="absolute right-0 top-0 rounded-r-md p-2.5" onClick={onClear} type="button">
+        <button className="absolute right-0 top-0 rounded-r-md p-2.5" onClick={onClear} tabIndex={-1} type="button">
           <Close size={16} />
         </button>
       )}

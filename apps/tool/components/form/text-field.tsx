@@ -12,6 +12,7 @@ type TextFieldProps = {
   list?: string[];
   value?: string;
   onChange?: (value: string) => void;
+  readOnly?: boolean;
   className?: string;
   placeholder?: string;
   defaultValue?: string;
@@ -27,18 +28,19 @@ export default function TextField(props: TextFieldProps) {
       <Component
         className={twMerge(
           "w-full rounded-md bg-transparent px-4 py-2 leading-5 tracking-wider",
-          props.value && "pr-12",
+          props.value && !props.readOnly && "pr-12",
         )}
         defaultValue={props.defaultValue}
         list={props.list && !isTextArea ? list : void 0}
         onChange={onChange}
         placeholder={props.placeholder}
+        readOnly={props.readOnly}
         rows={props.rows}
         type={isTextArea ? void 0 : props.type || "text"}
         value={props.value}
       />
-      {props.value && !isTextArea && (
-        <button className="absolute right-0 rounded-r-md p-2.5" onClick={onClick} type="button">
+      {props.value && !props.readOnly && !isTextArea && (
+        <button className="absolute right-0 rounded-r-md p-2.5" onClick={onClick} tabIndex={-1} type="button">
           <Close size={16} />
         </button>
       )}
