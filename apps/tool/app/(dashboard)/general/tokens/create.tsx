@@ -7,32 +7,32 @@ import Loader from "@components/common/loader";
 import ButtonPrimary from "@components/button/button-primary";
 import FieldGroup from "@components/form/field-group";
 import TextField from "@components/form/text-field";
-import { inviteUser } from "@lib/actions/general/user";
+import { createToken } from "@lib/actions/general/token";
 
-export default function InviteUser() {
+export default function CreateToken() {
   const router = useRouter();
   const pathname = usePathname();
 
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
 
   return (
     <>
       <ButtonPrimary className="ml-auto truncate" onClick={onOpen}>
-        Invite
+        Create
       </ButtonPrimary>
       <Dialog
-        canInvite={Boolean(email)}
+        canCreate={Boolean(name)}
         className="gap-2"
         onClose={onClose}
-        onInvite={onCreate}
+        onCreate={onCreate}
         open={isOpen}
-        title="Invite User"
+        title="Create Token"
       >
-        <FieldGroup className="col-span-full" label="Email">
-          <TextField onChange={setEmail} type="email" value={email} />
+        <FieldGroup className="col-span-full" label="Name">
+          <TextField onChange={setName} value={name} />
         </FieldGroup>
         {isPending && <Loader className="absolute inset-0 bg-slate-950/60" />}
       </Dialog>
@@ -46,12 +46,12 @@ export default function InviteUser() {
   function onClose() {
     setIsOpen(false);
 
-    setEmail("");
+    setName("");
   }
 
   function onCreate() {
     startTransition(async () => {
-      const response = await inviteUser({ email });
+      const response = await createToken({ name });
 
       if (response.error) {
         throw new Error(JSON.stringify(response.error, void 0, 2));

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
 import { PaymentSchema } from "@lib/utils/schema";
+import { withTokenVerify } from "@lib/utils/validate";
 
 export const revalidate = 0;
 
@@ -11,7 +12,7 @@ type PaymentProps = {
   };
 };
 
-export async function GET(_: NextRequest, props: PaymentProps) {
+export const GET = withTokenVerify(async function GET(_: NextRequest, props: PaymentProps) {
   try {
     const payment = await prisma.payments.findUnique({
       where: { id: props.params.id },
@@ -41,9 +42,9 @@ export async function GET(_: NextRequest, props: PaymentProps) {
     Sentry.captureException(error);
     return NextResponse.json({ error: { _errors: [] } }, { status: 500 });
   }
-}
+});
 
-export async function PUT(request: NextRequest, props: PaymentProps) {
+export const PUT = withTokenVerify(async function PUT(request: NextRequest, props: PaymentProps) {
   const payload = PaymentSchema.pick({ status: true }).safeParse(await request.json());
 
   if (!payload.success) {
@@ -57,7 +58,7 @@ export async function PUT(request: NextRequest, props: PaymentProps) {
       select: { id: true },
     });
 
-    return GET(new NextRequest(request.url), {
+    return GET(new NextRequest(request.url, { headers: request.headers }), {
       params: { id: payment.id.toString() },
     });
   } catch (error) {
@@ -66,4 +67,4 @@ export async function PUT(request: NextRequest, props: PaymentProps) {
     Sentry.captureException(error);
     return NextResponse.json({ error: { _errors: [] } }, { status: 500 });
   }
-}
+});

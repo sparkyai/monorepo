@@ -4,6 +4,7 @@ import { z } from "zod";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
 import { TelegramUserSchema } from "@lib/utils/schema";
+import { withTokenVerify } from "@lib/utils/validate";
 
 export const revalidate = 0;
 
@@ -24,7 +25,7 @@ type TemplateProps = {
   };
 };
 
-export async function PUT(request: NextRequest, props: TemplateProps) {
+export const PUT = withTokenVerify(async function PUT(request: NextRequest, props: TemplateProps) {
   const payload = PayloadSchema.safeParse(await request.json());
 
   if (!payload.success) {
@@ -55,4 +56,4 @@ export async function PUT(request: NextRequest, props: TemplateProps) {
     Sentry.captureException(error);
     return NextResponse.json({ error: { _errors: [] } }, { status: 500 });
   }
-}
+});

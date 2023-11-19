@@ -1,6 +1,5 @@
 "use server";
 
-import { createHash } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import * as Sentry from "@sentry/nextjs";
 import bcrypt from "bcrypt";
@@ -8,6 +7,7 @@ import type { TypeOf } from "zod";
 import { UserSchema } from "@lib/utils/schema";
 import { sendEmail } from "@lib/utils/sendgrid";
 import prisma from "@lib/utils/prisma";
+import { hash } from "@lib/utils/crypto";
 
 function revalidate() {
   revalidatePath("/general/users");
@@ -25,11 +25,7 @@ export async function inviteUser(payload: TypeOf<typeof InviteSchema>) {
   }
 
   try {
-    const hash = createHash("SHA256");
-    hash.update(`${user.data.email}:${Date.now()}`);
-
-    const signature = hash.digest("hex");
-
+    const signature = hash("md5", `${user.data.email}:${Date.now()}`, "base64url");
     const data = await prisma.users.create({
       data: {
         email: user.data.email,

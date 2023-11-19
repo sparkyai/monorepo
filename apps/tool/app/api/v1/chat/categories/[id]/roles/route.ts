@@ -5,6 +5,7 @@ import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
 import { ListQuerySchema } from "@lib/utils/schema";
 import { decoder } from "@lib/utils/qs";
+import { withTokenVerify } from "@lib/utils/validate";
 
 export const revalidate = 0;
 
@@ -14,7 +15,7 @@ type CategoryProps = {
   };
 };
 
-export async function GET(request: NextRequest, props: CategoryProps) {
+export const GET = withTokenVerify(async function GET(request: NextRequest, props: CategoryProps) {
   const category = await prisma.chat_categories.findUnique({
     where: { id: Number(props.params.id) },
     select: { id: true },
@@ -75,4 +76,4 @@ export async function GET(request: NextRequest, props: CategoryProps) {
     Sentry.captureException(error);
     return NextResponse.json({ error: { _errors: [] } }, { status: 500 });
   }
-}
+});

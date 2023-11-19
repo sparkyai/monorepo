@@ -30,7 +30,7 @@ export default async function DashboardLayout(props: DashboardLayoutProps) {
         </SidebarGroup>
         <SidebarGroup label="General">
           <SidebarLink href="/general/users">Users</SidebarLink>
-          <SidebarLink href="/general/api-tokens">API Tokens</SidebarLink>
+          <SidebarLink href="/general/tokens">API Tokens</SidebarLink>
         </SidebarGroup>
       </SidebarLayout>
       <div className="flex grow flex-col">

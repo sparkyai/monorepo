@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
 import { getTemplateParameters } from "@lib/utils/model";
 import { getObjectUrl } from "@lib/utils/s3";
+import { withTokenVerify } from "@lib/utils/validate";
 
 export const revalidate = 0;
 
@@ -13,7 +14,7 @@ type TemplateProps = {
   };
 };
 
-export async function GET(_: NextRequest, props: TemplateProps) {
+export const GET = withTokenVerify(async function GET(_: NextRequest, props: TemplateProps) {
   try {
     const template = await prisma.text_templates.findUnique({
       where: {
@@ -81,4 +82,4 @@ export async function GET(_: NextRequest, props: TemplateProps) {
     Sentry.captureException(error);
     return NextResponse.json({ error: { _errors: [] } }, { status: 500 });
   }
-}
+});

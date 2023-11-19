@@ -3,6 +3,7 @@ import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
 import { TelegramUserSchema } from "@lib/utils/schema";
 import { getUserTokenBalance } from "@lib/data/telegram/user";
+import { withTokenVerify } from "@lib/utils/validate";
 
 export const revalidate = 0;
 
@@ -12,7 +13,7 @@ type UserProps = {
   };
 };
 
-export async function GET(_: NextRequest, props: UserProps) {
+export const GET = withTokenVerify(async function GET(_: NextRequest, props: UserProps) {
   try {
     const user = await prisma.telegram_users.findUnique({
       where: { id: Number(props.params.id) },
@@ -49,9 +50,9 @@ export async function GET(_: NextRequest, props: UserProps) {
     Sentry.captureException(error);
     return NextResponse.json({ error: { _errors: [] } }, { status: 500 });
   }
-}
+});
 
-export async function PUT(request: NextRequest, props: UserProps) {
+export const PUT = withTokenVerify(async function PUT(request: NextRequest, props: UserProps) {
   const payload = TelegramUserSchema.partial().safeParse(await request.json());
 
   if (!payload.success) {
@@ -79,7 +80,7 @@ export async function PUT(request: NextRequest, props: UserProps) {
       select: { id: true },
     });
 
-    return GET(new NextRequest(request.url), {
+    return GET(new NextRequest(request.url, { headers: request.headers }), {
       params: { id: user.id.toString() },
     });
   } catch (error) {
@@ -88,4 +89,4 @@ export async function PUT(request: NextRequest, props: UserProps) {
     Sentry.captureException(error);
     return NextResponse.json({ error: { _errors: [] } }, { status: 500 });
   }
-}
+});

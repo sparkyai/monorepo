@@ -7,6 +7,10 @@ export const UserSchema = z.object({
   first_name: z.string().min(1),
 });
 
+export const TokensSchema = z.object({
+  name: z.string().min(1),
+});
+
 export const AnalyticPeriod = z.enum(["day", "week", "month", "year"]);
 
 export const LanguageSchema = z.object({
