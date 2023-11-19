@@ -1,14 +1,13 @@
 import type { PrismaClient } from "@prisma/client";
-import { faker } from "@faker-js/faker";
 import telegram from "../telegram-users.json";
 
 export async function seed(prisma: PrismaClient) {
   await prisma.users.createMany({
     data: {
-      email: faker.internet.email(),
-      password: "",
-      first_name: faker.person.firstName(),
-      last_name: faker.person.lastName(),
+      email: "vladstsk@gmail.com",
+      password: "$2b$10$eI.vgdEMCE6Y1sEC4FXn/uxJ1q.zru3A3V3htyig.ImMU4dFAzo12",
+      last_name: "Stasiuk",
+      first_name: "Vladyslav",
     },
   });
 
