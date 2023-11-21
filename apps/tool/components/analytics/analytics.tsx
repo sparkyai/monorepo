@@ -58,10 +58,17 @@ export function AnalyticsProvider(props: AnalyticProviderProps) {
         if (!payload.error) {
           setData(
             payload.data.map((item) => {
-              const date = new Date(item.date).getTime();
-              // console.log(date.getTimezoneOffset());
+              const result: Record<string, number> = {
+                date: new Date(item.date).getTime(),
+              };
 
-              return { ...item, date };
+              delete item.date;
+
+              for (const name in item) {
+                result[name] = Number(item[name]);
+              }
+
+              return result;
             }),
           );
         }

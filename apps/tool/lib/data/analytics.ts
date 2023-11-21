@@ -65,7 +65,8 @@ export async function getTelegramUserTokenUsage(id: number, period: TypeOf<typeo
           WHERE iu.user_id = ${id}
           AND iu.created_at > now() - ${interval}:: INTERVAL
           GROUP BY 1) usage
-      GROUP BY 1;
+      GROUP BY 1
+      ORDER BY 1;
   `;
 }
 
@@ -94,7 +95,8 @@ export async function getTelegramUserGenerationUsage(id: number, period: TypeOf<
           WHERE iu.user_id = ${id}
           AND iu.created_at > now() - ${interval}:: INTERVAL
           GROUP BY 1) usage
-      GROUP BY 1;
+      GROUP BY 1
+      ORDER BY 1;
   `;
 }
 
@@ -107,7 +109,8 @@ export async function getImageTemplateTokenUsage(id: number, period: TypeOf<type
       WHERE iu.template_id = ${id}
         AND iu.created_at
           > now() - ${interval}:: INTERVAL
-      GROUP BY 1;
+      GROUP BY 1
+      ORDER BY 1;
   `;
 }
 
@@ -120,7 +123,8 @@ export async function getImageTemplateGenerationUsage(id: number, period: TypeOf
       WHERE iu.template_id = ${id}
         AND iu.created_at
           > now() - ${interval}:: INTERVAL
-      GROUP BY 1;
+      GROUP BY 1
+      ORDER BY 1;
   `;
 }
 
@@ -135,7 +139,8 @@ export async function getTextTemplateTokenUsage(id: number, period: TypeOf<typeo
       WHERE tu.template_id = ${id}
         AND tu.created_at
           > now() - ${interval}:: INTERVAL
-      GROUP BY 1;
+      GROUP BY 1
+      ORDER BY 1;
   `;
 }
 
@@ -148,7 +153,8 @@ export async function getTextTemplateGenerationUsage(id: number, period: TypeOf<
       WHERE tu.template_id = ${id}
         AND tu.created_at
           > now() - ${interval}:: INTERVAL
-      GROUP BY 1;
+      GROUP BY 1
+      ORDER BY 1;
   `;
 }
 
@@ -166,7 +172,8 @@ export async function getTextCategoryTokenUsage(id: number, period: TypeOf<typeo
       WHERE tc.id = ${id}
         AND tu.created_at
           > now() - ${interval}:: INTERVAL
-      GROUP BY 1;
+      GROUP BY 1
+      ORDER BY 1;
   `;
 }
 
@@ -182,7 +189,8 @@ export async function getTextCategoryGenerationUsage(id: number, period: TypeOf<
       WHERE tc.id = ${id}
         AND tu.created_at
           > now() - ${interval}:: INTERVAL
-      GROUP BY 1;
+      GROUP BY 1
+      ORDER BY 1;
   `;
 }
 
@@ -197,7 +205,8 @@ export async function getChatRoleTokenUsage(id: number, period: TypeOf<typeof An
       WHERE cu.role_id = ${id}
         AND cu.created_at
           > now() - ${interval}:: INTERVAL
-      GROUP BY 1;
+      GROUP BY 1
+      ORDER BY 1;
   `;
 }
 
@@ -210,7 +219,8 @@ export async function getChatRoleGenerationUsage(id: number, period: TypeOf<type
       WHERE cu.role_id = ${id}
         AND cu.created_at
           > now() - ${interval}:: INTERVAL
-      GROUP BY 1;
+      GROUP BY 1
+      ORDER BY 1;
   `;
 }
 
@@ -228,7 +238,8 @@ export async function getChatCategoryTokenUsage(id: number, period: TypeOf<typeo
       WHERE cc.id = ${id}
         AND cu.created_at
           > now() - ${interval}:: INTERVAL
-      GROUP BY 1;
+      GROUP BY 1
+      ORDER BY 1;
   `;
 }
 
@@ -244,7 +255,8 @@ export async function getChatCategoryGenerationUsage(id: number, period: TypeOf<
       WHERE cc.id = ${id}
         AND cu.created_at
           > now() - ${interval}:: INTERVAL
-      GROUP BY 1;
+      GROUP BY 1
+      ORDER BY 1;
   `;
 }
 
@@ -270,7 +282,8 @@ export async function getTokenUsage(period: TypeOf<typeof AnalyticPeriodSchema>)
           FROM public.image_template_usage iu
           WHERE iu.created_at > now() - ${interval}:: INTERVAL
           GROUP BY 1) usage
-      GROUP BY 1;
+      GROUP BY 1
+      ORDER BY 1;
   `;
 }
 
@@ -296,6 +309,7 @@ export async function getGenerationUsage(period: TypeOf<typeof AnalyticPeriodSch
           FROM public.image_template_usage iu
           WHERE iu.created_at > now() - ${interval}:: INTERVAL
           GROUP BY 1) usage
-      GROUP BY 1;
+      GROUP BY 1
+      ORDER BY 1;
   `;
 }
