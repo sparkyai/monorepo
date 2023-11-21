@@ -11,24 +11,39 @@ const fields = {
   year: "week",
 };
 
-type TokenUsage = {
+declare interface Usage {
   date: Date;
-  image_tokens: number;
+}
+
+declare interface GPTTokenUsage extends Usage {
   prompt_tokens: number;
   completion_tokens: number;
-};
+}
 
-type GenerationUsage = {
-  date: Date;
+declare interface ImageTokenUsage extends Usage {
+  image_tokens: number;
+}
+
+declare interface SummaryTokenUsage extends GPTTokenUsage, ImageTokenUsage {}
+
+declare interface TextGenerationUsage extends Usage {
   text_generations: number;
+}
+
+declare interface ChatGenerationUsage extends Usage {
   chat_generations: number;
+}
+
+declare interface ImageGenerationUsage extends Usage {
   image_generations: number;
-};
+}
+
+declare interface SummaryGenerationUsage extends TextGenerationUsage, ChatGenerationUsage, ImageGenerationUsage {}
 
 export async function getTelegramUserTokenUsage(id: number, period: TypeOf<typeof AnalyticPeriodSchema>) {
   const interval = `1 ${period}`;
 
-  return prisma.$queryRaw<TokenUsage[]>`
+  return prisma.$queryRaw<SummaryTokenUsage[]>`
       SELECT date_trunc(${fields[period]}, usage.date) date,
              sum(usage.image_tokens)      image_tokens,
              sum(usage.prompt_tokens)     prompt_tokens,
@@ -57,7 +72,7 @@ export async function getTelegramUserTokenUsage(id: number, period: TypeOf<typeo
 export async function getTelegramUserGenerationUsage(id: number, period: TypeOf<typeof AnalyticPeriodSchema>) {
   const interval = `1 ${period}`;
 
-  return prisma.$queryRaw<GenerationUsage[]>`
+  return prisma.$queryRaw<SummaryGenerationUsage[]>`
       SELECT date_trunc(${fields[period]}, usage.date) date,
        sum(usage.chat_generations)                           chat_generations,
        sum(usage.text_generations)                           text_generations,
@@ -86,7 +101,7 @@ export async function getTelegramUserGenerationUsage(id: number, period: TypeOf<
 export async function getImageTemplateTokenUsage(id: number, period: TypeOf<typeof AnalyticPeriodSchema>) {
   const interval = `1 ${period}`;
 
-  return prisma.$queryRaw<Pick<TokenUsage, "date" | "image_tokens">[]>`
+  return prisma.$queryRaw<ImageTokenUsage[]>`
       SELECT date_trunc(${fields[period]}, iu.created_at) date, sum (iu.tokens) image_tokens
       FROM public.image_template_usage iu
       WHERE iu.template_id = ${id}
@@ -99,7 +114,7 @@ export async function getImageTemplateTokenUsage(id: number, period: TypeOf<type
 export async function getImageTemplateGenerationUsage(id: number, period: TypeOf<typeof AnalyticPeriodSchema>) {
   const interval = `1 ${period}`;
 
-  return prisma.$queryRaw<Pick<GenerationUsage, "date" | "image_generations">[]>`
+  return prisma.$queryRaw<ImageGenerationUsage[]>`
       SELECT date_trunc(${fields[period]}, iu.created_at) date, count (iu) image_generations
       FROM public.image_template_usage iu
       WHERE iu.template_id = ${id}
@@ -112,7 +127,7 @@ export async function getImageTemplateGenerationUsage(id: number, period: TypeOf
 export async function getTextTemplateTokenUsage(id: number, period: TypeOf<typeof AnalyticPeriodSchema>) {
   const interval = `1 ${period}`;
 
-  return prisma.$queryRaw<Omit<TokenUsage, "image_tokens">[]>`
+  return prisma.$queryRaw<GPTTokenUsage[]>`
       SELECT date_trunc(${fields[period]}, tu.created_at) date,
        sum(tu.prompt_tokens)                        prompt_tokens,
        sum(tu.completion_tokens)                    completion_tokens
@@ -127,8 +142,8 @@ export async function getTextTemplateTokenUsage(id: number, period: TypeOf<typeo
 export async function getTextTemplateGenerationUsage(id: number, period: TypeOf<typeof AnalyticPeriodSchema>) {
   const interval = `1 ${period}`;
 
-  return prisma.$queryRaw<Omit<GenerationUsage, "image_generations">[]>`
-      SELECT date_trunc(${fields[period]}, tu.created_at) date, count(tu) image_generations
+  return prisma.$queryRaw<TextGenerationUsage[]>`
+      SELECT date_trunc(${fields[period]}, tu.created_at) date, count(tu) text_generations
       FROM public.text_template_usage tu
       WHERE tu.template_id = ${id}
         AND tu.created_at
@@ -140,7 +155,7 @@ export async function getTextTemplateGenerationUsage(id: number, period: TypeOf<
 export async function getTextCategoryTokenUsage(id: number, period: TypeOf<typeof AnalyticPeriodSchema>) {
   const interval = `1 ${period}`;
 
-  return prisma.$queryRaw<Omit<TokenUsage, "image_tokens">[]>`
+  return prisma.$queryRaw<GPTTokenUsage[]>`
       SELECT date_trunc(${fields[period]}, tu.created_at) date,
        sum(tu.prompt_tokens)                        prompt_tokens,
        sum(tu.completion_tokens)                    completion_tokens
@@ -158,8 +173,8 @@ export async function getTextCategoryTokenUsage(id: number, period: TypeOf<typeo
 export async function getTextCategoryGenerationUsage(id: number, period: TypeOf<typeof AnalyticPeriodSchema>) {
   const interval = `1 ${period}`;
 
-  return prisma.$queryRaw<Omit<GenerationUsage, "image_generations">[]>`
-      SELECT date_trunc(${fields[period]}, tu.created_at) date, count(tu) image_generations
+  return prisma.$queryRaw<TextGenerationUsage[]>`
+      SELECT date_trunc(${fields[period]}, tu.created_at) date, count(tu) text_generations
       FROM public.text_template_usage tu
           INNER JOIN public.text_templates tt
       ON tt.id = tu.template_id
@@ -174,7 +189,7 @@ export async function getTextCategoryGenerationUsage(id: number, period: TypeOf<
 export async function getChatRoleTokenUsage(id: number, period: TypeOf<typeof AnalyticPeriodSchema>) {
   const interval = `1 ${period}`;
 
-  return prisma.$queryRaw<Omit<TokenUsage, "image_tokens">[]>`
+  return prisma.$queryRaw<GPTTokenUsage[]>`
       SELECT date_trunc(${fields[period]}, cu.created_at) date,
        sum(cu.prompt_tokens)                        prompt_tokens,
        sum(cu.completion_tokens)                    completion_tokens
@@ -189,8 +204,8 @@ export async function getChatRoleTokenUsage(id: number, period: TypeOf<typeof An
 export async function getChatRoleGenerationUsage(id: number, period: TypeOf<typeof AnalyticPeriodSchema>) {
   const interval = `1 ${period}`;
 
-  return prisma.$queryRaw<Omit<GenerationUsage, "image_generations">[]>`
-      SELECT date_trunc(${fields[period]}, cu.created_at) date, count(cu) image_generations
+  return prisma.$queryRaw<ChatGenerationUsage[]>`
+      SELECT date_trunc(${fields[period]}, cu.created_at) date, count(cu) chat_generations
       FROM public.chat_role_usage cu
       WHERE cu.role_id = ${id}
         AND cu.created_at
@@ -202,7 +217,7 @@ export async function getChatRoleGenerationUsage(id: number, period: TypeOf<type
 export async function getChatCategoryTokenUsage(id: number, period: TypeOf<typeof AnalyticPeriodSchema>) {
   const interval = `1 ${period}`;
 
-  return prisma.$queryRaw<Omit<TokenUsage, "image_tokens">[]>`
+  return prisma.$queryRaw<GPTTokenUsage[]>`
       SELECT date_trunc(${fields[period]}, cu.created_at) date,
        sum(cu.prompt_tokens)                        prompt_tokens,
        sum(cu.completion_tokens)                    completion_tokens
@@ -220,8 +235,8 @@ export async function getChatCategoryTokenUsage(id: number, period: TypeOf<typeo
 export async function getChatCategoryGenerationUsage(id: number, period: TypeOf<typeof AnalyticPeriodSchema>) {
   const interval = `1 ${period}`;
 
-  return prisma.$queryRaw<Omit<GenerationUsage, "image_generations">[]>`
-      SELECT date_trunc(${fields[period]}, cu.created_at) date, count(cu) image_generations
+  return prisma.$queryRaw<ChatGenerationUsage[]>`
+      SELECT date_trunc(${fields[period]}, cu.created_at) date, count(cu) chat_generations
       FROM public.chat_role_usage cu
           INNER JOIN public.chat_roles cr
       ON cr.id = cu.role_id
@@ -236,7 +251,7 @@ export async function getChatCategoryGenerationUsage(id: number, period: TypeOf<
 export async function getTokenUsage(period: TypeOf<typeof AnalyticPeriodSchema>) {
   const interval = `1 ${period}`;
 
-  return prisma.$queryRaw<Omit<TokenUsage, "image_tokens">[]>`
+  return prisma.$queryRaw<SummaryTokenUsage[]>`
       SELECT date_trunc(${fields[period]}, usage.date) date,
              sum(usage.image_tokens)      image_tokens,
              sum(usage.prompt_tokens)     prompt_tokens,
@@ -262,7 +277,7 @@ export async function getTokenUsage(period: TypeOf<typeof AnalyticPeriodSchema>)
 export async function getGenerationUsage(period: TypeOf<typeof AnalyticPeriodSchema>) {
   const interval = `1 ${period}`;
 
-  return prisma.$queryRaw<Omit<GenerationUsage, "image_generations">[]>`
+  return prisma.$queryRaw<SummaryGenerationUsage[]>`
       SELECT date_trunc(${fields[period]}, usage.date) date,
        sum(usage.chat_generations)                           chat_generations,
        sum(usage.text_generations)                           text_generations,

@@ -14,9 +14,12 @@ function yearFormat(value: number) {
 
 type AreaChartProps = {
   keys: Record<string, string>;
+  name?: (key: string) => string;
 };
 
 export default function AreaChart(props: AreaChartProps) {
+  const getName = props.name || ((key: string) => key.replace("_", " "));
+
   const [data, isLoading] = useAnalyticsData();
 
   return (
@@ -46,7 +49,7 @@ export default function AreaChart(props: AreaChartProps) {
                 dataKey={key}
                 fill={props.keys[key]}
                 key={key}
-                name={key.replace("_", " ")}
+                name={getName(key)}
                 stroke={props.keys[key]}
                 type="monotone"
               />

@@ -26,7 +26,7 @@ export default function CategoryAnalytics(props: CategoryAnalyticsProps) {
           <AreaChart keys={{ prompt_tokens: "#EA580C", completion_tokens: "#1D4ED8" }} />
         </AnalyticsProvider>
         <AnalyticsProvider endpoint={`/api/analytics/chat/categories/${props.category.id}/generation-usage`}>
-          <AreaChart keys={{ chat_generations: "#EA580C", image_generations: "#1D4ED8" }} />
+          <AreaChart keys={{ chat_generations: "#1D4ED8" }} name={() => "generations"} />
         </AnalyticsProvider>
       </Dialog>
     </>

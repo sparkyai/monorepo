@@ -26,7 +26,7 @@ export default function TemplateAnalytics(props: TemplateAnalyticsProps) {
           <AreaChart keys={{ image_tokens: "#1D4ED8" }} />
         </AnalyticsProvider>
         <AnalyticsProvider endpoint={`/api/analytics/image/templates/${props.template.id}/generation-usage`}>
-          <AreaChart keys={{ image_generations: "#1D4ED8" }} />
+          <AreaChart keys={{ image_generations: "#1D4ED8" }} name={() => "generations"} />
         </AnalyticsProvider>
       </Dialog>
     </>
