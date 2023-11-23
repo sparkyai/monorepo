@@ -6,11 +6,18 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - data:/var/lib/postgresql/data/
+      - tool-postgres:/var/lib/postgresql/data/
+    networks:
+      - sparky
     environment:
       POSTGRES_DB: tool
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: secret
 
+networks:
+  sparky:
+    driver: bridge
+
 volumes:
-  data:
+  tool-postgres:
+    driver: local

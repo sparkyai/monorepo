@@ -26,7 +26,7 @@ export default function RoleAnalytics(props: RoleAnalyticsProps) {
           <AreaChart keys={{ prompt_tokens: "#EA580C", completion_tokens: "#1D4ED8" }} />
         </AnalyticsProvider>
         <AnalyticsProvider endpoint={`/api/analytics/chat/roles/${props.role.id}/generation-usage`}>
-          <AreaChart keys={{ chat_generations: "#EA580C", image_generations: "#1D4ED8" }} />
+          <AreaChart keys={{ chat_generations: "#1D4ED8" }} name={() => "generations"} />
         </AnalyticsProvider>
       </Dialog>
     </>
