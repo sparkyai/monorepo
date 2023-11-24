@@ -90,3 +90,19 @@ export const PUT = withTokenVerify(async function PUT(request: NextRequest, prop
     return NextResponse.json({ error: { _errors: [] } }, { status: 500 });
   }
 });
+
+export const DELETE = withTokenVerify(async function DELETE(_: NextRequest, props: UserProps) {
+  try {
+    await prisma.telegram_users.delete({
+      where: { id: Number(props.params.id) },
+      select: { id: true },
+    });
+
+    return NextResponse.json({ data: null });
+  } catch (error) {
+    // eslint-disable-next-line no-console -- console.error(error);
+    console.error(error);
+    Sentry.captureException(error);
+    return NextResponse.json({ error: { _errors: [] } }, { status: 500 });
+  }
+});
