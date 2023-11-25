@@ -1,27 +1,31 @@
-/**
- * @param {string} key
- * @return {string}
- */
-function env(key) {
-  return process.env[key] || "";
+function env(key, _default) {
+  const value = process.env[key];
+
+  if (value || typeof _default === "string") {
+    return value || _default;
+  }
+
+  throw new Error(`The environment variable "${key}" is not available`);
 }
 
-/**
- * @param {string} key
- * @return {number}
- */
-env.number = function number(key) {
-  return Number(env(key));
+env.number = function number(key, _default) {
+  const value = Number(env(key, String(_default)));
+
+  if (!isNaN(value)) {
+    return value;
+  }
+
+  throw new Error(`The environment variable "${key}" must be of type number`);
 };
 
-/**
- * @param {string} key
- * @return {boolean}
- */
-env.boolean = function boolean(key) {
-  const value = env(key);
+env.boolean = function boolean(key, _default) {
+  const value = env(key, String(_default));
 
-  return Boolean(value) && value !== "false";
+  if (["true", "false"].includes(value.toLowerCase().trim())) {
+    return value === "true";
+  }
+
+  throw new Error(`The environment variable "${key}" must be of type boolean`);
 };
 
 module.exports = { env };

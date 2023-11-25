@@ -1,7 +1,7 @@
 const { withSentryConfig } = require("@sentry/nextjs");
 const env = require("@sparky/env").env;
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
-  enabled: env.boolean("ANALYZE") && env("NODE_ENV") === "production",
+  enabled: env.boolean("ANALYZE", false) && env("NODE_ENV") === "production",
   openAnalyzer: false,
 });
 
