@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@sentry/nextjs": "^7.75.0",
+    "@sparky/env": "workspace:^",
     "next": "^13.4.19",
     "qs": "^6.11.2",
     "react": "^18.2.0",

@@ -1,6 +1,7 @@
 import type { ServerRuntime } from "next";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { env } from "@sparky/env";
 import { pickSearchParams } from "lib/utils/query";
 
 export const runtime: ServerRuntime = "edge";
@@ -14,7 +15,7 @@ type NavigationContext = {
 export async function GET(request: NextRequest, context: NavigationContext) {
   const search = pickSearchParams(request.nextUrl.searchParams, "type", "locale");
   const response = await fetch(
-    `${process.env.STRAPI_URL}/api/navigation/render/${context.params.slug}?${search.toString()}`,
+    `${env("STRAPI_URL")}/api/navigation/render/${context.params.slug}?${search.toString()}`,
   );
 
   return NextResponse.json(getItems(await response.json()));

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import * as Sentry from "@sentry/nextjs";
 import bcrypt from "bcrypt";
 import type { TypeOf } from "zod";
+import { env } from "@sparky/env";
 import { UserSchema } from "@lib/utils/schema";
 import { sendEmail } from "@lib/utils/sendgrid";
 import prisma from "@lib/utils/prisma";
@@ -43,7 +44,9 @@ export async function inviteUser(payload: TypeOf<typeof InviteSchema>) {
 
     await sendEmail({
       to: user.data.email,
-      html: `You have been invited to the Sparky AI Tool. Click this <a href="${process.env.TOOL_URL}/login?signature=${signature}"target="_blank">link</a> to complete your registration.`,
+      html: `You have been invited to the Sparky AI Tool. Click this <a href="${env(
+        "TOOL_URL",
+      )}/login?signature=${signature}"target="_blank">link</a> to complete your registration.`,
       subject: "Sparky AI Tool sign up",
     });
 

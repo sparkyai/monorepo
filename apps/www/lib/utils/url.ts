@@ -1,7 +1,9 @@
+import { env } from "@sparky/env";
+
 export function www(...slug: string[]) {
-  return [process.env.WWW_URL, ...slug].filter(Boolean).join("/");
+  return [env("WWW_URL"), ...slug].filter(Boolean).join("/");
 }
 
 export function app(...slug: string[]) {
-  return [process.env.APP_URL, ...slug].filter(Boolean).join("/");
+  return [env("APP_URL"), ...slug].filter(Boolean).join("/");
 }

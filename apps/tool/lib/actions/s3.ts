@@ -3,12 +3,13 @@
 import { randomBytes } from "node:crypto";
 import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
+import { env } from "@sparky/env";
 
 const client = new S3Client({
-  region: `${process.env.AWS_REGION}`,
+  region: env("AWS_REGION"),
   credentials: {
-    accessKeyId: `${process.env.IAM_USER_KEY}`,
-    secretAccessKey: `${process.env.IAM_USER_SECRET}`,
+    accessKeyId: env("IAM_USER_KEY"),
+    secretAccessKey: env("IAM_USER_SECRET"),
   },
 });
 
@@ -21,7 +22,7 @@ export async function upload(data: FormData) {
   const key = `${randomBytes(128).readBigInt64BE().toString(36)}.${file.name.split(".").pop()}`;
 
   const params = {
-    Bucket: `${process.env.S3_BUCKET}`,
+    Bucket: env("S3_BUCKET"),
     Key: key,
     Body: new Uint8Array(await file.arrayBuffer()),
     ContentType: file.type,
@@ -35,7 +36,7 @@ export async function upload(data: FormData) {
 export async function remove(key: string) {
   await client.send(
     new DeleteObjectCommand({
-      Bucket: `${process.env.S3_BUCKET}`,
+      Bucket: env("S3_BUCKET"),
       Key: key,
     }),
   );

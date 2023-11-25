@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
 import { redirect } from "next/navigation";
+import { env } from "@sparky/env";
 import prisma from "@lib/utils/prisma";
 
 declare module "next-auth" {
@@ -21,7 +22,7 @@ export const NEXT_AUTH_OPTIONS: NextAuthOptions = {
     error: "/login",
     signIn: "/login",
   },
-  secret: process.env.JWT_SECRET,
+  secret: env("JWT_SECRET"),
   callbacks: {
     async session(params) {
       const session: AuthSession = { user: void 0, expires: params.session.expires };

@@ -1,0 +1,9 @@
+{
+  "extends": "@sparky/config/typescript/library.json",
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

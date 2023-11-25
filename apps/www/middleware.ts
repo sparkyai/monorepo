@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { env } from "@sparky/env";
 import { getLocaleCollection } from "lib/data/locale";
 
 export const config = {
@@ -66,7 +67,7 @@ export async function middleware(request: NextRequest) {
 
 function setLocale(response: NextResponse, locale: string) {
   response.cookies.set(LOCALE_COOKIE_NAME, locale, {
-    domain: `.${process.env.DOMAIN}`,
+    domain: `.${env("DOMAIN")}`,
     path: "/",
   });
 }

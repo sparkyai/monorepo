@@ -1,3 +1,5 @@
+import { env } from "@sparky/env";
+
 type Model = {
   id: string;
   object: string;
@@ -15,7 +17,7 @@ export async function getGPTModelCollection() {
       revalidate: 1440,
     },
     headers: {
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      Authorization: `Bearer ${env("OPENAI_API_KEY")}`,
     },
   });
 

@@ -4,11 +4,12 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs";
+import { env } from "@sparky/env";
 
 Sentry.init({
   dsn: "https://2e0c3780faabd6bc4ebe089b8afebb1a@o4505285422415872.ingest.sentry.io/4506185188376576",
 
-  enabled: process.env.NODE_ENV === "production",
+  enabled: env("NODE_ENV") === "production",
 
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: 1,

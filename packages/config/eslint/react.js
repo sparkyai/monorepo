@@ -4,6 +4,10 @@ module.exports = {
     require.resolve("@vercel/style-guide/eslint/react"),
     require.resolve("./library"),
   ],
+  globals: {
+    React: true,
+    JSX: true,
+  },
   ignorePatterns: [".eslintrc.js", "**/*.css"],
   // add rules configurations here
   rules: {

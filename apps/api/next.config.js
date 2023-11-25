@@ -1,4 +1,5 @@
 const { withSentryConfig } = require("@sentry/nextjs");
+const { env } = require("@sparky/env");
 
 module.exports = withSentryConfig(
   {
@@ -7,17 +8,7 @@ module.exports = withSentryConfig(
         {
           source: "/v1/:path*",
           permanent: false,
-          destination: `${process.env.TOOL_URL}/api/v1/:path*`,
-        },
-        {
-          source: "/categories",
-          permanent: false,
-          destination: `${process.env.TOOL_URL}/api/categories`,
-        },
-        {
-          source: "/templates/:path*",
-          permanent: false,
-          destination: `${process.env.TOOL_URL}/api/templates/:path*`,
+          destination: `${env("TOOL_URL")}/api/v1/:path*`,
         },
       ];
     },
