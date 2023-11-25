@@ -29,7 +29,7 @@ type LocaleLayoutProps = PropsWithChildren<{
 export default function LocaleLayout(props: LocaleLayoutProps) {
   return (
     <html className={inter.className} lang={props.params?.locale}>
-      <GoogleTagManager id={env("GTM_ID")} />
+      <GoogleTagManager id={env("GTM_ID", "")} />
       <body className="flex min-h-screen flex-col">{props.children}</body>
     </html>
   );

@@ -6,9 +6,7 @@ import * as Sentry from "@sentry/nextjs";
 import { env } from "@sparky/env";
 
 Sentry.init({
-  dsn: "https://c1d86be875c84149a9b9e2eff1937da0@o4505285422415872.ingest.sentry.io/4505353777840128",
-
-  enabled: env("NODE_ENV") === "production",
+  dsn: env("NEXT_PUBLIC_SENTRY_DSN", ""),
 
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: 1,

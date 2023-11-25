@@ -2,7 +2,6 @@
 
 import Script from "next/script";
 import { useSearchParams } from "next/navigation";
-import { env } from "@sparky/env";
 
 declare global {
   interface Window {
@@ -17,7 +16,7 @@ type GoogleTagManagerProps = {
 export default function GoogleTagManager(props: GoogleTagManagerProps) {
   const searchParams = useSearchParams();
 
-  if ((searchParams.has("gtm_debug") || env("NODE_ENV") === "production") && props.id) {
+  if (searchParams.has("gtm_debug") && props.id) {
     if (typeof window !== "undefined" && !window.dataLayer) {
       window.dataLayer = [{ "gtm.start": Date.now(), event: "gtm.js" }];
     }
