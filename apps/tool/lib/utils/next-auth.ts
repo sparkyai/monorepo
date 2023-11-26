@@ -22,7 +22,7 @@ export const NEXT_AUTH_OPTIONS: NextAuthOptions = {
     error: "/login",
     signIn: "/login",
   },
-  secret: env("JWT_SECRET"),
+  secret: env("NEXTAUTH_SECRET"),
   callbacks: {
     async session(params) {
       const session: AuthSession = { user: void 0, expires: params.session.expires };
