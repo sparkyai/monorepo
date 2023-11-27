@@ -2,8 +2,35 @@
   "extends": "@sparky/config/typescript/next.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "plugins": [{ "name": "next" }]
+    "paths": {
+      "widgets/*": [
+        "./src/widgets/*/index.ts"
+      ],
+      "features/*": [
+        "./src/features/*/index.ts"
+      ],
+      "entities/*": [
+        "./src/entities/*/index.ts"
+      ],
+      "shared/*": [
+        "./src/shared/*"
+      ]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
-  "include": ["**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", ".turbo", ".next"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    ".turbo",
+    ".next"
+  ]
 }
