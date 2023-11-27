@@ -1,6 +1,7 @@
 "use client";
 
 import Script from "next/script";
+import { env } from "@sparky/env";
 
 declare global {
   interface Window {
@@ -8,14 +9,14 @@ declare global {
   }
 }
 
-type GoogleTagManagerProps = {
-  id: string;
-};
-
-export default function GoogleTagManager(props: GoogleTagManagerProps) {
+export default function GoogleTagManager() {
   if (typeof window !== "undefined" && !window.dataLayer) {
     window.dataLayer = [{ "gtm.start": Date.now(), event: "gtm.js" }];
   }
 
-  return <Script async src={`https://www.googletagmanager.com/gtm.js?id=${props.id}`} />;
+  try {
+    return <Script async src={`https://www.googletagmanager.com/gtm.js?id=${env("NEXT_PUBLIC_GTM_ID")}`} />;
+  } catch {
+    return null;
+  }
 }
