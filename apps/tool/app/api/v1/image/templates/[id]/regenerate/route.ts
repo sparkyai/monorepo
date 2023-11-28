@@ -5,6 +5,7 @@ import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
 import { TelegramUserSchema } from "@lib/utils/schema";
 import { withTokenVerify } from "@lib/utils/validate";
+import { updateUserExtraTokens } from "@lib/data/telegram/user";
 
 export const revalidate = 0;
 
@@ -48,6 +49,8 @@ export const PUT = withTokenVerify(async function PUT(request: NextRequest, prop
       },
       select: { id: true },
     });
+
+    await updateUserExtraTokens(payload.data.telegram.user.id, payload.data.tokens);
 
     return NextResponse.json({ data: usage });
   } catch (error) {
