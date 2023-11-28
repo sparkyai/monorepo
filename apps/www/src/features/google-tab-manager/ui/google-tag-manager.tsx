@@ -12,7 +12,11 @@ export default function GoogleTagManager(props: GoogleTagManagerProps) {
 
   return (
     <>
-      <Script id={id}>{`window.dataLayer=[{"gtm.start":Date.now(),event:"gtm.js"}];`}</Script>
+      <Script
+        dangerouslySetInnerHTML={{ __html: 'window.dataLayer=[{"gtm.start":Date.now(),event:"gtm.js"}];' }}
+        id={id}
+        strategy="beforeInteractive"
+      />
       <Script async src={`https://www.googletagmanager.com/gtm.js?id=${props.id}`} />
     </>
   );
