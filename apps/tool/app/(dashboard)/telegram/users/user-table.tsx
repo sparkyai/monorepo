@@ -5,7 +5,7 @@ import TableHeader from "@components/table/header";
 import TablePagination from "@components/table/pagination";
 import TableWrap from "@components/table/wrap";
 import prisma from "@lib/utils/prisma";
-import { getUserTokenBalance } from "@lib/data/telegram/user";
+import { getUserSubscriptionBalance } from "@lib/data/telegram/user";
 import Skeleton from "@components/table/skeleton";
 import UserTopUp from "@app/(dashboard)/telegram/users/top-up";
 import UserAnalytics from "./analytics";
@@ -68,7 +68,11 @@ export default async function UserTable(props: UserTableProps) {
 
   const tokens = await Promise.all(
     users.map(async (user) => {
-      return { id: user.id, tokens: await getUserTokenBalance(user.id), extra: user.extra_tokens };
+      return {
+        id: user.id,
+        extra: user.extra_tokens,
+        tokens: Math.max(0, await getUserSubscriptionBalance(user.id)) + user.extra_tokens,
+      };
     }),
   );
 

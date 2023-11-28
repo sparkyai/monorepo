@@ -1,69 +1,58 @@
 import prisma from "@lib/utils/prisma";
 
-export async function getUserTokenBalance(id: bigint) {
-  const user = await prisma.telegram_users.findUniqueOrThrow({
-    where: { id },
-    select: {
-      payments: {
-        take: 1,
-        where: { expired_at: { gte: new Date() } },
-        select: {
-          tokens: true,
-          updated_at: true,
-          expired_at: true,
-        },
-        orderBy: { expired_at: "desc" },
-      },
-      extra_tokens: true,
-    },
-  });
+type Subscription = {
+  tokens: bigint | null;
+  started_at: Date | null;
+  expired_at: Date | null;
+};
 
-  let tokens = user.extra_tokens;
+type Usage = {
+  tokens: bigint;
+};
 
-  if (user.payments.length) {
-    const [payment] = user.payments;
+export async function getUserSubscriptionBalance(id: number | bigint) {
+  const subscriptions = await prisma.$queryRaw<Subscription[]>`
+      SELECT sum(coalesce(p.tokens, 0)) as tokens, min(p.updated_at) as started_at, max(p.expired_at) as expired_at
+      FROM public.payments p
+      WHERE p.user_id = ${id}
+        AND p.expired_at >= now();
+  `;
 
-    if (payment.expired_at) {
-      const [chat, text, image] = await Promise.all([
-        prisma.chat_role_usage.aggregate({
-          _sum: { completion_tokens: true },
-          where: {
-            user: { id },
-            created_at: {
-              lte: payment.expired_at,
-              gte: payment.updated_at,
-            },
-          },
-        }),
-        prisma.text_template_usage.aggregate({
-          _sum: { completion_tokens: true },
-          where: {
-            user: { id },
-            created_at: {
-              lte: payment.expired_at,
-              gte: payment.updated_at,
-            },
-          },
-        }),
-        prisma.image_template_usage.aggregate({
-          _sum: { tokens: true },
-          where: {
-            user: { id },
-            created_at: {
-              lte: payment.expired_at,
-              gte: payment.updated_at,
-            },
-          },
-        }),
-      ]);
-
-      tokens +=
-        payment.tokens -
-        (chat._sum.completion_tokens || 0) -
-        (text._sum.completion_tokens || 0) -
-        (image._sum.tokens || 0);
-    }
+  if (!subscriptions[0].tokens) {
+    return 0;
   }
 
-  return tokens;
+  const usage = await prisma.$queryRaw<Usage[]>`
+      SELECT *
+      FROM (SELECT coalesce(sum(cu.completion_tokens), 0) as tokens
+            FROM public.chat_role_usage cu
+            WHERE cu.user_id = ${id}
+              AND cu.created_at BETWEEN ${subscriptions[0].started_at} AND ${subscriptions[0].expired_at}
+            UNION ALL
+            SELECT coalesce(sum(tu.completion_tokens), 0) as tokens
+            FROM public.text_template_usage tu
+            WHERE tu.user_id = ${id}
+              AND tu.created_at BETWEEN ${subscriptions[0].started_at} AND ${subscriptions[0].expired_at}
+            UNION ALL
+            SELECT coalesce(sum(iu.tokens), 0) as tokens
+            FROM public.image_template_usage iu
+            WHERE iu.user_id = ${id}
+              AND iu.created_at BETWEEN ${subscriptions[0].started_at} AND ${subscriptions[0].expired_at}) usage
+  `;
+
+  return Number(subscriptions[0].tokens) - usage.reduce((balance, item) => balance + Number(item.tokens), 0);
+}
+
+export async function updateUserExtraTokens(id: number | bigint, tokens: number) {
+  const balance = (await getUserSubscriptionBalance(id)) - tokens;
+
+  if (balance < 0) {
+    await prisma.telegram_users.update({
+      data: {
+        extra_tokens: { increment: balance },
+      },
+      where: { id },
+      select: { id: true },
+    });
+  }
 }
