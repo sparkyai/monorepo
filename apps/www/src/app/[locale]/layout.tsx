@@ -1,9 +1,9 @@
 import type { PropsWithChildren } from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import GoogleTagManager from "features/google-tab-manager";
 import { www } from "shared/lib/url";
 import "./common.css";
-import GoogleTagManager from "../../../components/common/google-tag-manager";
 
 const inter = Inter({
   subsets: ["cyrillic", "latin"],
@@ -28,7 +28,7 @@ type LocaleLayoutProps = PropsWithChildren<{
 export default function LocaleLayout(props: LocaleLayoutProps) {
   return (
     <html className={inter.className} lang={props.params?.locale}>
-      <GoogleTagManager />
+      {process.env.GTM_ID && <GoogleTagManager id={process.env.GTM_ID} />}
       <body className="flex flex-col">{props.children}</body>
     </html>
   );
