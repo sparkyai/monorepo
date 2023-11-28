@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { env } from "@sparky/env";
 import type { StrapiEntity } from "lib/utils/strapi";
 import strapi from "lib/utils/strapi";
 import monobank from "lib/utils/monobank";
@@ -30,7 +31,7 @@ export async function POST(request: NextRequest) {
   const invoice = await monobank.post<Invoice>("/merchant/invoice/create", {
     ccy: data.ccy,
     amount: data.amount * 100,
-    webHookUrl: `${process.env.API_URL}/webhook/monobank`,
+    webHookUrl: `${env("API_URL")}/webhook/monobank`,
   });
 
   await strapi.post<Donation>("donations", {

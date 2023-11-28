@@ -1,4 +1,5 @@
 const { withSentryConfig } = require("@sentry/nextjs");
+const { env } = require("@sparky/env");
 
 module.exports = withSentryConfig(
   {
@@ -7,17 +8,7 @@ module.exports = withSentryConfig(
         {
           source: "/v1/:path*",
           permanent: false,
-          destination: `${process.env.TOOL_URL}/api/v1/:path*`,
-        },
-        {
-          source: "/categories",
-          permanent: false,
-          destination: `${process.env.TOOL_URL}/api/categories`,
-        },
-        {
-          source: "/templates/:path*",
-          permanent: false,
-          destination: `${process.env.TOOL_URL}/api/templates/:path*`,
+          destination: `${env("TOOL_URL")}/api/v1/:path*`,
         },
       ];
     },
@@ -30,8 +21,9 @@ module.exports = withSentryConfig(
 
     // Suppresses source map uploading logs during build
     silent: true,
-    org: "sparky-ai",
-    project: "api",
+    org: env("SENTRY_ORG", ""),
+    project: env("SENTRY_PROJECT", ""),
+    authToken: env("SENTRY_AUTH_TOKEN", ""),
   },
   {
     // For all available options, see:
@@ -39,9 +31,6 @@ module.exports = withSentryConfig(
 
     // Upload a larger set of source maps for prettier stack traces (increases build time)
     widenClientFileUpload: true,
-
-    // Transpiles SDK to be compatible with IE11 (increases bundle size)
-    transpileClientSDK: true,
 
     // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers (increases server load)
     tunnelRoute: "/monitoring",

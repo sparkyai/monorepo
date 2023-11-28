@@ -19,10 +19,6 @@ module.exports = {
   parserOptions: {
     project,
   },
-  globals: {
-    React: true,
-    JSX: true,
-  },
   settings: {
     "import/resolver": {
       typescript: {

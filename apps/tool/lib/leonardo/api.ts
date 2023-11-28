@@ -1,3 +1,5 @@
+import { env } from "@sparky/env";
+
 async function request<T>(url: string, method: "get" | "delete"): Promise<T>;
 async function request<T>(url: string, method: "put" | "post", data?: object): Promise<T>;
 async function request(url: string, method: string, payload?: object) {
@@ -6,7 +8,7 @@ async function request(url: string, method: string, payload?: object) {
     body: payload ? JSON.stringify(payload) : void 0,
     method,
     headers: {
-      Authorization: `Bearer ${process.env.LEONARDO_API_KEY}`,
+      Authorization: `Bearer ${env("LEONARDO_API_KEY")}`,
       "Content-Type": "application/json",
     },
   });

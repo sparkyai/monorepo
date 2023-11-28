@@ -2,6 +2,7 @@ import { ChatOpenAI } from "langchain/chat_models/openai";
 import type { ChainValues } from "langchain/schema";
 import { ChatPromptTemplate, ChatMessagePromptTemplate } from "langchain/prompts";
 import { BytesOutputParser } from "langchain/schema/output_parser";
+import { env } from "@sparky/env";
 
 type Message = {
   role: string;
@@ -23,9 +24,9 @@ export async function GPTChatCompletion(messages: Message[], parameters: Paramet
     streaming: true,
     modelName: parameters.model,
     temperature: parameters.temperature,
+    openAIApiKey: env("OPENAI_API_KEY"),
     presencePenalty: parameters.present_penalty,
     frequencyPenalty: parameters.frequency_penalty,
-    openAIApiKey: process.env.OPENAI_API_KEY,
   });
 
   const prompt = ChatPromptTemplate.fromPromptMessages(

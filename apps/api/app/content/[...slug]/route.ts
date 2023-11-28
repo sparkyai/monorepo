@@ -37,7 +37,6 @@ export async function GET(request: NextRequest, context: NavigationContext) {
       filters: {
         slug: slug ? { $eq: slug } : { $null: true },
       },
-
       populate: [
         "seo",
         "seo.image",
@@ -130,7 +129,6 @@ function getLocalization(space: string, translation: Translation) {
   return {
     id: translation.id,
     name: translation.name,
-    slug: translation.slug,
     href: `/${translation.locale}/${space}${slug}`.replace("/pages", ""),
     locale: translation.locale,
   };

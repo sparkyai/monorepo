@@ -1,0 +1,14 @@
+{
+  "name": "@sparky/env",
+  "private": true,
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "lint": "eslint . --color"
+  },
+  "devDependencies": {
+    "@sparky/config": "workspace:^",
+    "@types/node": "^18.11.17",
+    "eslint": "^8.54.0"
+  }
+}

@@ -1,3 +1,5 @@
+import { env } from "@sparky/env";
+
 type FailureData = {
   errCode?: string;
   errText?: string;
@@ -11,7 +13,7 @@ async function request<T extends object>(url: string, method: string, payload?: 
     body: payload ? JSON.stringify(payload) : void 0,
     method,
     headers: {
-      "X-Token": process.env.MONOBANK_API_KEY || "",
+      "X-Token": env("MONOBANK_API_KEY"),
     },
   });
 

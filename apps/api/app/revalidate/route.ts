@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { revalidateTag } from "next/cache";
+import { env } from "@sparky/env";
 
 export async function POST() {
   revalidateTag("strapi");
 
-  await revalidate(`${process.env.WWW_URL}/api/revalidate`, ["api"]);
+  await revalidate(`${env("WWW_URL")}/api/revalidate`, ["api"]);
 
   return new NextResponse();
 }
