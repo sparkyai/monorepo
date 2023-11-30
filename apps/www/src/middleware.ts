@@ -56,7 +56,7 @@ export async function middleware(request: NextRequest) {
   const url = new URL(request.url);
   url.pathname = `/${locale}${url.pathname}`;
 
-  response = NextResponse.redirect(url);
+  response = NextResponse.redirect(new URL(locale, request.url), { status: 308 });
 
   setLocale(response, locale);
 
