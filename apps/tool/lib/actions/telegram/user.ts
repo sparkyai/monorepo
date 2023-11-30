@@ -8,15 +8,18 @@ function revalidate() {
   revalidatePath("/telegram/users");
 }
 
-export async function userTopUp(id: bigint, tokens: number) {
+export async function userTopUp(id: number | bigint, tokens: number) {
   try {
-    await prisma.telegram_users.update({
+    await prisma.payments.create({
       data: {
-        extra_tokens: {
-          increment: tokens,
+        user: {
+          connect: { id },
         },
+        amount: 0,
+        tokens,
+        status: "success",
+        method: "top up",
       },
-      where: { id },
       select: { id: true },
     });
 

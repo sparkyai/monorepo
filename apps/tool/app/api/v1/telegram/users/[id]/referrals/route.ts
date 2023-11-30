@@ -93,8 +93,13 @@ export const POST = withTokenVerify(async function POST(request: NextRequest, pr
   try {
     await prisma.telegram_users.update({
       data: {
-        extra_tokens: {
-          increment: env.number("REFERRER_EXTRA_TOKENS"),
+        payments: {
+          create: {
+            amount: 0,
+            tokens: env.number("REFERRER_EXTRA_TOKENS"),
+            status: "success",
+            method: "referrer fee",
+          },
         },
       },
       where: { id: Number(props.params.id) },
@@ -115,12 +120,19 @@ export const POST = withTokenVerify(async function POST(request: NextRequest, pr
       data: {
         id: payload.data.id,
         language,
+        payments: {
+          create: {
+            amount: 0,
+            tokens: env.number("REGISTERED_USER_TOKENS"),
+            status: "success",
+            method: "registered",
+          },
+        },
         referrer: {
           connect: referrer,
         },
         last_name: payload.data.last_name,
         first_name: payload.data.first_name,
-        extra_tokens: env.number("REGISTERED_USER_TOKENS"),
         show_notification: payload.data.show_notification,
       },
       select: { id: true },

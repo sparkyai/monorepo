@@ -4,6 +4,7 @@ import TableHeader from "@components/table/header";
 import TablePagination from "@components/table/pagination";
 import TableWrap from "@components/table/wrap";
 import prisma from "@lib/utils/prisma";
+import dayjs from "@lib/utils/dayjs";
 
 type PaymentTableProps = {
   user: {
@@ -27,26 +28,49 @@ export default async function PaymentTable(props: PaymentTableProps) {
         tokens: true,
         method: true,
         status: true,
+        created_at: true,
+        updated_at: true,
       },
-      orderBy: { id: "desc" },
+      orderBy: { created_at: "desc" },
     }),
   ]);
 
   return (
-    <TableWrap className="grid-cols-[1fr_1fr_1fr_1fr]">
-      <TableHeader values={["Method", "Amount", "Tokens", "Status"]} />
+    <TableWrap className="grid-cols-[5fr_4fr_4fr_4fr_7fr_7fr]">
+      <TableHeader values={["Method", "Amount", "Tokens", "Status", "Created", "Updated"]} />
 
       {payments.length < 1 && (
         <p className="col-span-full border-t border-slate-700 px-4 py-12 text-center text-slate-400">
           Payment list is empty
         </p>
       )}
-      {payments.map((payment) => (
-        <TableRow
-          key={Number(payment.id)}
-          values={[payment.method, payment.amount.toString(), payment.tokens.toString(), payment.status]}
-        />
-      ))}
+      {payments.map((payment) => {
+        let className: string | undefined;
+
+        if (payment.status === "success") {
+          className = "text-lime-500";
+        } else if (["failure", "expired"].includes(payment.status)) {
+          className = "text-rose-500";
+        } else {
+          className = "text-yellow-500";
+        }
+
+        return (
+          <TableRow
+            key={Number(payment.id)}
+            values={[
+              payment.method,
+              payment.amount.toString(),
+              payment.tokens.toString(),
+              <span className={className} key={`:payment:status:${payment.id}:`}>
+                {payment.status}
+              </span>,
+              dayjs(payment.created_at).format("DD/MM/YYYY HH:mm"),
+              dayjs(payment.updated_at).format("DD/MM/YYYY HH:mm"),
+            ]}
+          />
+        );
+      })}
 
       <TablePagination disabled end={Math.min(20, total)} page={1} start={Math.min(1, total)} total={total} />
     </TableWrap>

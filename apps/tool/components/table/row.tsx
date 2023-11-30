@@ -19,7 +19,7 @@ export default function TableRow(props: TableRowProps) {
           key={typeof item === "string" ? `:${item}:${i}:` : item.key}
           title={typeof item === "string" ? item : void 0}
         >
-          {typeof item === "string" ? <span>{item}</span> : item}
+          {typeof item === "string" ? <span className="truncate">{item}</span> : item}
         </div>
       ))}
     </>

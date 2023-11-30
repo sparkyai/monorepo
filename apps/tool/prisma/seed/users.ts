@@ -22,7 +22,6 @@ export async function seed(prisma: PrismaClient) {
           first_name: user.first_name,
           created_at: user.created_at,
           updated_at: user.updated_at,
-          extra_tokens: user.extra_tokens,
         },
       });
     }),

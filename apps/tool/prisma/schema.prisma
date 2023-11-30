@@ -80,7 +80,6 @@ model payments {
   method     String
   created_at DateTime       @default(now()) @db.Timestamptz()
   updated_at DateTime       @updatedAt @db.Timestamptz()
-  expired_at DateTime?      @db.Timestamptz()
 
   @@index([status, method])
 }
@@ -92,7 +91,6 @@ model telegram_users {
   language_id              Int?
   first_name               String
   last_name                String?
-  extra_tokens             Int                        @default(0)
   created_at               DateTime                   @default(now()) @db.Timestamptz()
   updated_at               DateTime                   @updatedAt @db.Timestamptz()
   referrer                 telegram_users?            @relation("referrer", fields: [referrer_id], references: [id], onDelete: SetNull)

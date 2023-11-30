@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import prisma from "@lib/utils/prisma";
 import { TelegramUserSchema } from "@lib/utils/schema";
-import { getUserSubscriptionBalance } from "@lib/data/telegram/user";
+import { getTokenBalance } from "@lib/data/telegram/user";
 import { withTokenVerify } from "@lib/utils/validate";
 
 export const revalidate = 0;
@@ -27,7 +27,6 @@ export const GET = withTokenVerify(async function GET(_: NextRequest, props: Use
         },
         last_name: true,
         first_name: true,
-        extra_tokens: true,
         show_notification: true,
       },
     });
@@ -39,7 +38,7 @@ export const GET = withTokenVerify(async function GET(_: NextRequest, props: Use
     return NextResponse.json({
       data: {
         id: user.id,
-        tokens: Math.max(0, await getUserSubscriptionBalance(user.id)) + user.extra_tokens,
+        tokens: Math.max(0, await getTokenBalance(user.id)),
         language: user.language,
         last_name: user.last_name,
         first_name: user.first_name,
