@@ -5,7 +5,7 @@ import TableHeader from "@components/table/header";
 import TablePagination from "@components/table/pagination";
 import TableWrap from "@components/table/wrap";
 import prisma from "@lib/utils/prisma";
-import { getUserSubscriptionBalance } from "@lib/data/telegram/user";
+import { getTokenBalance } from "@lib/data/telegram/user";
 import Skeleton from "@components/table/skeleton";
 import UserTopUp from "@app/(dashboard)/telegram/users/top-up";
 import UserAnalytics from "./analytics";
@@ -60,7 +60,6 @@ export default async function UserTable(props: UserTableProps) {
         },
         last_name: true,
         first_name: true,
-        extra_tokens: true,
       },
       orderBy: { id: "desc" },
     }),
@@ -70,8 +69,7 @@ export default async function UserTable(props: UserTableProps) {
     users.map(async (user) => {
       return {
         id: user.id,
-        extra: user.extra_tokens,
-        tokens: Math.max(0, await getUserSubscriptionBalance(user.id)) + user.extra_tokens,
+        tokens: await getTokenBalance(user.id),
       };
     }),
   );
@@ -87,6 +85,11 @@ export default async function UserTable(props: UserTableProps) {
       )}
       {users.map((user) => {
         const balance = tokens.find((item) => item.id === user.id);
+        let className: string | undefined = void 0;
+
+        if (balance && balance.tokens !== 0) {
+          className = balance.tokens > 0 ? "text-lime-500" : "text-rose-500";
+        }
 
         return (
           <TableRow
@@ -94,11 +97,9 @@ export default async function UserTable(props: UserTableProps) {
             values={[
               user.id.toString(),
               [user.first_name, user.last_name].filter(Boolean).join(" "),
-              <Fragment key={`:balance:user:${user.id}:`}>
-                <span className="text-lime-500">{balance?.tokens || 0}</span>
-                {" / "}
-                <span className="text-rose-500">{balance?.extra || 0}</span>
-              </Fragment>,
+              <span className={className} key={`:balance:user:${user.id}:`}>
+                {balance?.tokens || 0}
+              </span>,
               user._count.referrals.toString(),
               user.language?.name || "",
               <Fragment key={`:actions:user:${user.id}:`}>

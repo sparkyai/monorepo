@@ -31,7 +31,6 @@ export const GET = withTokenVerify(async function GET(_: NextRequest, props: Pay
         method: true,
         created_at: true,
         updated_at: true,
-        expired_at: true,
       },
     });
 
@@ -52,19 +51,8 @@ export const PUT = withTokenVerify(async function PUT(request: NextRequest, prop
   }
 
   try {
-    let expired: Date | null = null;
-
-    if (payload.data.status === "success") {
-      expired = new Date();
-
-      expired.setMonth(expired.getMonth() + 1);
-    }
-
     const payment = await prisma.payments.update({
-      data: {
-        status: payload.data.status,
-        expired_at: expired,
-      },
+      data: { status: payload.data.status },
       where: { id: props.params.id },
       select: { id: true },
     });
