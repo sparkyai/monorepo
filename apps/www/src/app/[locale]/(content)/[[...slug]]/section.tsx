@@ -1,4 +1,5 @@
 import dynamic from "next/dynamic";
+import * as Sentry from "@sentry/nextjs";
 
 const SECTIONS = {
   faq: dynamic(() => import("components/section/faq")),
@@ -35,7 +36,11 @@ export default function Section(props: PageSectionProps) {
   const Component = SECTIONS[props.type];
 
   if (!Component) {
-    return <pre>{JSON.stringify(props, void 0, 2)}</pre>;
+    if (process.env.NODE_ENV === "development") {
+      return <pre>{JSON.stringify(props, void 0, 2)}</pre>;
+    }
+
+    Sentry.captureException(new Error(`Section "${props.type}" not found.`));
   }
 
   return Component ? <Component locale={props.locale} {...props.params} /> : null;
