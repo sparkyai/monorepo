@@ -85,7 +85,7 @@ export default async function UserTable(props: UserTableProps) {
       )}
       {users.map((user) => {
         const balance = tokens.find((item) => item.id === user.id);
-        let className: string | undefined = void 0;
+        let className: string | undefined;
 
         if (balance && balance.tokens !== 0) {
           className = balance.tokens > 0 ? "text-lime-500" : "text-rose-500";
@@ -119,8 +119,8 @@ export default async function UserTable(props: UserTableProps) {
                   <Suspense
                     fallback={
                       <Skeleton
-                        className="grid-cols-[1fr_1fr_1fr_1fr]"
-                        header={["Method", "Amount", "Tokens", "Status"]}
+                        className="grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr]"
+                        header={["Method", "Amount", "Tokens", "Status", "Created", "Updated"]}
                         rows={20}
                       />
                     }

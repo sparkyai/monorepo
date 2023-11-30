@@ -14,7 +14,7 @@ export default function UserPayments(props: PropsWithChildren) {
       <IconButtonPrimary className="-my-1.5" onClick={onOpen}>
         <Bank size={16} />
       </IconButtonPrimary>
-      <Dialog className="max-w-screen-sm" onClose={onClose} open={isOpen} title="User Payments">
+      <Dialog className="max-w-screen-md" onClose={onClose} open={isOpen} title="User Payments">
         {props.children}
       </Dialog>
     </>

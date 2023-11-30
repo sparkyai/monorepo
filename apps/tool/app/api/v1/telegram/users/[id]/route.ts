@@ -27,7 +27,6 @@ export const GET = withTokenVerify(async function GET(_: NextRequest, props: Use
         },
         last_name: true,
         first_name: true,
-        extra_tokens: true,
         show_notification: true,
       },
     });

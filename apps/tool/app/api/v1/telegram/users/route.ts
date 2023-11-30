@@ -30,9 +30,16 @@ export const POST = withTokenVerify(async function POST(request: NextRequest) {
       data: {
         id: payload.data.id,
         language,
+        payments: {
+          create: {
+            amount: 0,
+            tokens: env.number("REGISTERED_USER_TOKENS"),
+            status: "success",
+            method: "registered",
+          },
+        },
         last_name: payload.data.last_name,
         first_name: payload.data.first_name,
-        extra_tokens: env.number("REGISTERED_USER_TOKENS"),
         show_notification: payload.data.show_notification,
       },
       select: { id: true },
