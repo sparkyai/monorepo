@@ -42,6 +42,7 @@ export const GET = withTokenVerify(async function GET(_: NextRequest, props: Use
         language: user.language,
         last_name: user.last_name,
         first_name: user.first_name,
+        show_notification: user.show_notification,
       },
     });
   } catch (error) {
