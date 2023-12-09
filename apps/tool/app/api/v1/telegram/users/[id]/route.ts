@@ -76,6 +76,7 @@ export const PUT = withTokenVerify(async function PUT(request: NextRequest, prop
         language,
         last_name: payload.data.last_name,
         first_name: payload.data.first_name,
+        show_notification: payload.data.show_notification,
       },
       where: { id: Number(props.params.id) },
       select: { id: true },

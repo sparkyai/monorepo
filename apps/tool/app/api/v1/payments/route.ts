@@ -31,6 +31,7 @@ export const POST = withTokenVerify(async function POST(request: NextRequest) {
         tokens: payload.data.tokens,
         status: payload.data.status,
         method: payload.data.method,
+        invoice_id: payload.data.invoice_id,
       },
       select: { id: true },
     });

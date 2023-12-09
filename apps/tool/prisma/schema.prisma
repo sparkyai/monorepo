@@ -78,6 +78,7 @@ model payments {
   tokens     Int
   status     payment_status
   method     String
+  invoice_id String?        @unique
   created_at DateTime       @default(now()) @db.Timestamptz()
   updated_at DateTime       @updatedAt @db.Timestamptz()
 

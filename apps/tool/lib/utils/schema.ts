@@ -41,6 +41,7 @@ export const PaymentSchema = z.object({
   tokens: z.number().nonnegative().int(),
   status: z.enum(["reversed", "created", "success", "failure", "expired", "hold"]).default("created"),
   method: z.string().min(1),
+  invoice_id: z.optional(z.string().min(1)),
 });
 
 export const ImageSchema = z.object({

@@ -29,6 +29,7 @@ export const GET = withTokenVerify(async function GET(_: NextRequest, props: Pay
         amount: true,
         tokens: true,
         method: true,
+        invoice_id: true,
         created_at: true,
         updated_at: true,
       },
