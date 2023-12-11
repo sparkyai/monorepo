@@ -28,8 +28,10 @@ export const GET = withTokenVerify(async function GET(request: NextRequest, prop
   try {
     const payment = await prisma.payments.findUnique({
       where: {
-        method: params.data.method,
-        invoice_id: props.params.id,
+        method_invoice_id: {
+          method: params.data.method,
+          invoice_id: props.params.id,
+        },
       },
       select: {
         id: true,
@@ -76,8 +78,10 @@ export const PUT = withTokenVerify(async function PUT(request: NextRequest, prop
     await prisma.payments.update({
       data: { status: payload.data.status },
       where: {
-        method: params.data.method,
-        invoice_id: props.params.id,
+        method_invoice_id: {
+          method: params.data.method,
+          invoice_id: props.params.id,
+        },
       },
       select: { id: true },
     });
