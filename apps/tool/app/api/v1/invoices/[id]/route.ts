@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
+import { z } from "zod";
+import { parse } from "qs";
 import prisma from "@lib/utils/prisma";
 import { PaymentSchema } from "@lib/utils/schema";
 import { withTokenVerify } from "@lib/utils/validate";
+
+const MethodQuerySchema = z.object({
+  method: z.string().min(1),
+});
 
 export const revalidate = 0;
 
@@ -12,10 +18,19 @@ type PaymentProps = {
   };
 };
 
-export const GET = withTokenVerify(async function GET(_: NextRequest, props: PaymentProps) {
+export const GET = withTokenVerify(async function GET(request: NextRequest, props: PaymentProps) {
+  const params = MethodQuerySchema.safeParse(parse(request.nextUrl.search.slice(1)));
+
+  if (!params.success) {
+    return NextResponse.json({ error: params.error.format() }, { status: 500 });
+  }
+
   try {
     const payment = await prisma.payments.findUnique({
-      where: { invoice_id: props.params.id },
+      where: {
+        method: params.data.method,
+        invoice_id: props.params.id,
+      },
       select: {
         id: true,
         user: {
@@ -45,6 +60,12 @@ export const GET = withTokenVerify(async function GET(_: NextRequest, props: Pay
 });
 
 export const PUT = withTokenVerify(async function PUT(request: NextRequest, props: PaymentProps) {
+  const params = MethodQuerySchema.safeParse(parse(request.nextUrl.search.slice(1)));
+
+  if (!params.success) {
+    return NextResponse.json({ error: params.error.format() }, { status: 500 });
+  }
+
   const payload = PaymentSchema.pick({ status: true }).safeParse(await request.json());
 
   if (!payload.success) {
@@ -54,7 +75,10 @@ export const PUT = withTokenVerify(async function PUT(request: NextRequest, prop
   try {
     await prisma.payments.update({
       data: { status: payload.data.status },
-      where: { invoice_id: props.params.id },
+      where: {
+        method: params.data.method,
+        invoice_id: props.params.id,
+      },
       select: { id: true },
     });
 
