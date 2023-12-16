@@ -32,6 +32,7 @@ export async function generateMetadata(props: PageProps) {
       locale: page.locale,
       languages: page.localizations.reduce((languages: Record<string, string>, localization) => {
         languages[localization.locale] = www(localization.href.slice(1));
+        languages["x-default"] = www(localization.href.slice(1)).replace(`/${localization.locale}`, "");
 
         return languages;
       }, {}),
