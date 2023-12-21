@@ -98,6 +98,7 @@ model telegram_users {
   referrer                 telegram_users?            @relation("referrer", fields: [referrer_id], references: [id], onDelete: SetNull)
   referrer_id              BigInt?
   referrals                telegram_users[]           @relation("referrer")
+  origin_language          String?                    @db.VarChar(2)
   show_notification        Boolean                    @default(true)
   chat_role_usage          chat_role_usage[]
   text_template_usage      text_template_usage[]
@@ -106,7 +107,7 @@ model telegram_users {
   text_template_reactions  text_template_reactions[]
   image_template_reactions image_template_reactions[]
 
-  @@index([first_name, last_name])
+  @@index([first_name, last_name, origin_language])
 }
 
 model chat_roles {

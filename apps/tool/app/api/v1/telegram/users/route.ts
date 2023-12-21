@@ -16,20 +16,25 @@ export const POST = withTokenVerify(async function POST(request: NextRequest) {
   }
 
   try {
-    let language: object | undefined = void 0;
+    let language = { code: "en" };
 
     if (payload.data.language) {
-      language = {
-        connect: {
-          code: payload.data.language,
-        },
-      };
+      const relation = await prisma.languages.findUnique({
+        where: { code: payload.data.language },
+        select: { code: true },
+      });
+
+      if (relation) {
+        language = relation;
+      }
     }
 
     const user = await prisma.telegram_users.create({
       data: {
         id: payload.data.id,
-        language,
+        language: {
+          connect: language,
+        },
         payments: {
           create: {
             amount: 0,
@@ -40,6 +45,7 @@ export const POST = withTokenVerify(async function POST(request: NextRequest) {
         },
         last_name: payload.data.last_name,
         first_name: payload.data.first_name,
+        origin_language: payload.data.language,
         show_notification: payload.data.show_notification,
       },
       select: { id: true },
